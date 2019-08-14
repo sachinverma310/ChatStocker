@@ -2,5 +2,13 @@
 <resources>
     <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#00574B</color>
-    <color name="colorAccent">#D81B60</color>
+    <color name="colorAccent">#4E7AC1</color>
+    <color name="white">#FFFFFF</color>
+    <color name="hint_color">#4E7AC1</color>
+    <color name="fb_btn_color">#3B5999</color>
+    <color name="black">#000000</color>
+    <color name="red">#DB3235</color>
+    <color name="purple">#673BB7</color>
+    <color name="yellow">#FFDF3F</color>
+    <color name="navy_blue">#8CC4FF</color>
 </resources>

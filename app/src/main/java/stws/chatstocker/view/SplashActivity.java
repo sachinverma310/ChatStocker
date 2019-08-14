@@ -1,17 +1,24 @@
-package com.example.chatstocker.view;
+package stws.chatstocker.view;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.ViewModelProviders;
 
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.pm.Signature;
 import android.os.Bundle;
+import android.util.Base64;
+import android.util.Log;
 import android.widget.Toast;
 
-import com.example.chatstocker.R;
-import com.example.chatstocker.databinding.ActivitySplashBinding;
-import com.example.chatstocker.viewmodel.SplashViewModel;
+import stws.chatstocker.R;
+import stws.chatstocker.databinding.ActivitySplashBinding;
+import stws.chatstocker.viewmodel.SplashViewModel;
+
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 public class SplashActivity extends AppCompatActivity {
 private int REQUEST_PERMISION_CODE=101;
@@ -21,6 +28,7 @@ private ActivitySplashBinding activitySplashBinding;
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         activitySplashBinding= DataBindingUtil.setContentView(this,R.layout.activity_splash);
+//        printHashKey();
 //        setContentView(R.layout.activity_splash);
         splashViewModel= ViewModelProviders.of(this).get(SplashViewModel.class);
         activitySplashBinding.setViewModel(splashViewModel);
@@ -47,4 +55,5 @@ private ActivitySplashBinding activitySplashBinding;
 
 
     }
+
 }

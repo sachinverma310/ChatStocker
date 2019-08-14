@@ -8,4 +8,16 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="FaceBookButton" parent="Base.Widget.AppCompat.Button.Colored">
+        <item name="colorButtonNormal">@color/fb_btn_color</item>
+        <item name="colorAccent">@color/fb_btn_color</item>
+        <item name="colorControlHighlight">@color/fb_btn_color</item>></style>
+    <style name="GmailButton" parent="Base.Widget.AppCompat.Button.Colored">
+        <item name="colorButtonNormal">@color/red</item>
+        <item name="colorAccent">@color/red</item>
+        <item name="colorControlHighlight">@color/red</item>></style>
+    <style name="MobileButton" parent="Base.Widget.AppCompat.Button.Colored">
+        <item name="colorButtonNormal">@color/purple</item>
+        <item name="colorAccent">@color/purple</item>
+        <item name="colorControlHighlight">@color/purple</item>></style>
 </resources>

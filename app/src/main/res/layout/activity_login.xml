@@ -2,25 +2,34 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
+    <data>
+        <variable
+            name="viewModel"
+            type="stws.chatstocker.viewmodel.LoginViewModel" />
+    </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@drawable/login_bg"
         tools:context=".view.LoginActivity">
 
         <ImageView
             android:id="@+id/imageView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="140dp"
+            android:layout_height="140dp"
             android:layout_marginStart="8dp"
             android:layout_marginLeft="8dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginRight="8dp"
+            android:layout_marginBottom="8dp"
+            android:src="@drawable/logo"
+            app:layout_constraintBottom_toTopOf="@+id/btnSignIn"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@mipmap/ic_launcher" />
+            app:layout_constraintVertical_bias="0.13" />
 
         <TextView
             android:id="@+id/textView"
@@ -31,79 +40,139 @@
             android:layout_marginTop="32dp"
             android:layout_marginEnd="16dp"
             android:layout_marginRight="16dp"
-            android:layout_marginBottom="8dp"
-            android:text="TextView"
-            app:layout_constraintBottom_toTopOf="@+id/textView2"
+            android:text="@string/sign_in"
+            android:textAllCaps="true"
+            android:textColor="@color/white"
+            android:textSize="28sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/imageView" />
 
-        <TextView
-            android:id="@+id/textView2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:layout_marginRight="8dp"
-            android:layout_marginBottom="8dp"
-            android:text="TextView"
-            app:layout_constraintBottom_toTopOf="@+id/editText"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+        <!--<FrameLayout-->
+        <!--android:id="@+id/btnGmail"-->
+        <!--android:layout_width="0dp"-->
+        <!--android:layout_height="50dp"-->
+        <!--android:layout_marginStart="32dp"-->
+        <!--android:layout_marginLeft="32dp"-->
+        <!--android:layout_marginTop="10dp"-->
+        <!--android:layout_marginEnd="32dp"-->
+        <!--android:layout_marginRight="32dp"-->
+        <!--android:layout_marginBottom="128dp"-->
+        <!--android:background="@drawable/gmail_btn"-->
+        <!--app:layout_constraintBottom_toBottomOf="parent"-->
+        <!--app:layout_constraintEnd_toEndOf="parent"-->
+        <!--app:layout_constraintStart_toStartOf="parent">-->
 
         <Button
             android:id="@+id/btnGmail"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginRight="8dp"
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:layout_width="0dp"
+            android:layout_height="70dp"
+            android:layout_gravity="center"
+            android:layout_marginStart="32dp"
+            android:layout_marginLeft="32dp"
+            android:layout_marginEnd="32dp"
+
             android:layout_marginBottom="32dp"
-            android:text="Button"
+            android:drawablePadding="10dp"
+
+            android:gravity="center"
+            android:text="@string/google"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:theme="@style/GmailButton"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
+        <!--</FrameLayout>-->
+
+        <!--<FrameLayout-->
+        <!--android:id="@+id/btnSigIn"-->
+        <!--android:layout_width="0dp"-->
+        <!--android:layout_height="50dp"-->
+        <!--android:layout_marginStart="32dp"-->
+        <!--android:layout_marginLeft="32dp"-->
+        <!--android:layout_marginEnd="32dp"-->
+        <!--android:layout_marginRight="32dp"-->
+        <!--android:layout_marginBottom="8dp"-->
+        <!--android:background="@drawable/fb_button_design"-->
+        <!--android:textSize="20sp"-->
+        <!--app:layout_constraintBottom_toTopOf="@+id/btnGmail"-->
+        <!--app:layout_constraintEnd_toEndOf="parent"-->
+        <!--app:layout_constraintStart_toStartOf="parent">-->
+
         <Button
-            android:id="@+id/button2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginRight="8dp"
-            android:layout_marginBottom="32dp"
-            android:text="Button"
-            app:layout_constraintBottom_toTopOf="@+id/textView3"
+            android:theme="@style/FaceBookButton"
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:id="@+id/btnFb"
+            android:layout_width="0dp"
+            android:layout_height="70dp"
+            android:layout_gravity="center"
+            android:layout_marginStart="32dp"
+            android:layout_marginLeft="32dp"
+            android:layout_marginEnd="32dp"
+            android:gravity="center"
+            android:text="@string/fb"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            app:layout_constraintBottom_toTopOf="@+id/btnGmail"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+        <!--</FrameLayout>-->
+
+        <Button
+
+            android:id="@+id/btnSignIn"
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:layout_width="0dp"
+            android:layout_height="70dp"
+            android:layout_marginStart="32dp"
+            android:layout_marginLeft="32dp"
+            android:layout_marginEnd="32dp"
+            android:layout_marginRight="32dp"
+            android:ems="10"
+            android:gravity="center"
+            android:inputType="phone"
+
+            android:text="@string/continue_with_mobile"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:theme="@style/MobileButton"
+            app:layout_constraintBottom_toTopOf="@+id/btnFb"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent" />
 
         <TextView
             android:id="@+id/textView3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginLeft="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginRight="8dp"
-            android:layout_marginBottom="32dp"
-            android:text="TextView"
-            app:layout_constraintBottom_toTopOf="@+id/btnGmail"
+            android:text="@string/enter_your_mob_no"
+            android:textColor="@color/white"
+            app:layout_constraintBottom_toTopOf="@+id/edtMobile"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
         <EditText
-            android:id="@+id/editText"
-            android:layout_width="wrap_content"
+            android:id="@+id/edtMobile"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginRight="8dp"
+            android:layout_marginStart="32dp"
+            android:layout_marginLeft="32dp"
+            android:layout_marginEnd="32dp"
+            android:layout_marginRight="32dp"
             android:layout_marginBottom="8dp"
             android:ems="10"
+            android:gravity="center"
+            android:hint="@string/mobile_num"
             android:inputType="phone"
-            app:layout_constraintBottom_toTopOf="@+id/button2"
+            android:textColorHint="@color/hint_color"
+            app:layout_constraintBottom_toTopOf="@+id/btnSignIn"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>

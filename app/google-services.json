@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "1043198422629",
+    "firebase_url": "https://chat-stocker.firebaseio.com",
+    "project_id": "chat-stocker",
+    "storage_bucket": "chat-stocker.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1043198422629:android:bb7a0049bc9ea655",
+        "android_client_info": {
+          "package_name": "stws.chatstocker"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1043198422629-up3aos9q9a4hdak8uvetij1mecupi5pu.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "stws.chatstocker",
+            "certificate_hash": "f39b243189ad3e33c987eb2f32e4276225ba424e"
+          }
+        },
+        {
+          "client_id": "1043198422629-tl7bbuhljmvad1gpaeu5vfh9mf08h0gg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDuw38sRR2HNjSyOiHHdVE2SwhzdzBWzcM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1043198422629-tl7bbuhljmvad1gpaeu5vfh9mf08h0gg.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

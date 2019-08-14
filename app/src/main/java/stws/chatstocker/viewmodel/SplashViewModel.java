@@ -1,4 +1,4 @@
-package com.example.chatstocker.viewmodel;
+package stws.chatstocker.viewmodel;
 
 import android.Manifest;
 import android.app.Activity;
@@ -11,7 +11,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.lifecycle.ViewModel;
 
-import com.example.chatstocker.view.LoginActivity;
+import stws.chatstocker.view.LoginActivity;
+
 
 public class SplashViewModel extends ViewModel {
     private int SPLASH_TIME_OUT = 3000;
