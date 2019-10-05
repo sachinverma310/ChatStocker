@@ -170,6 +170,7 @@
             android:ems="10"
             android:gravity="center"
             android:hint="@string/mobile_num"
+            android:textColor="@color/white"
             android:inputType="phone"
             android:textColorHint="@color/hint_color"
             app:layout_constraintBottom_toTopOf="@+id/btnSignIn"

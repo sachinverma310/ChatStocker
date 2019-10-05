@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/sign_in_bg">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBarLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/AppBarOverlay"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:background="?attr/colorPrimary"
+            app:contentInsetLeft="0dp"
+            app:contentInsetStart="0dp"
+            app:contentInsetStartWithNavigation="0dp"
+            app:popupTheme="@style/PopupOverlay">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/mainActionBar"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <ImageView
+                    android:id="@+id/imgProfile"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:src="@drawable/profile" />
+
+                <TextView
+                    android:id="@+id/tvName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:text="Xyz"
+                    android:textColor="@color/white"
+                    app:layout_constraintBottom_toBottomOf="@+id/imgProfile"
+                    app:layout_constraintStart_toEndOf="@+id/imgProfile"
+                    app:layout_constraintTop_toTopOf="@+id/imgProfile" />
+
+                <TextView
+                    android:id="@+id/tvLogout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginRight="16dp"
+                    android:text="@string/logout"
+                    android:textColor="@color/white"
+                    android:textSize="16sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/imgLogout" />
+
+                <ImageView
+                    android:id="@+id/imgLogout"
+                    android:layout_width="24dp"
+                    android:layout_height="22dp"
+                    android:layout_marginTop="8dp"
+                    android:scaleType="fitXY"
+                    app:layout_constraintEnd_toEndOf="@+id/tvLogout"
+                    app:layout_constraintStart_toStartOf="@+id/tvLogout"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:src="@drawable/logout" />
+
+                <TextView
+                    android:id="@+id/tvSetting"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginRight="8dp"
+                    android:text="@string/settings"
+                    android:textColor="@color/white"
+                    android:textSize="16sp"
+                    app:layout_constraintEnd_toStartOf="@+id/tvLogout"
+                    app:layout_constraintTop_toBottomOf="@+id/imgSettings" />
+
+                <ImageView
+                    android:id="@+id/imgSettings"
+                    android:layout_width="24dp"
+                    android:layout_height="22dp"
+                    android:layout_marginTop="8dp"
+                    android:scaleType="fitXY"
+                    app:layout_constraintEnd_toEndOf="@+id/tvSetting"
+                    app:layout_constraintStart_toStartOf="@+id/tvSetting"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:src="@drawable/setting" />
+
+                <ImageView
+                    android:id="@+id/imageView10"
+                    android:layout_width="24dp"
+                    android:layout_height="22dp"
+                    android:layout_marginTop="8dp"
+                    android:scaleType="fitXY"
+                    app:layout_constraintEnd_toEndOf="@+id/tvCall"
+                    app:layout_constraintStart_toStartOf="@+id/tvCall"
+                    app:layout_constraintTop_toTopOf="parent"
+                   android:src="@drawable/call" />
+
+                <TextView
+                    android:id="@+id/tvCall"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginRight="20dp"
+                    android:text="@string/call"
+                    android:textColor="@color/white"
+                    android:textSize="16sp"
+                    app:layout_constraintEnd_toStartOf="@+id/tvSetting"
+                    app:layout_constraintTop_toBottomOf="@+id/imageView10" />
+
+                <!--<TextView-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_gravity="center"-->
+                <!--android:text="@string/app_name"-->
+                <!--android:textColor="@color/white"-->
+                <!--android:textSize="20sp"-->
+                <!--android:textStyle="bold"-->
+                <!--android:visibility="visible" />-->
+
+
+                <!--</LinearLayout>-->
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+            <include  android:layout_width="match_parent"
+
+                android:visibility="gone"
+                layout="@layout/user_action_bar"
+                android:layout_height="match_parent"></include>
+        </androidx.appcompat.widget.Toolbar>
+
+        <!--<android.support.v7.widget.Toolbar-->
+        <!--android:id="@+id/toolbar"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="?attr/actionBarSize"-->
+        <!--android:background="?attr/colorPrimary"-->
+        <!--app:popupTheme="@style/AppTheme.PopupOverlay" />-->
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <FrameLayout
+        android:id="@+id/frameLayout"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/bottomNavigationView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/appBarLayout">
+
+    </FrameLayout>
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNavigationView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginEnd="8dp"
+        android:background="@color/colorPrimary"
+
+        app:itemTextColor="@color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+
+
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:menu="@menu/bottom_menu" />
+
+
+    <!--<ImageView-->
+    <!--android:id="@+id/imgLogout"-->
+    <!--android:layout_width="80dp"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_marginTop="32dp"-->
+    <!--app:layout_constraintEnd_toEndOf="parent"-->
+    <!--app:layout_constraintTop_toTopOf="parent"-->
+    <!--app:srcCompat="@drawable/logout" />-->
+
+    <!--<ImageView-->
+    <!--android:id="@+id/imgSettings"-->
+    <!--android:layout_width="80dp"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_marginEnd="16dp"-->
+    <!--android:layout_marginRight="16dp"-->
+    <!--app:layout_constraintEnd_toStartOf="@+id/imgLogout"-->
+    <!--app:layout_constraintTop_toTopOf="@+id/imgLogout"-->
+    <!--app:srcCompat="@drawable/setting" />-->
+
+    <!--<ImageView-->
+    <!--android:id="@+id/imgCall"-->
+    <!--android:layout_width="80dp"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_marginEnd="16dp"-->
+    <!--android:layout_marginRight="16dp"-->
+    <!--app:layout_constraintEnd_toStartOf="@+id/imgSettings"-->
+    <!--app:layout_constraintTop_toTopOf="@+id/imgSettings"-->
+    <!--app:srcCompat="@drawable/call" />-->
+
+    <!--<TextView-->
+    <!--android:id="@+id/tvAudioCall"-->
+    <!--android:layout_width="34dp"-->
+    <!--android:layout_height="100dp"-->
+    <!--android:layout_marginStart="8dp"-->
+    <!--android:layout_marginLeft="8dp"-->
+    <!--android:text="TextView"-->
+    <!--app:layout_constraintStart_toStartOf="@+id/imgCall"-->
+    <!--app:layout_constraintEnd_toEndOf="@+id/imgCall"-->
+    <!--app:layout_constraintTop_toBottomOf="@+id/imgCall" />-->
+
+    <!--<TextView-->
+    <!--android:id="@+id/tvSetting"-->
+    <!--android:layout_width="34dp"-->
+    <!--android:layout_height="100dp"-->
+    <!--android:layout_marginStart="8dp"-->
+    <!--android:layout_marginLeft="8dp"-->
+    <!--android:text="TextView"-->
+    <!--app:layout_constraintStart_toStartOf="@+id/imgSettings"-->
+    <!--app:layout_constraintEnd_toEndOf="@+id/imgSettings"-->
+    <!--app:layout_constraintTop_toBottomOf="@+id/imgSettings" />-->
+
+    <!--<TextView-->
+    <!--android:id="@+id/tvLogout"-->
+    <!--android:layout_width="34dp"-->
+    <!--android:layout_height="100dp"-->
+    <!--android:layout_marginStart="8dp"-->
+    <!--android:layout_marginLeft="8dp"-->
+    <!--android:text="TextView"-->
+    <!--app:layout_constraintStart_toStartOf="@+id/imgLogout"-->
+    <!--app:layout_constraintEnd_toEndOf="@+id/imgLogout"-->
+    <!--app:layout_constraintTop_toBottomOf="@+id/imgLogout" />-->
+</androidx.constraintlayout.widget.ConstraintLayout>

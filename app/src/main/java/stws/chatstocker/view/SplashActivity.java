@@ -42,8 +42,9 @@ private ActivitySplashBinding activitySplashBinding;
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
 
-        if (requestCode==REQUEST_PERMISION_CODE &&grantResults.length == 2&& grantResults[0] == PackageManager.PERMISSION_GRANTED
-                && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+        if (requestCode==REQUEST_PERMISION_CODE &&grantResults.length == 5&& grantResults[0] == PackageManager.PERMISSION_GRANTED
+                && grantResults[1] == PackageManager.PERMISSION_GRANTED && grantResults[2] == PackageManager.PERMISSION_GRANTED
+                && grantResults[3] == PackageManager.PERMISSION_GRANTED && grantResults[4] == PackageManager.PERMISSION_GRANTED) {
 
            splashViewModel.callSplash(SplashActivity.this);
         }

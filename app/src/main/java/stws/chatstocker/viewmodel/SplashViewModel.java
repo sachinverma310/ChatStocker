@@ -11,14 +11,18 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.lifecycle.ViewModel;
 
+import stws.chatstocker.ConstantsValues;
+import stws.chatstocker.utils.Prefrences;
+import stws.chatstocker.view.ChatActivity;
+import stws.chatstocker.view.HomeActivity;
 import stws.chatstocker.view.LoginActivity;
 
 
-public class SplashViewModel extends ViewModel {
+public class SplashViewModel extends ViewModel implements ConstantsValues {
     private int SPLASH_TIME_OUT = 3000;
     int REQUEST_PERMISION_CODE=101;
     String REQUEST_PERMISSION[]=new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE
-            ,Manifest.permission.READ_EXTERNAL_STORAGE};
+            ,Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.CAMERA  ,Manifest.permission.READ_CONTACTS ,Manifest.permission.WRITE_CONTACTS};
 
     public void callSplash(final Context context) {
         new Handler().postDelayed(new Runnable() {
@@ -31,13 +35,13 @@ public class SplashViewModel extends ViewModel {
             @Override
             public void run() {
 
-//                if (Prefrences.getBoolen(SplasActivity.this, KEY_IS_LOGIN)) {
-//                    Intent i = new Intent(SplasActivity.this, ProdcutListActivity.class);
-//                    startActivity(i);
-//                } else {
+                if (Prefrences.Companion.getBoolean(context, KEY_IS_LOGIN)) {
+                    Intent i = new Intent(context, HomeActivity.class);
+                    context.startActivity(i);
+                } else {
                     Intent i = new Intent( context, LoginActivity.class);
                     context.startActivity(i);
-//                }
+                }
 
                 // close this activity
                 ((AppCompatActivity)context).finish();

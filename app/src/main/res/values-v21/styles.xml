@@ -20,4 +20,7 @@
         <item name="android:colorButtonNormal">@color/purple</item>
         <item name="android:colorControlHighlight">@color/purple</item>
     </style>
+    <style name="AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 </resources>

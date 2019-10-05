@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#008577</color>
+    <color name="colorPrimary">#030E1B</color>
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#4E7AC1</color>
     <color name="white">#FFFFFF</color>
@@ -11,4 +11,13 @@
     <color name="purple">#673BB7</color>
     <color name="yellow">#FFDF3F</color>
     <color name="navy_blue">#8CC4FF</color>
+    <color name="camera_bg">#00B4DA</color>
+    <color name="chat_msg_time_color">#A4A5A8</color>
+    <color name="chat_text_color">#151515</color>
+    <color name="chat_page_day_color">#584E45</color>
+    <color name="action_bg">#030E1B</color>
+    <color name="profile_bg">#EDF6FF</color>
+    <color name="profile_edit_hint_color">#142335</color>
+    <color name="chat_page">#CEDAE9</color>
+    <color name="gray">#7D7F80</color>
 </resources>
