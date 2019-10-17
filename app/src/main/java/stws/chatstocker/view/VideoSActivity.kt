@@ -4,32 +4,26 @@ import android.graphics.Bitmap
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.MenuItem
-import android.view.View
 import android.widget.ImageView
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import com.google.api.services.drive.model.FileList
 import stws.chatstocker.R
 import stws.chatstocker.databinding.ActivityPhotosBinding
 import stws.chatstocker.interfaces.FileRecievedListener
 import stws.chatstocker.utils.DriveServiceHelper
 import stws.chatstocker.utils.GetAllFiles
-import stws.chatstocker.view.BaseActivity.mDriveService
-import stws.chatstocker.view.BaseActivity.mDriveServiceHelper
 import stws.chatstocker.view.adapter.PhotoAdapter
 
-class PhotosActivity : AppCompatActivity(), GetAllFiles.OnFileReciveListener, FileRecievedListener {
+class VideoSActivity : AppCompatActivity() , GetAllFiles.OnFileReciveListener, FileRecievedListener {
     override fun Downloaded(list: List<String>) {
 //        Glide.with(this).load(list.get(0)).into(btn)
         recyclerView.adapter = PhotoAdapter(list)
     }
 
     override fun onFileRecive(id: String) {
-        DriveServiceHelper.getInstance(mDriveService).GetFilesUrl(this,id, this).execute()
+        DriveServiceHelper.getInstance(BaseActivity.mDriveService).GetFilesUrl(this,id, this).execute()
     }
 
     lateinit var photosBinding: ActivityPhotosBinding
@@ -45,7 +39,7 @@ class PhotosActivity : AppCompatActivity(), GetAllFiles.OnFileReciveListener, Fi
         recyclerView.layoutManager = GridLayoutManager(this, 3)
         recyclerView.itemAnimator = DefaultItemAnimator()
 
-        GetAllFiles(this, "Chat Stocker photos", mDriveServiceHelper, mDriveService, this@PhotosActivity,"image/jpeg").execute()
+        GetAllFiles(this, "Chat Stocker videos", BaseActivity.mDriveServiceHelper, BaseActivity.mDriveService, this@VideoSActivity,"video/mp4").execute()
 
 
     }

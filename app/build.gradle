@@ -75,13 +75,18 @@ dependencies {
     annotationProcessor 'com.github.bumptech.glide:compiler:4.6.1'
     implementation 'com.amulyakhare:com.amulyakhare.textdrawable:1.0.1'
     implementation 'com.google.android.gms:play-services-auth:16.0.1'
-    implementation('com.google.apis:google-api-services-drive:v3-rev136-1.25.0') {
-        exclude group: 'org.apache.httpcomponents'
-    }
+//    implementation('com.google.apis:google-api-services-drive:v3-rev136-1.25.0') {
+//        exclude group: 'org.apache.httpcomponents'
+//    }
     implementation('com.google.api-client:google-api-client-android:1.26.0') {
         exclude group: 'org.apache.httpcomponents'
     }
     implementation 'com.google.http-client:google-http-client-gson:1.26.0'
-    implementation 'com.google.apis:google-api-services-drive:v3-rev173-1.25.0'
+    implementation('com.google.apis:google-api-services-drive:v3-rev173-1.25.0')
+            {
+                exclude group: 'org.apache.httpcomponents'
+            }
     implementation 'org.greenrobot:eventbus:3.1.1'
+//    implementation 'com.google.api-client:google-api-client:1.30.2'
+
 }

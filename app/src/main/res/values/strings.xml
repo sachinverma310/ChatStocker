@@ -40,6 +40,9 @@
     <string name="Gallery">Gallery</string>
     <string name="new_">New</string>
     <string name="audio_rcording">Audio Recording</string>
+    <string name="current_years_photos">Current Years Photos</string>
+    <string name="current_years_videos">Current Years Videos</string>
+    <string name="current_years_audio">Current Years Audios</string>
     <string-array name="home_items">
         <item>Camera</item>
         <item>Photos</item>

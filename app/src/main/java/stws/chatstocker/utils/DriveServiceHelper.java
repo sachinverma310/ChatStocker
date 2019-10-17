@@ -2,41 +2,64 @@ package stws.chatstocker.utils;
 
 
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.provider.OpenableColumns;
+import android.util.Log;
 import android.util.Pair;
+
+import androidx.annotation.Nullable;
 
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.api.client.http.ByteArrayContent;
 import com.google.api.client.http.FileContent;
+import com.google.api.client.http.GenericUrl;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.Callable;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 import stws.chatstocker.R;
+import stws.chatstocker.interfaces.FileRecievedListener;
+import stws.chatstocker.view.LoginActivity;
 
 public class DriveServiceHelper {
 
     private final Executor mExecutor = Executors.newSingleThreadExecutor();
-    private final Drive mDriveService;
+    private static Drive mDriveService=null;
+    private static DriveServiceHelper driveServiceHelper=null;
+    private DriveServiceHelper(){
 
-    public DriveServiceHelper(Drive driveService) {
-        mDriveService = driveService;
     }
+    public static DriveServiceHelper getInstance(Drive driveService){
+        if (driveServiceHelper==null){
+            mDriveService = driveService;
+            driveServiceHelper=new DriveServiceHelper();
+        }
+        return driveServiceHelper;
+    }
+//    public DriveServiceHelper(Drive driveService) {
+//
+//    }
+
 
     /**
      * Creates a text file in the user's My Drive folder and returns its file ID.
@@ -56,7 +79,7 @@ public class DriveServiceHelper {
                 return googleFile.getId();
             });
     }
-    public void uploadFile(java.io.File path,String folderId)
+    public void uploadFile(java.io.File path,String folderId,String type)
             throws Exception {
         Thread thread = new Thread() {
             @Override
@@ -77,9 +100,11 @@ public class DriveServiceHelper {
 //                    String folderId = "0BwwA4oUTeiV1TGRPeTVjaWRDY1E";
                     File fileMetadata = new File();
                     fileMetadata.setName(path.getName());
+
                     fileMetadata.setParents(Collections.singletonList(folderId));
                     java.io.File filePath = new java.io.File(path.getAbsolutePath());
-                    FileContent mediaContent = new FileContent("image/jpeg", filePath);
+                    FileContent mediaContent = new FileContent(type, filePath);
+
                     File file = mDriveService.files().create(fileMetadata, mediaContent)
                             .setFields("id, parents")
                             .execute();
@@ -131,7 +156,7 @@ public class DriveServiceHelper {
         return result;
     }
 
-    public void createFolder(String fileName,java.io.File path) {
+    public void createFolder(String fileName,java.io.File path,String type) {
 
         Thread thread=new Thread(new Runnable() {
             @Override
@@ -149,7 +174,7 @@ public class DriveServiceHelper {
                     e.printStackTrace();
                 }
                 try {
-                    uploadFile(path,file.getId());
+                    uploadFile(path,file.getId(),type);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -258,4 +283,147 @@ public class DriveServiceHelper {
                 return Pair.create(name, content);
             });
     }
+    public class GetFilesUrl extends AsyncTask<String,String, List<String>>{
+        String filedId;
+        FileRecievedListener fileRecievedListener;
+        Context context;
+        public GetFilesUrl(Context context,String filedId, FileRecievedListener fileRecievedListener){
+            this.filedId=filedId;
+            this.context=context;
+            this.fileRecievedListener=fileRecievedListener;
+        }
+
+        @Override
+        protected   List<String> doInBackground(String... strings) {
+            List<String> googleDriveFileHolderList = new ArrayList<>();
+//            List<Bitmap> googleDriveFileHolderList = new ArrayList<>();
+            String parent = "root";
+            if (filedId != null) {
+                parent = filedId;
+            }
+
+//            FileList result = mDriveService.files().list().setQ("'" + parent + "' in parents").setFields("files(id, name,size,createdTime,modifiedTime,starred)").setSpaces("drive").execute();
+            Drive.Files.List request= null;
+            try {
+                request = mDriveService.files().list().setFields("files/thumbnailLink, files/name, files/mimeType, files/id").setQ("'" + parent + "' in parents");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            do {
+                try {
+                    FileList files = request.execute();
+                    files.getFiles().get(0).getIconLink();
+                    files.getFiles().get(0).getThumbnailLink();
+//                    String fileId = "1ZdR3L3qP4Bkq8noWLJHSr_iBau0DNT4Kli4SxNc2YEo";
+                    for (int i=0;i<files.getFiles().size();i++) {
+//                        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+//                        mDriveService.files().get(files.getFiles().get(0).getId())
+//                                .executeMediaAndDownloadTo(outputStream);
+////                        Bitmap bitmap = BitmapFactory.de(outputStream);
+//                        byte[] data = outputStream.toByteArray();
+//                        Bitmap bmp = BitmapFactory.decodeByteArray(data, 0, data.length);
+//                        googleDriveFileHolderList.add(bmp);
+//                        Log.e("dta",data+"");
+                        if (files.getFiles().get(i).getThumbnailLink()!=null)
+                        googleDriveFileHolderList.add(files.getFiles().get(i).getThumbnailLink());
+                        else
+                            googleDriveFileHolderList.add(files.getFiles().get(i).getName());
+                    }
+//                    googleDriveFileHolderList.addAll(files.getFiles());
+                    request.setPageToken(files.getNextPageToken());
+                } catch (IOException e) {
+                    System.out.println("An error occurred: " + e);
+                    request.setPageToken(null);
+                }
+            } while (request.getPageToken() != null &&
+                    request.getPageToken().length() > 0);
+//          List<String> list= queryFiles(filedId).getResult();
+//            try {
+//                File file = mDriveService.files().get(filedId).execute();
+//                file.
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+
+            return googleDriveFileHolderList;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            ProgressBarHandler.Companion.getInstance();
+
+            ProgressBarHandler.Companion.show(context);
+        }
+
+        @Override
+        protected void onPostExecute(List<String> genericUrl) {
+
+            super.onPostExecute(genericUrl);
+            fileRecievedListener.Downloaded(genericUrl);
+            ProgressBarHandler.Companion.hide();
+
+//            Log.e("url",genericUrl.get(0).getu+"");
+        }
+    }
+
+    public Task<List<File>> queryFiles(@Nullable final String folderId) {
+        return Tasks.call(mExecutor, new Callable<List<File>>() {
+                    @Override
+                    public List<File> call() throws Exception {
+                        List<File> googleDriveFileHolderList = new ArrayList<>();
+                        String parent = "root";
+                        if (folderId != null) {
+                            parent = folderId;
+                        }
+
+                        FileList result = mDriveService.files().list().setQ("'" + parent + "' in parents").setFields("files(id, name,size,createdTime,modifiedTime,starred)").setSpaces("drive").execute();
+                        Drive.Files.List request=mDriveService.files().list().setQ("'" + parent + "' in parents");
+                        do {
+                            try {
+                                FileList files = request.execute();
+
+                                googleDriveFileHolderList.addAll(files.getFiles());
+                                request.setPageToken(files.getNextPageToken());
+                            } catch (IOException e) {
+                                System.out.println("An error occurred: " + e);
+                                request.setPageToken(null);
+                            }
+                        } while (request.getPageToken() != null &&
+                                request.getPageToken().length() > 0);
+
+//                        for (int i = 0; i < result.getFiles().size(); i++) {
+//
+//                            String googleDriveFileHolder = result.getFiles().get(i).getOriginalFilename();
+////                            googleDriveFileHolder.setId(result.getFiles().get(i).getId());
+////                            googleDriveFileHolder.setName(result.getFiles().get(i).getName());
+////                            if (result.getFiles().get(i).getSize() != null) {
+////                                googleDriveFileHolder.setSize(result.getFiles().get(i).getSize());
+////                            }
+////
+////                            if (result.getFiles().get(i).getModifiedTime() != null) {
+////                                googleDriveFileHolder.setModifiedTime(result.getFiles().get(i).getModifiedTime());
+////                            }
+////
+////                            if (result.getFiles().get(i).getCreatedTime() != null) {
+////                                googleDriveFileHolder.setCreatedTime(result.getFiles().get(i).getCreatedTime());
+////                            }
+////
+////                            if (result.getFiles().get(i).getStarred() != null) {
+////                                googleDriveFileHolder.setStarred(result.getFiles().get(i).getStarred());
+////                            }
+//
+//                            googleDriveFileHolderList.add(googleDriveFileHolder);
+//
+//                        }
+
+
+                        return googleDriveFileHolderList;
+
+
+                    }
+                }
+        );
+    }
+
 }

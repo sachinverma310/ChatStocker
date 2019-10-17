@@ -248,7 +248,7 @@ public class LoginActivity extends DaggerAppCompatActivity implements ConstantsV
     }
 
     public void firebaseAuthWithGoogle(GoogleSignInAccount acct, Context context) {
-        Log.d("TAG", "firebaseAuthWithGoogle:" + acct.getId());
+        Log.d("TAG", "firebaseAuthWithGoogle:" + acct.getId()+" "+acct.getIdToken());
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
         mAuth.signInWithCredential(credential)
                 .addOnCompleteListener((AppCompatActivity) context, new OnCompleteListener<AuthResult>() {
@@ -273,6 +273,7 @@ public class LoginActivity extends DaggerAppCompatActivity implements ConstantsV
     }
 
     private void updateUi(FirebaseUser user) {
+
         LoginResponse loginResponse = new LoginResponse(user.getDisplayName(), user.getUid(), user.getEmail());
         try {
             Prefrences.Companion.saveUser(LoginActivity.this, KEY_LOGIN_DATA, loginResponse);

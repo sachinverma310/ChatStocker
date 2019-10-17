@@ -4,28 +4,24 @@ import android.graphics.Bitmap
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.MenuItem
-import android.view.View
 import android.widget.ImageView
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import com.google.api.services.drive.model.FileList
 import stws.chatstocker.R
 import stws.chatstocker.databinding.ActivityPhotosBinding
 import stws.chatstocker.interfaces.FileRecievedListener
 import stws.chatstocker.utils.DriveServiceHelper
 import stws.chatstocker.utils.GetAllFiles
 import stws.chatstocker.view.BaseActivity.mDriveService
-import stws.chatstocker.view.BaseActivity.mDriveServiceHelper
+import stws.chatstocker.view.adapter.AudioAdapter
 import stws.chatstocker.view.adapter.PhotoAdapter
 
-class PhotosActivity : AppCompatActivity(), GetAllFiles.OnFileReciveListener, FileRecievedListener {
+class AuidosActivity : AppCompatActivity()  , GetAllFiles.OnFileReciveListener, FileRecievedListener {
     override fun Downloaded(list: List<String>) {
 //        Glide.with(this).load(list.get(0)).into(btn)
-        recyclerView.adapter = PhotoAdapter(list)
+        recyclerView.adapter = AudioAdapter(list)
     }
 
     override fun onFileRecive(id: String) {
@@ -45,7 +41,7 @@ class PhotosActivity : AppCompatActivity(), GetAllFiles.OnFileReciveListener, Fi
         recyclerView.layoutManager = GridLayoutManager(this, 3)
         recyclerView.itemAnimator = DefaultItemAnimator()
 
-        GetAllFiles(this, "Chat Stocker photos", mDriveServiceHelper, mDriveService, this@PhotosActivity,"image/jpeg").execute()
+        GetAllFiles(this, "Chat Stocker audio", BaseActivity.mDriveServiceHelper, BaseActivity.mDriveService, this@AuidosActivity,"audio/mpeg").execute()
 
 
     }
@@ -62,3 +58,4 @@ class PhotosActivity : AppCompatActivity(), GetAllFiles.OnFileReciveListener, Fi
         return true
     }
 }
+

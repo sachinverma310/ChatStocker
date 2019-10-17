@@ -80,6 +80,7 @@ class HomeActivity : BaseActivity(), ConstantsValues, HomeAdapter.OnItemClcik {
                 openCamera()
             }
             1 -> {
+                startActivity(Intent(this,PhotosActivity::class.java))
 
             }
             2 -> {
@@ -94,13 +95,16 @@ class HomeActivity : BaseActivity(), ConstantsValues, HomeAdapter.OnItemClcik {
                 startActivityForResult(intent, MEDIA_TYPE_VIDEO);
             }
             4 -> {
-
+                startActivity(Intent(this,VideoSActivity::class.java))
             }
             5 -> {
 
             }
             6 -> {
                 startActivity(Intent(this, AudioRecordingActivity::class.java))
+            }
+            7 -> {
+                startActivity(Intent(this, AuidosActivity::class.java))
             }
         }
 
@@ -120,10 +124,9 @@ class HomeActivity : BaseActivity(), ConstantsValues, HomeAdapter.OnItemClcik {
 
     lateinit var img: ImageView
 
-    companion object {
-    lateinit var mDriveService: Drive
-     lateinit var mDriveServiceHelper: DriveServiceHelper
-}
+
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         actvivityHomeBinding = DataBindingUtil.inflate(layoutInflater, R.layout.activity_home, frameLayout, true)
@@ -144,7 +147,7 @@ class HomeActivity : BaseActivity(), ConstantsValues, HomeAdapter.OnItemClcik {
         val adapter = HomeAdapter(this, this, list, homeItemList)
         img = actvivityHomeBinding.img
         recyclerView.adapter = adapter
-        signIn()
+//        signIn()
         homeViewModel = ViewModelProviders.of(this).get(HomeViewModel::class.java)
 
 //        photoFile = getOutputMediaFile()
@@ -198,55 +201,55 @@ class HomeActivity : BaseActivity(), ConstantsValues, HomeAdapter.OnItemClcik {
         val client = GoogleSignIn.getClient(this, signInOptions);
 
         // The result of the sign-in Intent is handled in onActivityResult.
-        startActivityForResult(client.getSignInIntent(), REQUEST_CODE_SIGN_IN);
+//        startActivityForResult(client.getSignInIntent(), REQUEST_CODE_SIGN_IN);
     }
 
 
-    private fun handleSignInResult(result: Intent) {
-        GoogleSignIn.getSignedInAccountFromIntent(result)
-                .addOnSuccessListener { googleAccount ->
-                    Log.d(TAG, "Signed in as " + googleAccount.email!!)
-
-                    // Use the authenticated account to sign in to the Drive service.
-                    val credential = GoogleAccountCredential.usingOAuth2(
-                            this, Collections.singleton(DriveScopes.DRIVE_FILE))
-                    credential.setSelectedAccount(googleAccount.account)
-                    val googleDriveService = Drive.Builder(
-                            AndroidHttp.newCompatibleTransport(),
-                            GsonFactory(),
-                            credential)
-                            .setApplicationName("Drive API Migration")
-                            .build()
-
-                    // The DriveServiceHelper encapsulates all REST API and SAF functionality.
-                    // Its instantiation is required before handling any onClick actions.
-                    mDriveService = googleDriveService
-                    mDriveServiceHelper = DriveServiceHelper(googleDriveService)
-                    mDriveServiceHelper.listAllFiles()
-                }
-                .addOnFailureListener { exception -> Log.e(TAG, "Unable to sign in.", exception) }
-
-    }
+//    private fun handleSignInResult(result: Intent) {
+//        GoogleSignIn.getSignedInAccountFromIntent(result)
+//                .addOnSuccessListener { googleAccount ->
+//                    Log.d(TAG, "Signed in as " + googleAccount.email!!)
+//
+//                    // Use the authenticated account to sign in to the Drive service.
+//                    val credential = GoogleAccountCredential.usingOAuth2(
+//                            this, Collections.singleton(DriveScopes.DRIVE_FILE))
+//                    credential.setSelectedAccount(googleAccount.account)
+//                    val googleDriveService = Drive.Builder(
+//                            AndroidHttp.newCompatibleTransport(),
+//                            GsonFactory(),
+//                            credential)
+//                            .setApplicationName("Drive API Migration")
+//                            .build()
+//
+//                    // The DriveServiceHelper encapsulates all REST API and SAF functionality.
+//                    // Its instantiation is required before handling any onClick actions.
+//                    mDriveService = googleDriveService
+//                    mDriveServiceHelper = DriveServiceHelper(googleDriveService)
+//                    mDriveServiceHelper.listAllFiles()
+//                }
+//                .addOnFailureListener { exception -> Log.e(TAG, "Unable to sign in.", exception) }
+//
+//    }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         when (requestCode) {
-            REQUEST_CODE_SIGN_IN -> {
-                if (resultCode == RESULT_OK) {
-                    Log.i(TAG, "Signed in successfully.");
-                    if (resultCode == Activity.RESULT_OK && data != null) {
-                        handleSignInResult(data);
-                    }
-                }
-            }
+//            REQUEST_CODE_SIGN_IN -> {
+//                if (resultCode == RESULT_OK) {
+//                    Log.i(TAG, "Signed in successfully.");
+//                    if (resultCode == Activity.RESULT_OK && data != null) {
+//                        handleSignInResult(data);
+//                    }
+//                }
+//            }
             REQUEST_CODE_CAPTURE_IMAGE -> {
-                GetAllFiles(this,"Chat Stocker photos",mDriveServiceHelper,mDriveService,photoFile!!).execute()
+                GetAllFiles(this,"Chat Stocker photos",mDriveServiceHelper,mDriveService,photoFile!!,"image/jpeg").execute()
 //                GetAllFiles("Chat Stocker photos").execute()
 
 
             }
             MEDIA_TYPE_VIDEO -> {
-                GetAllFiles(this,"Chat Stocker videos",mDriveServiceHelper,mDriveService,photoFile!!).execute()
+                GetAllFiles(this,"Chat Stocker videos",mDriveServiceHelper,mDriveService,photoFile!!,"video/mp4").execute()
 //                GetAllFiles("Chat Stocker videos").execute()
             }
         }

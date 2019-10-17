@@ -32,7 +32,7 @@ import java.util.*
 
 private const val LOG_TAG = "AudioRecordTest"
 private const val REQUEST_RECORD_AUDIO_PERMISSION = 200
-class AudioRecordingActivity : AppCompatActivity(),View.OnClickListener{
+class AudioRecordingActivity : BaseActivity(),View.OnClickListener{
     private var fileName: String = ""
     lateinit var audioBinding:ActivityAudioRecordingBinding
     lateinit var chronometer:Chronometer;
@@ -139,7 +139,7 @@ class AudioRecordingActivity : AppCompatActivity(),View.OnClickListener{
             stop()
             release()
         }
-        GetAllFiles(this,"Chat Stocker audio",HomeActivity.mDriveServiceHelper,HomeActivity.mDriveService,File(fileName)).execute()
+        GetAllFiles(this,"Chat Stocker audio",mDriveServiceHelper,mDriveService,File(fileName),"audio/mpeg").execute()
         recorder = null
     }
 

@@ -1,19 +1,51 @@
 package stws.chatstocker.utils
 
+import android.accounts.Account
 import android.content.Context
 import android.os.AsyncTask
 import com.google.api.services.drive.Drive
 import com.google.api.services.drive.model.File
 import java.io.IOException
-import java.util.ArrayList
 
-class GetAllFiles(val context: Context,val folderName: String,val mDriveServiceHelper: DriveServiceHelper,val mDriveService: Drive,val photoFile:java.io.File) : AsyncTask<String, String, List<File>>() {
-lateinit var progressBarHandler: ProgressBarHandler
+import kotlin.collections.ArrayList
+
+class GetAllFiles : AsyncTask<String, String, List<File>> {
+
+    var context:Context?=null
+    var folderName: String=""
+    var mDriveServiceHelper: DriveServiceHelper?=null
+    var mDriveService: Drive?=null
+    var photoFile:java.io.File?=null
+    var  onFileReciveListener: OnFileReciveListener?=null
+    var fileType:String?=null
+
+    constructor(context: Context, folderName: String, mDriveServiceHelper: DriveServiceHelper, mDriveService: Drive, photoFile:java.io.File,fileType: String) :
+            super() {
+        this.context = context
+        this.folderName = folderName
+        this.mDriveServiceHelper=mDriveServiceHelper
+        this.mDriveService=mDriveService
+        this.photoFile=photoFile
+        this.fileType=fileType
+    }
+      constructor( context: Context, folderName: String, mDriveServiceHelper: DriveServiceHelper, mDriveService: Drive, onFileReciveListener: OnFileReciveListener,fileType:String):
+            super(){
+          this.context=context
+          this.folderName=folderName
+          this.mDriveServiceHelper=mDriveServiceHelper
+          this.mDriveService=mDriveService
+          this.onFileReciveListener=onFileReciveListener
+          this.fileType=fileType
+
+    }
+
+
+    lateinit var progressBarHandler: ProgressBarHandler
     override fun doInBackground(vararg strings: String): List<com.google.api.services.drive.model.File> {
         val result = ArrayList<File>()
         var request: Drive.Files.List? = null
         try {
-            request = mDriveService.files().list()
+            request = mDriveService!!.files().list()
         } catch (e: IOException) {
             e.printStackTrace()
         }
@@ -21,7 +53,6 @@ lateinit var progressBarHandler: ProgressBarHandler
         do {
             try {
                 val files = request!!.execute()
-
                 result.addAll(files.files)
                 request.pageToken = files.nextPageToken
             } catch (e: IOException) {
@@ -46,17 +77,26 @@ lateinit var progressBarHandler: ProgressBarHandler
             }
 
         }
-        if (isExist!!)
-            mDriveServiceHelper.uploadFile(photoFile, id)
-        else
-            mDriveServiceHelper.createFolder(folderName, photoFile)
         ProgressBarHandler.hide()
+        if(onFileReciveListener!=null){
+            onFileReciveListener!!.onFileRecive(id!!)
+            return
+        }
+        if (isExist!!)
+            mDriveServiceHelper!!.uploadFile(photoFile, id,fileType)
+        else
+            mDriveServiceHelper!!.createFolder(folderName, photoFile,fileType)
+
     }
 
     override fun onPreExecute() {
         super.onPreExecute()
         ProgressBarHandler.getInstance()
-        ProgressBarHandler.show(context)
+        ProgressBarHandler.show(context!!)
 
+    }
+
+    interface OnFileReciveListener{
+        fun onFileRecive( id:String)
     }
 }
