@@ -42,6 +42,7 @@ import stws.chatstocker.model.User
 import stws.chatstocker.utils.GetRealPathUtil
 import stws.chatstocker.utils.Prefrences
 import stws.chatstocker.view.adapter.ChatAdapter
+import stws.chatstocker.view.adapter.ChatAppMsgAdapter
 import stws.chatstocker.viewmodel.ChatMessageViewModel
 import java.io.File
 import java.io.IOException
@@ -53,7 +54,8 @@ import kotlin.collections.ArrayList
 class ChatActivity : AppCompatActivity(), ConstantsValues {
     private lateinit var chatActivityChatBinding: ActivityChatBinding
     private var onceLoaded: Boolean = false
-    lateinit var adapter: ChatAdapter
+//    lateinit var adapter: ChatAdapter
+    lateinit var adapter: ChatAppMsgAdapter
     lateinit var linearLayoutManager: LinearLayoutManager
     //    private lateinit var chatPageActionBarBinding: ChatPageActionBarBinding
     private lateinit var chatList: ArrayList<ChatMessage>
@@ -77,6 +79,7 @@ class ChatActivity : AppCompatActivity(), ConstantsValues {
         chatActivityChatBinding = DataBindingUtil.setContentView(this, R.layout.activity_chat)
         imgFile = chatActivityChatBinding.imgFileUpload
 //        chatActivityChatBinding=ActivityChatBinding.inflate(layoutInflater)
+
         chatList = java.util.ArrayList()
         otherUId = intent.getParcelableExtra(KEYOTHER_UID)
          myUserId = Prefrences.Companion.getUserUid(this)
@@ -98,7 +101,7 @@ class ChatActivity : AppCompatActivity(), ConstantsValues {
         recyclerView.layoutManager = linearLayoutManager
 
          list = ArrayList<ChatMessage>()
-        adapter = ChatAdapter(this, list)
+        adapter = ChatAppMsgAdapter( list)
         mImageStorage = FirebaseStorage.getInstance().getReference();
         recyclerView.adapter = adapter
         viewmodel.getChatResponse().observe(this, Observer<ChatMessage> {
@@ -310,7 +313,7 @@ class ChatActivity : AppCompatActivity(), ConstantsValues {
                     val downUri = task.getResult();
                     val download_url = downUri.toString()
                     Log.d(TAG, "onComplete: Url: " + downUri.toString());
-                    Glide.with(this@ChatActivity).load(Uri.parse(download_url)).into(imgFile)
+//                    Glide.with(this@ChatActivity).load(Uri.parse(download_url)).into(imgFile)
                     val chat = ChatMessage(download_url, "flase", "image", senderUid, date,receiverUid,myUserId!!)
                     val messageMap = HashMap<Any, Any>();
                     messageMap.put("message", download_url);
@@ -322,7 +325,7 @@ class ChatActivity : AppCompatActivity(), ConstantsValues {
                     val messageUserMap = HashMap<String, Any>();
                     messageUserMap.put(senderUid + "/" + push_id, messageMap);
                     messageUserMap.put(receiverUid + "/" + push_id, messageMap);
-                    adapter.addMessage(chat)
+//                    adapter.addMessage(chat)
                     recyclerView.adapter = adapter
                     databaseReference.child("chat_room")
                             .ref
@@ -454,7 +457,7 @@ class ChatActivity : AppCompatActivity(), ConstantsValues {
                 } else if (requestCode == 200) {
                     val realPath: String
                     realPath = GetRealPathUtil.getPath(this@ChatActivity, data!!.data)
-                    Glide.with(this@ChatActivity).load(realPath).into(imgFile)
+//                    Glide.with(this@ChatActivity).load(realPath).into(imgFile)
                     sendFile(Prefrences.Companion.getUserUid(this), otherUId.uid, Uri.fromFile(File(realPath)))
                     Log.e("realPath", realPath)
 

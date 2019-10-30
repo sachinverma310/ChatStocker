@@ -32,7 +32,9 @@
             android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar" />
         <activity
             android:name=".view.PhotosActivity"
-            android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar" />
+            android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar" >
+
+        </activity>
         <activity
             android:name=".view.AudioRecordingActivity"
             android:theme="@style/AppTheme.ActionBar" />
@@ -40,7 +42,18 @@
         <activity android:name=".view.ChatUserActivity" />
         <activity android:name=".view.fragments.UserFragment" />
         <activity android:name=".view.fragments.ContactsFragment" />
-        <activity android:name=".view.HomeActivity" />
+        <activity android:name=".view.HomeActivity" >
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" /> <!-- Send action required to display activity in share list -->
+
+                <category android:name="android.intent.category.DEFAULT" /> <!-- Make activity default to launch -->
+
+
+                <!-- Mime type i.e. what can be shared with this activity only image and text -->
+                <data android:mimeType="image/*" />
+                <data android:mimeType="video/*" />
+            </intent-filter>
+        </activity>
         <activity android:name=".view.OtpverifyActivity" />
         <activity android:name=".view.LoginWithMobileActivity" />
         <activity android:name=".view.LoginActivity" />

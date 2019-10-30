@@ -1,7 +1,10 @@
 package stws.chatstocker.view
 
 import android.app.Activity
+import android.content.ClipData
+import android.content.Context
 import android.content.Intent
+import android.database.Cursor
 import android.graphics.drawable.Drawable
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -15,7 +18,6 @@ import stws.chatstocker.ConstantsValues
 import stws.chatstocker.ConstantsValues.KEY_LOGIN_DATA
 import stws.chatstocker.R
 import stws.chatstocker.databinding.ActivityHomeBinding
-import stws.chatstocker.utils.Prefrences
 import stws.chatstocker.view.adapter.HomeAdapter
 import androidx.core.app.ComponentActivity
 import androidx.core.app.ComponentActivity.ExtraData
@@ -38,7 +40,6 @@ import android.util.Log
 import androidx.core.content.ContextCompat.getSystemService
 import android.icu.lang.UCharacter.GraphemeClusterBreak.T
 import com.google.api.services.drive.Drive
-import stws.chatstocker.utils.DriveServiceHelper
 import com.google.api.services.drive.DriveScopes
 
 import androidx.core.content.ContextCompat.getSystemService
@@ -47,6 +48,7 @@ import android.net.Uri
 import android.os.AsyncTask
 import android.os.Build
 import android.os.Environment
+import android.provider.DocumentsContract
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
@@ -60,11 +62,11 @@ import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccoun
 import com.google.api.client.http.FileContent
 import com.google.api.client.json.gson.GsonFactory
 import org.greenrobot.eventbus.Subscribe
-import stws.chatstocker.utils.GetAllFiles
-import stws.chatstocker.utils.RecordingPopup
+import stws.chatstocker.utils.*
 import stws.chatstocker.viewmodel.HomeViewModel
 import java.io.File
 import java.io.IOException
+import java.net.URI
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -147,12 +149,73 @@ class HomeActivity : BaseActivity(), ConstantsValues, HomeAdapter.OnItemClcik {
         val adapter = HomeAdapter(this, this, list, homeItemList)
         img = actvivityHomeBinding.img
         recyclerView.adapter = adapter
+        val intent=intent;
 //        signIn()
+        if (intent.type!=null) {
+        if (intent.data==null)
+            for (i in 0 until intent.clipData!!.itemCount) {
+                photoFile = File(GetRealPathUtil.getPath(this, intent!!.clipData!!.getItemAt(i).uri));
+//            if (data.getClipData() != null) {
+//                var count = data.clipData!!.itemCount
+//                for (i in 0..count - 1) {
+//                    var imageUri: Uri = data!!.clipData!!.getItemAt(i).uri
+//                    getPathFromURI(imageUri)
+//                }
+//            } else if (data.getData() != null) {
+//                photoFile = File(data.data!!.path!!)
+////                Log.e("imagePath", imagePath);
+//            }
+//            photoFile = File(URI(imageUri!!.path));
+                if (intent.type.equals("image/*"))
+                    GetAllFiles(this, "Chat Stocker photos", mDriveServiceHelper, mDriveService, photoFile!!, "image/jpeg").execute()
+                else {
+                    GetAllFiles(this, "Chat Stocker videos", mDriveServiceHelper, mDriveService, photoFile!!, "video/mp4").execute()
+                }
+            }
+
+        }
         homeViewModel = ViewModelProviders.of(this).get(HomeViewModel::class.java)
 
 //        photoFile = getOutputMediaFile()
 //        fileUri = getOutputMediaFileUri(photoFile!!)
 
+    }
+    private fun getPathFromURI(uri: Uri) {
+        var path: String = uri.path!! // uri = any content Uri
+
+        val databaseUri: Uri
+        val selection: String?
+        val selectionArgs: Array<String>?
+        if (path.contains("/document/image:")) { // files selected from "Documents"
+            databaseUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+            selection = "_id=?"
+            selectionArgs = arrayOf(DocumentsContract.getDocumentId(uri).split(":")[1])
+        } else { // files selected from all other sources, especially on Samsung devices
+            databaseUri = uri
+            selection = null
+            selectionArgs = null
+        }
+        try {
+            val projection = arrayOf(
+                    MediaStore.Images.Media.DATA,
+                    MediaStore.Images.Media._ID,
+                    MediaStore.Images.Media.ORIENTATION,
+                    MediaStore.Images.Media.DATE_TAKEN
+            ) // some example data you can query
+            val cursor = contentResolver.query(
+                    databaseUri,
+                    projection, selection, selectionArgs, null
+            )
+            if (cursor!!.moveToFirst()) {
+                val columnIndex = cursor.getColumnIndex(projection[0])
+                photoFile = File(cursor.getString(columnIndex))
+                // Log.e("path", imagePath);
+//                imagesPathList.add(imagePath)
+            }
+            cursor.close()
+        } catch (e: Exception) {
+            Log.e(TAG, e.message, e)
+        }
     }
 
     fun openCamera() {
@@ -205,32 +268,9 @@ class HomeActivity : BaseActivity(), ConstantsValues, HomeAdapter.OnItemClcik {
     }
 
 
-//    private fun handleSignInResult(result: Intent) {
-//        GoogleSignIn.getSignedInAccountFromIntent(result)
-//                .addOnSuccessListener { googleAccount ->
-//                    Log.d(TAG, "Signed in as " + googleAccount.email!!)
-//
-//                    // Use the authenticated account to sign in to the Drive service.
-//                    val credential = GoogleAccountCredential.usingOAuth2(
-//                            this, Collections.singleton(DriveScopes.DRIVE_FILE))
-//                    credential.setSelectedAccount(googleAccount.account)
-//                    val googleDriveService = Drive.Builder(
-//                            AndroidHttp.newCompatibleTransport(),
-//                            GsonFactory(),
-//                            credential)
-//                            .setApplicationName("Drive API Migration")
-//                            .build()
-//
-//                    // The DriveServiceHelper encapsulates all REST API and SAF functionality.
-//                    // Its instantiation is required before handling any onClick actions.
-//                    mDriveService = googleDriveService
-//                    mDriveServiceHelper = DriveServiceHelper(googleDriveService)
-//                    mDriveServiceHelper.listAllFiles()
-//                }
-//                .addOnFailureListener { exception -> Log.e(TAG, "Unable to sign in.", exception) }
-//
-//    }
-
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+    }
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         when (requestCode) {
@@ -242,6 +282,11 @@ class HomeActivity : BaseActivity(), ConstantsValues, HomeAdapter.OnItemClcik {
 //                    }
 //                }
 //            }
+            101->{
+               val imageUri = data!!.getData() as Uri
+                photoFile =  File( URI(imageUri.path));
+                GetAllFiles(this,"Chat Stocker photos",mDriveServiceHelper,mDriveService,photoFile!!,"image/jpeg").execute()
+            }
             REQUEST_CODE_CAPTURE_IMAGE -> {
                 GetAllFiles(this,"Chat Stocker photos",mDriveServiceHelper,mDriveService,photoFile!!,"image/jpeg").execute()
 //                GetAllFiles("Chat Stocker photos").execute()
@@ -308,6 +353,20 @@ class HomeActivity : BaseActivity(), ConstantsValues, HomeAdapter.OnItemClcik {
 //                mDriveServiceHelper.createFolder(folderName, photoFile)
 //        }
 //    }
-
+    fun  getRealPathFromURI(context: Context,  contentUri:Uri):String {
+        var cursor: Cursor?= null;
+        try {
+           val proj = { MediaStore.Images.Media.DATA } as Array<String>
+            cursor = context.getContentResolver().query(contentUri, proj, null,
+                    null, null);
+            val column_index = cursor?.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+            cursor?.moveToFirst();
+            return cursor!!.getString(column_index!!);
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+    }
 
 }
