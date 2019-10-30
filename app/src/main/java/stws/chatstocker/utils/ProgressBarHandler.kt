@@ -10,6 +10,7 @@ import android.widget.ProgressBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentManager
 import stws.chatstocker.R
+import java.lang.Exception
 
 class ProgressBarHandler() {
     companion object{
@@ -38,7 +39,13 @@ class ProgressBarHandler() {
             this.alertDialog.getWindow()?.setBackgroundDrawable(ColorDrawable(0));
             this.alertDialog.getWindow()?.setAttributes(lWindowParams);
             this.alertDialog.setCancelable(false);
+            try {
+
             alertDialog.show()
+            }
+            catch (e:Exception){
+
+            }
         }
         fun hide(){
             alertDialog.hide()

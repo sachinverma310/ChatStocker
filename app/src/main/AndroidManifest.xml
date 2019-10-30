@@ -19,7 +19,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".view.FullscreenImageActivity"></activity>
+        <activity android:name=".view.ProfileActivity"></activity>
+        <activity
+            android:name=".view.VideoPlayerActivity"
+            android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar" />
+        <activity android:name=".view.FullscreenImageActivity" />
         <activity
             android:name=".view.AuidosActivity"
             android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar" />

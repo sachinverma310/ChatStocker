@@ -81,11 +81,23 @@
             app:layout_constraintTop_toBottomOf="@+id/imgAudio"
             app:layout_constraintVertical_bias="0.07999998" />
         <ImageView
-            android:id="@+id/imgFile"
+            android:id="@+id/imgPlay"
             android:layout_width="75dp"
             android:layout_height="75dp"
             android:layout_marginTop="8dp"
-            android:src="@drawable/audio_file"
+            android:src="@drawable/ic_play_button"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/imgStop"
+            app:layout_constraintStart_toStartOf="@+id/imgStop"
+            app:layout_constraintTop_toBottomOf="@+id/imgStop"
+            app:layout_constraintVertical_bias="0.100000024" />
+        <ImageView
+            android:id="@+id/imgPause"
+            android:visibility="gone"
+            android:layout_width="75dp"
+            android:layout_height="75dp"
+            android:layout_marginTop="8dp"
+            android:src="@drawable/ic_pause_button"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@+id/imgStop"
             app:layout_constraintStart_toStartOf="@+id/imgStop"

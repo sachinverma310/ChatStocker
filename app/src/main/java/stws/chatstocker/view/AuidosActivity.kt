@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import stws.chatstocker.R
 import stws.chatstocker.databinding.ActivityPhotosBinding
 import stws.chatstocker.interfaces.FileRecievedListener
+import stws.chatstocker.model.FileDetails
 import stws.chatstocker.utils.DriveServiceHelper
 import stws.chatstocker.utils.GetAllFiles
 import stws.chatstocker.view.BaseActivity.mDriveService
@@ -19,7 +20,7 @@ import stws.chatstocker.view.adapter.AudioAdapter
 import stws.chatstocker.view.adapter.PhotoAdapter
 
 class AuidosActivity : AppCompatActivity()  , GetAllFiles.OnFileReciveListener, FileRecievedListener {
-    override fun Downloaded(list: List<String>) {
+    override fun Downloaded(list: List<FileDetails>) {
 //        Glide.with(this).load(list.get(0)).into(btn)
         recyclerView.adapter = AudioAdapter(list)
     }

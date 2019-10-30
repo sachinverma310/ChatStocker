@@ -36,7 +36,7 @@ class ContactAdapter(val contactList:List<ContactsList>): RecyclerView.Adapter<C
         val generator = ColorGenerator.MATERIAL
         fun bindItem(contactList: ContactsList){
             val drawable = TextDrawable.builder()
-                    .buildRound(contactList.name, generator.getRandomColor())
+                    .buildRound(contactList.name[0].toString(), generator.getRandomColor())
             contactBinding.imgChar.setImageDrawable(drawable)
             if (contactBinding.viewModel==null){
                 contactBinding.viewModel= ContactDetailsViewModel(contactList)
@@ -45,5 +45,13 @@ class ContactAdapter(val contactList:List<ContactsList>): RecyclerView.Adapter<C
                 contactBinding!!.viewModel!!.contacts=contactList
             }
         }
+    }
+
+    override fun getItemId(position: Int): Long {
+        return position.toLong()
+    }
+
+    override fun getItemViewType(position: Int): Int {
+        return position
     }
 }

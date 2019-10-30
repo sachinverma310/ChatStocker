@@ -77,7 +77,7 @@ class GetAllFiles : AsyncTask<String, String, List<File>> {
             }
 
         }
-        ProgressBarHandler.hide()
+//        ProgressBarHandler.hide()
         if(onFileReciveListener!=null){
             onFileReciveListener!!.onFileRecive(id!!)
             return
@@ -91,8 +91,8 @@ class GetAllFiles : AsyncTask<String, String, List<File>> {
 
     override fun onPreExecute() {
         super.onPreExecute()
-        ProgressBarHandler.getInstance()
-        ProgressBarHandler.show(context!!)
+//        ProgressBarHandler.getInstance()
+//        ProgressBarHandler.show(context!!)
 
     }
 

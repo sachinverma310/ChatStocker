@@ -8,8 +8,9 @@ import com.bumptech.glide.Glide
 import stws.chatstocker.R
 import stws.chatstocker.databinding.AudioListBinding
 import stws.chatstocker.databinding.PhotoListBinding
+import stws.chatstocker.model.FileDetails
 
-class AudioAdapter (val list: List<String>) : RecyclerView.Adapter<AudioAdapter.MyViewHolder>() {
+class AudioAdapter (val list: List<FileDetails>) : RecyclerView.Adapter<AudioAdapter.MyViewHolder>() {
     lateinit var photoListBinding: AudioListBinding
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         photoListBinding = DataBindingUtil.inflate(LayoutInflater.from(parent.context), R.layout.audio_list, parent, false)
@@ -27,8 +28,8 @@ class AudioAdapter (val list: List<String>) : RecyclerView.Adapter<AudioAdapter.
 
     inner class MyViewHolder( itemView: AudioListBinding) : RecyclerView.ViewHolder(itemView.root) {
         val tvName=itemView.tvName
-        fun bindItem(photos:String){
-            tvName.text=photos
+        fun bindItem(photos:FileDetails){
+            tvName.text=photos.thumbnail
 //            Glide.with(imageView.context).load(photos).into(imageView)
 //            imageView.setImageBitmap(photos)
 //            if (photoListBinding.viewModel==null)

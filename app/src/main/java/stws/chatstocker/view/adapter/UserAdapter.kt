@@ -15,7 +15,7 @@ import stws.chatstocker.viewmodel.HomeViewModel
 import stws.chatstocker.viewmodel.UserListDetailsViewModel
 import stws.chatstocker.viewmodel.UserListViewModel
 
-class UserAdapter(val context:Context,val userList:ArrayList<User>): RecyclerView.Adapter<UserAdapter.MyViewHolder>() {
+class UserAdapter(val context:Context, var userList:ArrayList<User>): RecyclerView.Adapter<UserAdapter.MyViewHolder>() {
     private lateinit var userListBinding:UserListBinding;
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         userListBinding=DataBindingUtil.inflate(LayoutInflater.from(parent.context), R.layout.user_list,parent,false)
@@ -30,7 +30,10 @@ class UserAdapter(val context:Context,val userList:ArrayList<User>): RecyclerVie
         holder.bindItem(userList.get(position))
         Glide.with(context).load(userList.get(position).image).into(holder.imageView)
     }
-
+fun updateList(updateduserList:ArrayList<User>){
+    userList=updateduserList;
+    notifyDataSetChanged()
+}
     public class MyViewHolder(val userListBinding:UserListBinding):RecyclerView.ViewHolder(userListBinding.root){
         val imageView=userListBinding.imgUserPic
         public fun bindItem(user:User){

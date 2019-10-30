@@ -39,6 +39,7 @@ import java.util.concurrent.Executors;
 
 import stws.chatstocker.R;
 import stws.chatstocker.interfaces.FileRecievedListener;
+import stws.chatstocker.model.FileDetails;
 import stws.chatstocker.view.LoginActivity;
 
 public class DriveServiceHelper {
@@ -283,7 +284,7 @@ public class DriveServiceHelper {
                 return Pair.create(name, content);
             });
     }
-    public class GetFilesUrl extends AsyncTask<String,String, List<String>>{
+    public class GetFilesUrl extends AsyncTask<String,String, List<FileDetails>>{
         String filedId;
         FileRecievedListener fileRecievedListener;
         Context context;
@@ -294,8 +295,8 @@ public class DriveServiceHelper {
         }
 
         @Override
-        protected   List<String> doInBackground(String... strings) {
-            List<String> googleDriveFileHolderList = new ArrayList<>();
+        protected   List<FileDetails> doInBackground(String... strings) {
+            List<FileDetails> googleDriveFileHolderList = new ArrayList<>();
 //            List<Bitmap> googleDriveFileHolderList = new ArrayList<>();
             String parent = "root";
             if (filedId != null) {
@@ -324,10 +325,15 @@ public class DriveServiceHelper {
 //                        Bitmap bmp = BitmapFactory.decodeByteArray(data, 0, data.length);
 //                        googleDriveFileHolderList.add(bmp);
 //                        Log.e("dta",data+"");
-                        if (files.getFiles().get(i).getThumbnailLink()!=null)
-                        googleDriveFileHolderList.add(files.getFiles().get(i).getThumbnailLink());
-                        else
-                            googleDriveFileHolderList.add(files.getFiles().get(i).getName());
+
+                        if (files.getFiles().get(i).getThumbnailLink()!=null) {
+                            FileDetails fileDetails=new FileDetails(files.getFiles().get(i).getId(),files.getFiles().get(i).getThumbnailLink());
+                            googleDriveFileHolderList.add(fileDetails);
+                        }
+                        else {
+                            FileDetails fileDetails=new FileDetails(files.getFiles().get(i).getId(),files.getFiles().get(i).getName());
+                            googleDriveFileHolderList.add(fileDetails);
+                        }
                     }
 //                    googleDriveFileHolderList.addAll(files.getFiles());
                     request.setPageToken(files.getNextPageToken());
@@ -351,17 +357,16 @@ public class DriveServiceHelper {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            ProgressBarHandler.Companion.getInstance();
-
-            ProgressBarHandler.Companion.show(context);
+//            ProgressBarHandler.Companion.getInstance();
+//            ProgressBarHandler.Companion.show(context);
         }
 
         @Override
-        protected void onPostExecute(List<String> genericUrl) {
+        protected void onPostExecute(List<FileDetails> genericUrl) {
 
             super.onPostExecute(genericUrl);
             fileRecievedListener.Downloaded(genericUrl);
-            ProgressBarHandler.Companion.hide();
+//            ProgressBarHandler.Companion.hide();
 
 //            Log.e("url",genericUrl.get(0).getu+"");
         }

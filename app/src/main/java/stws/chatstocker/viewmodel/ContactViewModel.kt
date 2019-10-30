@@ -50,7 +50,7 @@ class ContactViewModel() : ViewModel() {
                     while (pCur!!.moveToNext()) {
                         val phoneNo = pCur!!.getString(pCur!!.getColumnIndex(
                                 ContactsContract.CommonDataKinds.Phone.NUMBER))
-                        val contactsList = ContactsList(name, phoneNo)
+                        val contactsList = ContactsList(name, phoneNo,name[0].toString())
                         list.add(contactsList)
 
                     }

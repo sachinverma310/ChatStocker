@@ -1,10 +1,13 @@
 package stws.chatstocker.view;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.TextClock;
 import android.widget.TextView;
 
@@ -53,17 +56,28 @@ public abstract class BaseActivity extends AppCompatActivity implements Constant
     public static Drive mDriveService;
      public static DriveServiceHelper mDriveServiceHelper;
      int REQUEST_CODE_SIGN_IN=101;
+     public ImageView imgCall,imgSearchBar;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_base);
         frameLayout=findViewById(R.id.frameLayout);
+        imgSearchBar=findViewById(R.id.imgSearch);
         bottomNavigationView=findViewById(R.id.bottomNavigationView);
         mainActionbar=findViewById(R.id.mainActionBar);
         userActionBar=findViewById(R.id.userActionBar);
         bottomNavigationView.setItemIconTintList(null);
         bottomNavigationView.setOnNavigationItemSelectedListener(this);
         tvName=findViewById(R.id.tvName);
+        imgCall=findViewById(R.id.imgCall);
+        imgCall.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Intent.ACTION_DIAL);
+//                intent.setData(Uri.parse("tel:0123456789"));
+                startActivity(intent);
+            }
+        });
         getUserDetails();
         signIn();
 

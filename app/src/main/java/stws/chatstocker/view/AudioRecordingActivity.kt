@@ -39,10 +39,12 @@ class AudioRecordingActivity : BaseActivity(),View.OnClickListener{
     lateinit var imgAudiorecord:ImageView;
     lateinit var imgAudioStop:ImageView;
     lateinit var imgAudioPause:ImageView;
-    lateinit var imgFile:ImageView;
+    lateinit var imgPlay:ImageView;
+    lateinit var imgPause:ImageView;
     private var permissionToRecordAccepted = false
     private var permissions: Array<String> = arrayOf(Manifest.permission.RECORD_AUDIO)
     private var recorder: MediaRecorder? = null
+    private var isRecordingStarted:Boolean?=false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,9 +55,11 @@ class AudioRecordingActivity : BaseActivity(),View.OnClickListener{
         chronometer=audioBinding.chronometer
         imgAudioPause=audioBinding.imgAudioPause
         imgAudioStop=audioBinding.imgStop
-        imgFile=audioBinding.imgFile
+        imgPlay=audioBinding.imgPlay
+        imgPause=audioBinding.imgPause
         imgAudiorecord=audioBinding.imgAudio
-        imgFile.setOnClickListener(this)
+        imgPause.setOnClickListener(this)
+        imgPlay.setOnClickListener(this)
         imgAudioStop.setOnClickListener(this)
         chronometer.let {
             chronometer.setOnChronometerTickListener {
@@ -72,8 +76,7 @@ class AudioRecordingActivity : BaseActivity(),View.OnClickListener{
         }
 
         fileName= "$file" + File.separator+"Audio_" + timeStamp + "." + "3gp"
-        Toast.makeText(this,"Recording started",Toast.LENGTH_SHORT).show()
-        startStopAudioRecording(false)
+
     }
     fun startStopAudioRecording( isStart: Boolean){
         if (isStart) {
@@ -126,9 +129,31 @@ class AudioRecordingActivity : BaseActivity(),View.OnClickListener{
                 imgAudioPause.visibility=View.INVISIBLE
                 imgAudiorecord.visibility=View.VISIBLE
                 Toast.makeText(this,"Recording saved",Toast.LENGTH_SHORT).show()
+                imgPlay.visibility=View.VISIBLE
+                imgPause.visibility=View.GONE
+                isRecordingStarted=false
 //                finish()
             }
-            R.id.imgFile->{
+            R.id.imgPlay->{
+                Toast.makeText(this,"Recording started",Toast.LENGTH_SHORT).show()
+                if (!isRecordingStarted!!)
+                startStopAudioRecording(false)
+                else {
+                    recorder!!.resume()
+                    chronometer.start()
+                }
+                imgPlay.visibility=View.GONE
+                imgPause.visibility=View.VISIBLE
+                isRecordingStarted=true
+
+//                chronometer.stop()
+//                startStopAudioRecording(false)
+            }
+            R.id.imgPause->{
+                imgPlay.visibility=View.VISIBLE
+                imgPause.visibility=View.GONE
+                recorder!!.pause()
+                chronometer.stop()
 //                startStopAudioRecording(false)
             }
         }

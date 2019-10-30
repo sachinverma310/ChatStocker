@@ -19,9 +19,11 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ChildEventListener
 
 import android.R.attr.name
+import android.view.View
 import android.widget.ImageView
 import androidx.databinding.BindingAdapter
 import com.bumptech.glide.Glide
+import com.google.gson.JsonObject
 import kotlin.collections.ArrayList
 
 
@@ -30,8 +32,15 @@ class ChatMessageViewModel : ViewModel() {
     private var childEventListenerResponse: MutableLiveData<ChildEventListener>? = null
     private var onchatMessageSendResponse: MutableLiveData<ChatMessage>? = null
     lateinit var childEventListener: ChildEventListener
+     var sendMessageEventListener: ValueEventListener?=null
     private var room_type = "0"
+    private var isCleared:Boolean=true
     private val TAG = "Chat"
+    var isBlocked:Boolean=false
+        set(value) {
+            field = value
+        }
+        get() = field
     var isloadedOnce: Boolean = false
         set(value) {
             field = value
@@ -83,28 +92,32 @@ class ChatMessageViewModel : ViewModel() {
         return onchatMessageSendResponse as MutableLiveData<ChatMessage>
     }
 
-    fun getAllChatResponse(): LiveData<ChatMessage> {
-//        if (onchatSendResponse == null) {
-        onchatSendResponse = MutableLiveData<ChatMessage>()
-        getAllChat()
-//        }
-        return onchatSendResponse as MutableLiveData<ChatMessage>
-    }
+//    fun getAllChatResponse(): LiveData<ChatMessage> {
+////        if (onchatSendResponse == null) {
+//        onchatSendResponse = MutableLiveData<ChatMessage>()
+//        getAllChat()
+////        }
+//        return onchatSendResponse as MutableLiveData<ChatMessage>
+//    }
 
-    fun getChildEventListener(): LiveData<java.util.ArrayList<ChatMessage>> {
-        if (onchatSendResponse!=null)
-        newChildAddedListener()
+//    fun getChildEventListener(): LiveData<java.util.ArrayList<ChatMessage>> {
+//        if (onchatSendResponse!=null)
+//        newChildAddedListener()
+//
+//        return onchatSendResponse as MutableLiveData<java.util.ArrayList<ChatMessage>>
+//    }
 
-        return onchatSendResponse as MutableLiveData<java.util.ArrayList<ChatMessage>>
-    }
-
-    public fun onSendClick() {
+    public fun onSendClick(view: View) {
         if (message.length > 0)
-            sendMessageClick()
+            sendMessageClick(view)
     }
 
-    private fun sendMessageClick() {
-
+    private fun sendMessageClick(view: View) {
+        isCleared=false
+            if (isBlocked) {
+                Toast.makeText(view.context,"You are unable to send message to this user",Toast.LENGTH_SHORT).show()
+                return
+            }
         var databaseReference = FirebaseDatabase.getInstance().reference
         if (room_type.equals("1")) {
             FirebaseDatabase.getInstance()
@@ -119,44 +132,85 @@ class ChatMessageViewModel : ViewModel() {
         }
 
         val date = Calendar.getInstance().timeInMillis.toString();
-        val chat = ChatMessage(message, "flase", "text", senderUid, date)
+        val chat = ChatMessage(message, "flase", "text", senderUid, date,receiverUid,"")
         val room_type_1 = senderUid + "_" + receiverUid;
         val room_type_2 = receiverUid + "_" + senderUid;
+
         onchatMessageSendResponse!!.postValue(chat)
+        sendMessageEventListener=object :ValueEventListener{
+            override fun onCancelled(p0: DatabaseError) {
+
+            }
+
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                if (isCleared)
+                    return
+                if (dataSnapshot.hasChild(room_type_1)) {
+                    Log.e(TAG, "sendMessageToFirebaseUser: $room_type_1 exists")
+
+                    databaseReference.child("chat_room")
+                            .child(room_type_1)
+                            .child(date)
+                            .setValue(chat)
+//                            onchatMessageSendResponse!!.postValue(chat)
+                } else if (dataSnapshot.hasChild(room_type_2)) {
+                    Log.e(TAG, "sendMessageToFirebaseUser: $room_type_2 exists")
+                    databaseReference.child("chat_room")
+                            .child(room_type_2)
+                            .child(date)
+                            .setValue(chat)
+//                            onchatMessageSendResponse!!.postValue(chat)
+                } else {
+                    Log.e(TAG, "sendMessageToFirebaseUser: success")
+                    databaseReference.child("chat_room")
+                            .child(room_type_1)
+                            .child(date)
+                            .setValue(chat)
+//                            onchatMessageSendResponse!!.postValue(chat)
+                }
+
+            }
+
+        }
         databaseReference.child("chat_room")
                 .ref
-                .addValueEventListener(object : ValueEventListener {
-                    override fun onDataChange(dataSnapshot: DataSnapshot) {
-                        if (dataSnapshot.hasChild(room_type_1)) {
-                            Log.e(TAG, "sendMessageToFirebaseUser: $room_type_1 exists")
-
-                            databaseReference.child("chat_room")
-                                    .child(room_type_1)
-                                    .child(date)
-                                    .setValue(chat)
-//                            onchatMessageSendResponse!!.postValue(chat)
-                        } else if (dataSnapshot.hasChild(room_type_2)) {
-                            Log.e(TAG, "sendMessageToFirebaseUser: $room_type_2 exists")
-                            databaseReference.child("chat_room")
-                                    .child(room_type_2)
-                                    .child(date)
-                                    .setValue(chat)
-//                            onchatMessageSendResponse!!.postValue(chat)
-                        } else {
-                            Log.e(TAG, "sendMessageToFirebaseUser: success")
-                            databaseReference.child("chat_room")
-                                    .child(room_type_1)
-                                    .child(date)
-                                    .setValue(chat)
-//                            onchatMessageSendResponse!!.postValue(chat)
-                        }
-
-                    }
-
-                    override fun onCancelled(databaseError: DatabaseError) {
-                        // Unable to send message.
-                    }
-                })
+                .addValueEventListener(sendMessageEventListener!!)
+//        databaseReference.child("chat_room")
+//                .ref.removeEventListener(sendMessageEventListener!!)
+//        databaseReference.child("chat_room")
+//                .ref
+//                .addValueEventListener(object : ValueEventListener {
+//                    override fun onDataChange(dataSnapshot: DataSnapshot) {
+//                        if (dataSnapshot.hasChild(room_type_1)) {
+//                            Log.e(TAG, "sendMessageToFirebaseUser: $room_type_1 exists")
+//
+//                            databaseReference.child("chat_room")
+//                                    .child(room_type_1)
+//                                    .child(date)
+//                                    .setValue(chat)
+////                            onchatMessageSendResponse!!.postValue(chat)
+//                        } else if (dataSnapshot.hasChild(room_type_2)) {
+//                            Log.e(TAG, "sendMessageToFirebaseUser: $room_type_2 exists")
+//                            databaseReference.child("chat_room")
+//                                    .child(room_type_2)
+//                                    .child(date)
+//                                    .setValue(chat)
+////                            onchatMessageSendResponse!!.postValue(chat)
+//                        } else {
+//                            Log.e(TAG, "sendMessageToFirebaseUser: success")
+//                            databaseReference.child("chat_room")
+//                                    .child(room_type_1)
+//                                    .child(date)
+//                                    .setValue(chat)
+////                            onchatMessageSendResponse!!.postValue(chat)
+//                        }
+//
+//                    }
+//
+//                    override fun onCancelled(databaseError: DatabaseError) {
+//                        // Unable to send message.
+//                    }
+//                })
     }
 
 
@@ -247,52 +301,76 @@ class ChatMessageViewModel : ViewModel() {
                                 }
                             }
                             FirebaseDatabase.getInstance().reference.child("chat_room").child(room_type_2).addChildEventListener(childEventListener)
+                            FirebaseDatabase.getInstance().reference.child("chat_room").child(room_type_2).removeEventListener(childEventListener)
                         }}
 
                 })
     }
 
-    private fun newChildAddedListener() {
+     fun clearChat(list:List<ChatMessage>,userId:String,room_type:String){
+         if (sendMessageEventListener!=null)
+         FirebaseDatabase.getInstance().reference.child("chat_room")
+                 .ref
+                 .removeEventListener(sendMessageEventListener!!)
 
-        if (room_type == "0") {
-//            if (childEventListener!= null)
-//            FirebaseDatabase.getInstance().reference.child("chat_room").child(senderUid + "_" + receiverUid).removeEventListener(childEventListener)
-            FirebaseDatabase.getInstance().reference.child("chat_room").child(senderUid + "_" + receiverUid).orderByKey().limitToLast(1)
-                    .addValueEventListener(object : ValueEventListener {
-                        override fun onCancelled(p0: DatabaseError) {
-
-                        }
-
-                        override fun onDataChange(dataSnapshot: DataSnapshot) {
-                            if (dataSnapshot.value != null) {
-                                val chatMessage = dataSnapshot.getValue(ChatMessage::class.java!!)
-                                chatMessage!!.date = dataSnapshot.key.toString()
-
-                                onchatMessageSendResponse!!.postValue(chatMessage)
-                            }
-                        }
-                    })
-        }
-        else{
-//            if (childEventListener!= null)
-//            FirebaseDatabase.getInstance().reference.child("chat_room").child(receiverUid + "_" + senderUid).removeEventListener(childEventListener)
-            FirebaseDatabase.getInstance().reference.child("chat_room").child(receiverUid + "_" + senderUid).orderByKey().limitToLast(1)
-                    .addValueEventListener(object : ValueEventListener {
-                        override fun onCancelled(p0: DatabaseError) {
-
-                        }
-
-                        override fun onDataChange(dataSnapshot: DataSnapshot) {
-                            if (dataSnapshot.value != null) {
-                                val chatMessage = dataSnapshot.getValue(ChatMessage::class.java!!)
-                                chatMessage!!.date = dataSnapshot.key.toString()
-
-                                onchatMessageSendResponse!!.postValue(chatMessage)
-                            }
-                        }
-                    })
-        }
+         for (i in 0 until list.size) {
+             FirebaseDatabase.getInstance().reference.child("chat_room").child(room_type).child(list.get(i).date)
+                     .child(userId).setValue(true)
+         }
     }
 
+
+
+
+
+//    private fun newChildAddedListener() {
+//
+//        if (room_type == "0") {
+////            if (childEventListener!= null)
+////            FirebaseDatabase.getInstance().reference.child("chat_room").child(senderUid + "_" + receiverUid).removeEventListener(childEventListener)
+//            FirebaseDatabase.getInstance().reference.child("chat_room").child(senderUid + "_" + receiverUid).orderByKey().limitToLast(1)
+//                    .addValueEventListener(object : ValueEventListener {
+//                        override fun onCancelled(p0: DatabaseError) {
+//
+//                        }
+//
+//                        override fun onDataChange(dataSnapshot: DataSnapshot) {
+//                            if (dataSnapshot.value != null) {
+//                                val chatMessage = dataSnapshot.getValue(ChatMessage::class.java!!)
+//                                chatMessage!!.date = dataSnapshot.key.toString()
+//
+//                                onchatMessageSendResponse!!.postValue(chatMessage)
+//                            }
+//                        }
+//                    })
+//        }
+//        else{
+////            if (childEventListener!= null)
+////            FirebaseDatabase.getInstance().reference.child("chat_room").child(receiverUid + "_" + senderUid).removeEventListener(childEventListener)
+//            FirebaseDatabase.getInstance().reference.child("chat_room").child(receiverUid + "_" + senderUid).orderByKey().limitToLast(1)
+//                    .addValueEventListener(object : ValueEventListener {
+//                        override fun onCancelled(p0: DatabaseError) {
+//
+//                        }
+//
+//                        override fun onDataChange(dataSnapshot: DataSnapshot) {
+//                            if (dataSnapshot.value != null) {
+//                                val chatMessage = dataSnapshot.getValue(ChatMessage::class.java!!)
+//                                chatMessage!!.date = dataSnapshot.key.toString()
+//
+//                                onchatMessageSendResponse!!.postValue(chatMessage)
+//                            }
+//                        }
+//                    })
+//        }
+//    }
+
+     fun unregisterEventListener() {
+
+        if (sendMessageEventListener!=null)
+            FirebaseDatabase.getInstance().reference.child("chat_room")
+                    .ref
+                    .removeEventListener(sendMessageEventListener!!)
+    }
 
 }

@@ -64,11 +64,17 @@ private lateinit var context:Context
                     if (!myuid.equals(uid)) {
                         val name = ds.child("name").getValue(String::class.java)
                         val email = ds.child("email").getValue(String::class.java)
-                        val status = ds.child("online").getValue(Boolean::class.java)
+                        var status:Boolean?=false
+                        if (ds.hasChild("online"))
+                         status = ds.child("online").getValue(Boolean::class.java)
                         val profileImage = ds.child("profileImage").getValue(String::class.java)
                         val lastSeen = ds.child("lastSeen").getValue(String::class.java)
 //                    val uid = ds.getValue().toString()
-                        val user = User(name, profileImage, status, email, lastSeen, uid)
+                        var user:User?=null;
+                        if (status!!)
+                         user = User(name, profileImage, true, email, lastSeen, uid)
+                        else
+                            user = User(name, profileImage, false, email, lastSeen, uid)
                         Log.d("TAG", name)
                         nameArrayList.add(user)
                     }

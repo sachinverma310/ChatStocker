@@ -2,24 +2,30 @@ package stws.chatstocker.view.adapter
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.os.Environment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.api.services.drive.Drive
 import com.google.api.services.drive.model.File
 import com.google.api.services.drive.model.FileList
 import stws.chatstocker.R
+import stws.chatstocker.data.rest.RepoService
 import stws.chatstocker.databinding.PhotoListBinding
+import stws.chatstocker.model.FileDetails
 import stws.chatstocker.model.Photos
 import stws.chatstocker.viewmodel.PhotoViewModel
 import java.io.ByteArrayOutputStream
 
 
-class PhotoAdapter(val list: List<String>) : RecyclerView.Adapter<PhotoAdapter.MyViewHolder>() {
+class PhotoAdapter(val contxet:AppCompatActivity,val diveService: Drive,val list: List<FileDetails>,val isVideo:Boolean) : RecyclerView.Adapter<PhotoAdapter.MyViewHolder>() {
     lateinit var photoListBinding: PhotoListBinding
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         photoListBinding = DataBindingUtil.inflate(LayoutInflater.from(parent.context), R.layout.photo_list, parent, false)
         return MyViewHolder(photoListBinding)
@@ -34,17 +40,38 @@ class PhotoAdapter(val list: List<String>) : RecyclerView.Adapter<PhotoAdapter.M
 
     }
 
-    inner class MyViewHolder( itemView: PhotoListBinding) : RecyclerView.ViewHolder(itemView.root) {
-        val imageView=itemView.imageView
-        fun bindItem(photos:String){
-            Glide.with(imageView.context).load(photos).into(imageView)
+    inner class MyViewHolder( itemView: PhotoListBinding) : RecyclerView.ViewHolder(itemView.root) ,FileDownloadProgressListener{
+        override fun onProgress(value: Float) {
+            progressBar.progress=value
+        }
 
-//            imageView.setImageBitmap(photos)
-//            if (photoListBinding.viewModel==null)
-                photoListBinding.viewModel= PhotoViewModel(photos)
+        val imageView=itemView.imageView
+        val progressBar=itemView.pgbProgress
+        lateinit var progressListener:FileDownloadProgressListener
+
+
+        fun bindItem(photos:FileDetails){
+
+            if (isVideo)
+                progressBar.visibility=View.VISIBLE
+            else
+                progressBar.visibility=View.GONE
+            progressListener=this
+            Glide.with(imageView.context).load(photos.thumbnail).into(imageView)
+            photoListBinding.viewModel= PhotoViewModel(photos.thumbnail,isVideo,photos.fileId,diveService,progressListener)
+
+
+
+
 //            else
 //                photoListBinding.viewModel!!.setPhotos(photos)
 
         }
+
+    }
+    public interface FileDownloadProgressListener{
+        public fun onProgress( value:Float)
+
+
     }
 }

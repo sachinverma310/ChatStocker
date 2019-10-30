@@ -89,6 +89,7 @@ class ChatAdapter(val context: Context,val messages: java.util.ArrayList<ChatMes
 //            messageText.text = message.message
 //            timeText.text = DateUtils.fromMillisToTimeString(message.time)
         }
+
     }
 
     inner class OtherMessageViewHolder(val othetChatLayoutBinding: OtherChatLayoutBinding) : MessageViewHolder(othetChatLayoutBinding.root) {
@@ -97,7 +98,7 @@ class ChatAdapter(val context: Context,val messages: java.util.ArrayList<ChatMes
 //        private var timeText: TextView = view.txtOtherMessageTime
 
         override fun bind(message: ChatMessage?) {
-            Glide.with(context).load(message!!.msg).into(ownChatLayoutBinding.imgFile)
+            Glide.with(context).load(message!!.msg).into(othetChatLayoutBinding.imgFile)
             if (message!!.type.equals("image")) {
                 othetChatLayoutBinding.imageLayout.visibility = View.VISIBLE
                 Glide.with(context).load(message!!.msg).into(othetChatLayoutBinding.imgFile)
@@ -116,11 +117,17 @@ class ChatAdapter(val context: Context,val messages: java.util.ArrayList<ChatMes
 //            timeText.text = DateUtils.fromMillisToTimeString(message.time)
         }
     }
+
+    override fun getItemId(position: Int): Long {
+        return position.toLong()
+    }
+
 }
 
 open class MessageViewHolder(view: View) : RecyclerView.ViewHolder(view) {
     open fun bind(message: ChatMessage?) {
 
     }
+
 
 }

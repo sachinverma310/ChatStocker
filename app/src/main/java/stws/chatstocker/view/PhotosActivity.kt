@@ -16,6 +16,7 @@ import com.google.api.services.drive.model.FileList
 import stws.chatstocker.R
 import stws.chatstocker.databinding.ActivityPhotosBinding
 import stws.chatstocker.interfaces.FileRecievedListener
+import stws.chatstocker.model.FileDetails
 import stws.chatstocker.utils.DriveServiceHelper
 import stws.chatstocker.utils.GetAllFiles
 import stws.chatstocker.view.BaseActivity.mDriveService
@@ -23,9 +24,9 @@ import stws.chatstocker.view.BaseActivity.mDriveServiceHelper
 import stws.chatstocker.view.adapter.PhotoAdapter
 
 class PhotosActivity : AppCompatActivity(), GetAllFiles.OnFileReciveListener, FileRecievedListener {
-    override fun Downloaded(list: List<String>) {
+    override fun Downloaded(list: List<FileDetails>) {
 //        Glide.with(this).load(list.get(0)).into(btn)
-        recyclerView.adapter = PhotoAdapter(list)
+        recyclerView.adapter = PhotoAdapter(this@PhotosActivity,BaseActivity.mDriveService,list,false)
     }
 
     override fun onFileRecive(id: String) {
