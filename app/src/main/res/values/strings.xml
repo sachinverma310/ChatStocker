@@ -48,6 +48,8 @@
     <string name="search_hint">Search here</string>
     <string name="block_user">Block user</string>
     <string name="clear_chat">Clear chat</string>
+    <string name="update">Update</string>
+    <string name="audio">Audio</string>
     <string-array name="home_items">
         <item>Camera</item>
         <item>Photos</item>

@@ -9,6 +9,7 @@ public interface ConstantsValues {
      String KEYOTHER_UID="other_uid";
      String KEY_FILE_URL="file_url";
     String KEY_VIDEO_ID="video_id";
+    String KEY_PATH="path";
     String BASE_FILE_URL="https://drive.google.com/file/d/";
 
 }

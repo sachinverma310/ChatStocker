@@ -306,7 +306,7 @@ public class DriveServiceHelper {
 //            FileList result = mDriveService.files().list().setQ("'" + parent + "' in parents").setFields("files(id, name,size,createdTime,modifiedTime,starred)").setSpaces("drive").execute();
             Drive.Files.List request= null;
             try {
-                request = mDriveService.files().list().setFields("files/thumbnailLink, files/name, files/mimeType, files/id").setQ("'" + parent + "' in parents");
+                request = mDriveService.files().list().setFields("files/thumbnailLink, files/name, files/mimeType, files/id,files/createdTime").setQ("'" + parent + "' in parents");
             } catch (IOException e) {
                 e.printStackTrace();
             }

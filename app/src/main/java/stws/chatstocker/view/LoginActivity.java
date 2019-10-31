@@ -274,7 +274,7 @@ public class LoginActivity extends DaggerAppCompatActivity implements ConstantsV
 
     private void updateUi(FirebaseUser user) {
 
-        LoginResponse loginResponse = new LoginResponse(user.getDisplayName(), user.getUid(), user.getEmail());
+        LoginResponse loginResponse = new LoginResponse(user.getDisplayName(), user.getUid(), user.getEmail(),user.getPhotoUrl().toString());
         try {
             Prefrences.Companion.saveUser(LoginActivity.this, KEY_LOGIN_DATA, loginResponse);
 

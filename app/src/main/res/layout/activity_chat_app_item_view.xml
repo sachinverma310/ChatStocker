@@ -2,6 +2,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
+    android:id="@+id/parentLayout"
     android:padding="1dp">
 
     <LinearLayout
@@ -25,7 +26,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:paddingRight="10dp"
+            android:paddingLeft="10dp"
 
             android:textColor="@color/black" />
 
@@ -52,7 +53,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:paddingRight="10dp"
+            android:paddingLeft="10dp"
             android:text="200"
             android:textColor="@color/black" />
     </LinearLayout>
@@ -71,7 +72,9 @@
             android:id="@+id/imgFileRight"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:scaleType="fitXY"
             android:layout_marginTop="8dp"
+            android:adjustViewBounds="true"
             android:layout_marginEnd="8dp"
             android:layout_marginRight="8dp"></ImageView>
     </LinearLayout>
@@ -88,8 +91,10 @@
 
         <ImageView
             android:id="@+id/imgFileLeft"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:adjustViewBounds="true"
+            android:scaleType="fitXY"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginRight="8dp"></ImageView>

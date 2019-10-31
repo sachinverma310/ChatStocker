@@ -1,224 +1,251 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#EDF6FF"
-    android:orientation="vertical"
-    tools:context=".view.ProfileActivity">
+<layout>
 
-<!--    <LinearLayout-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_gravity="center"-->
-<!--        android:layout_margin="20dp"-->
-<!--        android:gravity="center"-->
-<!--        android:orientation="vertical">-->
+    <data>
 
-<!--        <androidx.constraintlayout.widget.ConstraintLayout-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="match_parent">-->
+        <variable
+            name="viewModel"
+            type="stws.chatstocker.viewmodel.ProfileViewModel" />
+    </data>
 
-<!--            <de.hdodenhof.circleimageview.CircleImageView-->
-<!--                android:id="@+id/ivProfile"-->
-<!--                android:layout_width="96dp"-->
-<!--                android:layout_height="96dp"-->
-<!--                android:layout_gravity="center_horizontal"-->
-<!--                android:layout_marginBottom="20dp"-->
-<!--                android:src="@color/black"-->
-<!--                app:civ_border_color="#FFF"-->
-<!--                app:civ_border_width="1dp"-->
-<!--                app:layout_constraintBottom_toBottomOf="parent"-->
-<!--                app:layout_constraintEnd_toEndOf="parent"-->
-<!--                app:layout_constraintStart_toStartOf="parent"-->
-<!--                app:layout_constraintTop_toTopOf="parent"-->
-<!--                app:layout_constraintVertical_bias="0.0" />-->
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#EDF6FF"
+        android:orientation="vertical"
+        tools:context=".view.ProfileActivity">
 
-<!--            <com.google.android.material.floatingactionbutton.FloatingActionButton-->
-<!--                android:id="@+id/fabCamera"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:layout_centerHorizontal="true"-->
-<!--                android:layout_gravity="center_horizontal"-->
-<!--                android:layout_marginStart="8dp"-->
-<!--                android:layout_marginTop="8dp"-->
-<!--                android:layout_marginEnd="8dp"-->
-<!--                android:foregroundGravity="center"-->
-<!--                android:src="@color/black"-->
-<!--                app:borderWidth="0dp"-->
-<!--                app:elevation="0dp"-->
-<!--                app:fabCustomSize="40dp"-->
-<!--                app:fabSize="mini"-->
-<!--                app:layout_constraintBottom_toBottomOf="@+id/ivProfile"-->
-<!--                app:layout_constraintEnd_toEndOf="@+id/ivProfile"-->
-<!--                app:layout_constraintStart_toStartOf="@+id/ivProfile"-->
-<!--                app:layout_constraintTop_toBottomOf="@+id/ivProfile"-->
-<!--                app:pressedTranslationZ="0dp" />-->
-<!--        </androidx.constraintlayout.widget.ConstraintLayout>-->
-<!--    </LinearLayout>-->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="20dp"
+            android:gravity="center"
+            android:orientation="vertical">
 
-<!--    <LinearLayout-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_marginLeft="5dp"-->
-<!--        android:layout_marginTop="5dp"-->
-<!--        android:layout_marginRight="5dp"-->
-<!--        android:orientation="horizontal">-->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent">
 
-<!--        <ImageView-->
-<!--            android:layout_width="32dp"-->
-<!--            android:layout_height="32dp"-->
-<!--            android:layout_gravity="center"-->
-<!--            android:layout_marginRight="2dp"-->
-<!--            android:src="@drawable/camera" />-->
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/ivProfile"
+                    android:layout_width="96dp"
+                    android:layout_height="96dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginBottom="20dp"
+                    android:src="@color/black"
+                    app:civ_border_color="#FFF"
+                    app:civ_border_width="1dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="0.0" />
 
-<!--        <LinearLayout-->
-<!--            android:layout_width="0dp"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_marginLeft="5dp"-->
-<!--            android:layout_weight="1"-->
-<!--            android:orientation="vertical">-->
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/fabCamera"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:foregroundGravity="center"
+                    android:src="@drawable/profilecamera"
+                    app:borderWidth="0dp"
+                    app:elevation="0dp"
+                    app:fabCustomSize="40dp"
+                    app:fabSize="mini"
+                    app:layout_constraintBottom_toBottomOf="@+id/ivProfile"
+                    app:layout_constraintEnd_toEndOf="@+id/ivProfile"
+                    app:layout_constraintStart_toStartOf="@+id/ivProfile"
+                    app:layout_constraintTop_toBottomOf="@+id/ivProfile"
+                    app:pressedTranslationZ="0dp" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </LinearLayout>
 
-<!--            <TextView-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:text="Name"-->
-<!--                android:textColor="@color/black"-->
-<!--                android:textSize="16sp" />-->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginRight="5dp"
+            android:orientation="horizontal">
 
-<!--            <EditText-->
-<!--                android:id="@+id/etUserName"-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:drawableRight="@drawable/home"-->
-<!--                android:text="John Smith"-->
-<!--                android:textColor="@color/black"-->
-<!--                android:textSize="16sp" />-->
-<!--        </LinearLayout>-->
+            <ImageView
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_gravity="center"
+                android:layout_marginRight="2dp"
+                android:src="@drawable/profilename" />
 
-<!--    </LinearLayout>-->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
 
-<!--    <LinearLayout-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_marginLeft="5dp"-->
-<!--        android:layout_marginTop="5dp"-->
-<!--        android:layout_marginRight="5dp"-->
-<!--        android:orientation="horizontal">-->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Name"
+                    android:textColor="@color/black"
+                    android:textSize="16sp" />
 
-<!--        <ImageView-->
-<!--            android:layout_width="32dp"-->
-<!--            android:layout_height="32dp"-->
-<!--            android:layout_gravity="center"-->
-<!--            android:layout_marginRight="2dp"-->
-<!--            android:src="@drawable/home" />-->
+                <EditText
+                    android:id="@+id/etUserName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:drawableRight="@drawable/profileeditable"
+                    android:text="@={viewModel.name}"
+                    android:textColor="@color/black"
+                    android:textSize="16sp" />
+            </LinearLayout>
 
-<!--        <LinearLayout-->
-<!--            android:layout_width="0dp"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_marginLeft="5dp"-->
-<!--            android:layout_weight="1"-->
-<!--            android:orientation="vertical">-->
+        </LinearLayout>
 
-<!--            <TextView-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:text="About"-->
-<!--                android:textColor="@color/black"-->
-<!--                android:textSize="16sp" />-->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginRight="5dp"
+            android:orientation="horizontal"
+            android:visibility="gone">
 
-<!--            <EditText-->
-<!--                android:id="@+id/etAbout"-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:drawableRight="@drawable/home"-->
-<!--                android:text="Lorem ispum"-->
-<!--                android:textColor="@color/black"-->
-<!--                android:textSize="16sp" />-->
-<!--        </LinearLayout>-->
+            <ImageView
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_gravity="center"
 
-<!--    </LinearLayout>-->
+                android:layout_marginRight="2dp"
+                android:src="@drawable/aboutprofile" />
 
-<!--    <LinearLayout-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_marginLeft="5dp"-->
-<!--        android:layout_marginTop="5dp"-->
-<!--        android:layout_marginRight="5dp"-->
-<!--        android:orientation="horizontal">-->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
 
-<!--        <ImageView-->
-<!--            android:layout_width="32dp"-->
-<!--            android:layout_height="32dp"-->
-<!--            android:layout_gravity="center"-->
-<!--            android:layout_marginRight="2dp"-->
-<!--            android:src="@drawable/home" />-->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="About"
+                    android:textColor="@color/black"
+                    android:textSize="16sp" />
 
-<!--        <LinearLayout-->
-<!--            android:layout_width="0dp"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_marginLeft="5dp"-->
-<!--            android:layout_weight="1"-->
-<!--            android:orientation="vertical">-->
+                <EditText
+                    android:id="@+id/etAbout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:drawableRight="@drawable/profileeditable"
+                    android:text="Lorem ispum"
+                    android:textColor="@color/black"
+                    android:textSize="16sp" />
+            </LinearLayout>
 
-<!--            <TextView-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:text="Phone"-->
-<!--                android:textColor="@color/black"-->
-<!--                android:textSize="16sp" />-->
+        </LinearLayout>
 
-<!--            <EditText-->
-<!--                android:id="@+id/etPhoneNo"-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:text="9999999999"-->
-<!--                android:textColor="@color/black"-->
-<!--                android:textSize="16sp" />-->
-<!--        </LinearLayout>-->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginRight="5dp"
+            android:orientation="horizontal">
 
-<!--    </LinearLayout>-->
+            <ImageView
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_gravity="center"
+                android:layout_marginRight="2dp"
+                android:src="@drawable/profilenumber" />
 
-<!--    <LinearLayout-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_marginLeft="5dp"-->
-<!--        android:layout_marginTop="5dp"-->
-<!--        android:layout_marginRight="5dp"-->
-<!--        android:orientation="horizontal">-->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
 
-<!--        <ImageView-->
-<!--            android:layout_width="32dp"-->
-<!--            android:layout_height="32dp"-->
-<!--            android:layout_gravity="center"-->
-<!--            android:layout_marginRight="2dp"-->
-<!--            android:src="@drawable/home" />-->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Phone"
+                    android:textColor="@color/black"
+                    android:textSize="16sp" />
 
-<!--        <LinearLayout-->
-<!--            android:layout_width="0dp"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_marginLeft="5dp"-->
-<!--            android:layout_weight="1"-->
-<!--            android:orientation="vertical">-->
+                <EditText
+                    android:id="@+id/etPhoneNo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:editable="false"
+                    android:text="@{viewModel.phone}"
+                    android:textColor="@color/black"
+                    android:textSize="16sp" />
+            </LinearLayout>
 
-<!--            <TextView-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:text="Name"-->
-<!--                android:textColor="@color/black"-->
-<!--                android:textSize="16sp" />-->
+        </LinearLayout>
 
-<!--            <EditText-->
-<!--                android:id="@+id/etEmail"-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:drawableRight="@drawable/home"-->
-<!--                android:text="JohnSmith@gmail.com"-->
-<!--                android:textColor="@color/black"-->
-<!--                android:textSize="16sp" />-->
-<!--        </LinearLayout>-->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginRight="5dp"
+            android:orientation="horizontal">
 
-<!--    </LinearLayout>-->
+            <ImageView
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_gravity="center"
+                android:layout_marginRight="2dp"
+                android:src="@drawable/profilemail" />
 
-</LinearLayout>
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Email:"
+                    android:textColor="@color/black"
+                    android:textSize="16sp" />
+
+                <EditText
+                    android:id="@+id/etEmail"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:editable="false"
+                    android:text="@={viewModel.email}"
+                    android:textColor="@color/black"
+                    android:textSize="16sp" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <Button
+                android:layout_margin="20dp"
+                android:background="@drawable/button_bg"
+                android:textColor="@color/white"
+                android:text="@string/update"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"></Button>
+        </RelativeLayout>
+
+    </LinearLayout>
+</layout>

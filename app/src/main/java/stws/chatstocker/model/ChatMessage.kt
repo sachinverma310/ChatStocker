@@ -7,13 +7,14 @@ class  ChatMessage {
      var from:String=""
      var to:String=""
      var deletedFrom:String=""
+    var isSelected:Boolean=false
 //    var istoDeleted:Boolean=false
     var date:String=""
     constructor( ) {
         //code
     }
     constructor( msg:String, seen:String, type:String, from:String, date:String,to:String,deletedFrom:String
-               ) : this() {
+              ,isSelected:Boolean ) : this() {
         //code
         this.from=from
         this.msg=msg
@@ -22,6 +23,7 @@ class  ChatMessage {
         this.date=date
         this.to=to
         this.deletedFrom=deletedFrom
+        this.isSelected=isSelected
 //        this.istoDeleted=istoDeleted
     }
 

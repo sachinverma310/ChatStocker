@@ -132,7 +132,7 @@ class ChatMessageViewModel : ViewModel() {
         }
 
         val date = Calendar.getInstance().timeInMillis.toString();
-        val chat = ChatMessage(message, "flase", "text", senderUid, date,receiverUid,"")
+        val chat = ChatMessage(message, "flase", "text", senderUid, date,receiverUid,"",false)
         val room_type_1 = senderUid + "_" + receiverUid;
         val room_type_2 = receiverUid + "_" + senderUid;
 

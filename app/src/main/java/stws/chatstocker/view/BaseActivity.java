@@ -48,28 +48,30 @@ import stws.chatstocker.utils.Prefrences;
 import stws.chatstocker.view.fragments.ContactsFragment;
 import stws.chatstocker.view.fragments.UserFragment;
 
-public abstract class BaseActivity extends AppCompatActivity implements ConstantsValues,BottomNavigationView.OnNavigationItemSelectedListener {
+public abstract class BaseActivity extends AppCompatActivity implements ConstantsValues, BottomNavigationView.OnNavigationItemSelectedListener {
     public FrameLayout frameLayout;
     public BottomNavigationView bottomNavigationView;
     public TextView tvName;
-    private ConstraintLayout mainActionbar,userActionBar;
+    private ConstraintLayout mainActionbar, userActionBar;
     public static Drive mDriveService;
-     public static DriveServiceHelper mDriveServiceHelper;
-     int REQUEST_CODE_SIGN_IN=103;
-     public ImageView imgCall,imgSearchBar;
+    public static DriveServiceHelper mDriveServiceHelper;
+    int REQUEST_CODE_SIGN_IN = 103;
+    public ImageView imgCall, imgSearchBar,imgLogout;
+    private GoogleSignInClient client;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_base);
-        frameLayout=findViewById(R.id.frameLayout);
-        imgSearchBar=findViewById(R.id.imgSearch);
-        bottomNavigationView=findViewById(R.id.bottomNavigationView);
-        mainActionbar=findViewById(R.id.mainActionBar);
-        userActionBar=findViewById(R.id.userActionBar);
+        frameLayout = findViewById(R.id.frameLayout);
+        imgSearchBar = findViewById(R.id.imgSearch);
+        bottomNavigationView = findViewById(R.id.bottomNavigationView);
+        mainActionbar = findViewById(R.id.mainActionBar);
+        userActionBar = findViewById(R.id.userActionBar);
         bottomNavigationView.setItemIconTintList(null);
         bottomNavigationView.setOnNavigationItemSelectedListener(this);
-        tvName=findViewById(R.id.tvName);
-        imgCall=findViewById(R.id.imgCall);
+        tvName = findViewById(R.id.tvName);
+        imgCall = findViewById(R.id.imgCall);
         imgCall.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -78,14 +80,21 @@ public abstract class BaseActivity extends AppCompatActivity implements Constant
                 startActivity(intent);
             }
         });
+        imgLogout=findViewById(R.id.imgLogout);
+        imgLogout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                signOut();
+            }
+        });
         getUserDetails();
         signIn();
 
     }
 
-    private void getUserDetails(){
+    private void getUserDetails() {
         try {
-            LoginResponse firebaseUser= Prefrences.Companion.getUserDetails(BaseActivity.this,KEY_LOGIN_DATA);
+            LoginResponse firebaseUser = Prefrences.Companion.getUserDetails(BaseActivity.this, KEY_LOGIN_DATA);
             tvName.setText(firebaseUser.getName());
 
         } catch (IOException e) {
@@ -96,6 +105,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Constant
 
 
     }
+
     private void signIn() {
         Log.d("TAG", "Requesting sign-in");
 
@@ -104,14 +114,23 @@ public abstract class BaseActivity extends AppCompatActivity implements Constant
                         .requestEmail()
                         .requestScopes(new Scope(DriveScopes.DRIVE_FILE))
                         .build();
-        GoogleSignInClient client = GoogleSignIn.getClient(this, signInOptions);
+        client = GoogleSignIn.getClient(this, signInOptions);
 
         // The result of the sign-in Intent is handled in onActivityResult.
         startActivityForResult(client.getSignInIntent(), REQUEST_CODE_SIGN_IN);
     }
 
+    private void signOut() {
+        client.signOut().addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                startActivity(new Intent(BaseActivity.this,LoginActivity.class));
+                finishAffinity();
+            }
+        });
+    }
 
-    private void handleSignInResult( Intent result) {
+    private void handleSignInResult(Intent result) {
         GoogleSignIn.getSignedInAccountFromIntent(result).addOnSuccessListener(new OnSuccessListener<GoogleSignInAccount>() {
             @Override
             public void onSuccess(GoogleSignInAccount googleSignInAccount) {
@@ -134,36 +153,36 @@ public abstract class BaseActivity extends AppCompatActivity implements Constant
         });
 
 
-
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode==REQUEST_CODE_SIGN_IN&&resultCode == RESULT_OK)
-        handleSignInResult(data);
+        if (requestCode == REQUEST_CODE_SIGN_IN && resultCode == RESULT_OK)
+            handleSignInResult(data);
     }
-
 
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-        switch (menuItem.getItemId()){
+        switch (menuItem.getItemId()) {
             case R.id.navigation_chat:
                 if (!(this instanceof UserFragment))
-                startActivity(new Intent(this,UserFragment.class));
+                    startActivity(new Intent(this, UserFragment.class));
                 break;
             case R.id.navigation_contacts:
                 if (!(this instanceof ContactsFragment))
-                    startActivity(new Intent(this,ContactsFragment.class));
+                    startActivity(new Intent(this, ContactsFragment.class));
                 break;
             case R.id.navigation_profile:
+//                if (!(this instanceof ProfileActivity))
+                startActivity(new Intent(this, ProfileActivity.class));
                 break;
         }
         return true;
     }
 
-    private void callFrag(Fragment fragment){
-        getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout,fragment).commit();
+    private void callFrag(Fragment fragment) {
+        getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, fragment).commit();
     }
 }

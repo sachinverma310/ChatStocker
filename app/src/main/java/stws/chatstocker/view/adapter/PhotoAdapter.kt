@@ -51,14 +51,24 @@ class PhotoAdapter(val contxet:AppCompatActivity,val diveService: Drive,val list
 
 
         fun bindItem(photos:FileDetails){
-
-            if (isVideo)
-                progressBar.visibility=View.VISIBLE
-            else
-                progressBar.visibility=View.GONE
+            val photo= java.io.File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
+                    "Chatstocker")
+            val photoFile= java.io.File(photo.path + java.io.File.separator
+                    + photos.fileId + "." + "mp4")
             progressListener=this
             Glide.with(imageView.context).load(photos.thumbnail).into(imageView)
-            photoListBinding.viewModel= PhotoViewModel(photos.thumbnail,isVideo,photos.fileId,diveService,progressListener)
+            val photoViewModel= PhotoViewModel(photos.thumbnail,isVideo,photos.fileId,diveService,progressListener)
+            photoListBinding.viewModel=photoViewModel
+
+            if (isVideo) {
+                progressBar.visibility = View.VISIBLE
+                if (photoFile.exists())
+                photoViewModel.isDownloaded!!.set(true)
+            }
+            else {
+                photoViewModel.isDownloaded!!.set(true)
+                progressBar.visibility = View.GONE
+            }
 
 
 

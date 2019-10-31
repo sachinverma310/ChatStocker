@@ -62,6 +62,7 @@ dependencies {
     implementation 'com.google.android.gms:play-services-auth:17.0.0'
     implementation 'io.reactivex.rxjava2:rxandroid:2.0.1'
     implementation 'io.reactivex.rxjava2:rxjava:2.0.5'
+    implementation 'de.hdodenhof:circleimageview:2.2.0'
     implementation 'com.squareup.retrofit2:retrofit:2.3.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.3.0'
     implementation "com.squareup.retrofit2:adapter-rxjava2:2.3.0"
@@ -92,6 +93,7 @@ dependencies {
             }
     implementation 'org.greenrobot:eventbus:3.1.1'
     implementation 'com.github.Adilhusen:circle-progress-ad-android-:1.0'
+    implementation 'de.hdodenhof:circleimageview:2.2.0'
 //    implementation 'com.google.api-client:google-api-client:1.30.2'
 
 }

@@ -67,6 +67,7 @@ class GetAllFiles : AsyncTask<String, String, List<File>> {
 
     override fun onPostExecute(allFiles: List<com.google.api.services.drive.model.File>) {
         super.onPostExecute(allFiles)
+//        ProgressBarHandler.hide()
         var isExist: Boolean? = false
         var id: String? = ""
         for (i in 0 until allFiles.size) {
@@ -86,6 +87,7 @@ class GetAllFiles : AsyncTask<String, String, List<File>> {
             mDriveServiceHelper!!.uploadFile(photoFile, id,fileType)
         else
             mDriveServiceHelper!!.createFolder(folderName, photoFile,fileType)
+
 
     }
 

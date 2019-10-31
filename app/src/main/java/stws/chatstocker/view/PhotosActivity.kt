@@ -19,12 +19,15 @@ import stws.chatstocker.interfaces.FileRecievedListener
 import stws.chatstocker.model.FileDetails
 import stws.chatstocker.utils.DriveServiceHelper
 import stws.chatstocker.utils.GetAllFiles
+import stws.chatstocker.utils.ProgressBarHandler
 import stws.chatstocker.view.BaseActivity.mDriveService
 import stws.chatstocker.view.BaseActivity.mDriveServiceHelper
 import stws.chatstocker.view.adapter.PhotoAdapter
 
 class PhotosActivity : AppCompatActivity(), GetAllFiles.OnFileReciveListener, FileRecievedListener {
+    lateinit var progressBarHandler:ProgressBarHandler
     override fun Downloaded(list: List<FileDetails>) {
+//        ProgressBarHandler.hide()
 //        Glide.with(this).load(list.get(0)).into(btn)
         recyclerView.adapter = PhotoAdapter(this@PhotosActivity,BaseActivity.mDriveService,list,false)
     }
@@ -45,6 +48,8 @@ class PhotosActivity : AppCompatActivity(), GetAllFiles.OnFileReciveListener, Fi
         recyclerView = photosBinding.recyclerView
         recyclerView.layoutManager = GridLayoutManager(this, 3)
         recyclerView.itemAnimator = DefaultItemAnimator()
+//        ProgressBarHandler.getInstance()
+//        ProgressBarHandler.show(this)
 
         GetAllFiles(this, "Chat Stocker photos", mDriveServiceHelper, mDriveService, this@PhotosActivity,"image/jpeg").execute()
 
@@ -62,4 +67,7 @@ class PhotosActivity : AppCompatActivity(), GetAllFiles.OnFileReciveListener, Fi
             super.onBackPressed()
         return true
     }
+
+
+
 }

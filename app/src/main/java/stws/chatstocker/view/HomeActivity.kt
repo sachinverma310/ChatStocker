@@ -73,7 +73,7 @@ import java.util.*
 
 class HomeActivity : BaseActivity(), ConstantsValues, HomeAdapter.OnItemClcik {
     override fun onItemClick(post: Int) {
-        Toast.makeText(this, post.toString(), Toast.LENGTH_SHORT).show()
+//        Toast.makeText(this, post.toString(), Toast.LENGTH_SHORT).show()
         when (post) {
 
             0 -> {
@@ -86,7 +86,7 @@ class HomeActivity : BaseActivity(), ConstantsValues, HomeAdapter.OnItemClcik {
 
             }
             2 -> {
-
+                startActivity(Intent(this,PhotosActivity::class.java))
             }
             3 -> {
                 photoFile = getOutputMediaFile(MEDIA_TYPE_VIDEO)!!
@@ -100,12 +100,15 @@ class HomeActivity : BaseActivity(), ConstantsValues, HomeAdapter.OnItemClcik {
                 startActivity(Intent(this,VideoSActivity::class.java))
             }
             5 -> {
-
+                startActivity(Intent(this,VideoSActivity::class.java))
             }
             6 -> {
                 startActivity(Intent(this, AudioRecordingActivity::class.java))
             }
             7 -> {
+                startActivity(Intent(this, AuidosActivity::class.java))
+            }
+            8 -> {
                 startActivity(Intent(this, AuidosActivity::class.java))
             }
         }

@@ -18,12 +18,14 @@ import stws.chatstocker.interfaces.FileRecievedListener
 import stws.chatstocker.model.FileDetails
 import stws.chatstocker.utils.DriveServiceHelper
 import stws.chatstocker.utils.GetAllFiles
+import stws.chatstocker.utils.ProgressBarHandler
 import stws.chatstocker.view.adapter.PhotoAdapter
 import stws.chatstocker.viewmodel.PhotoViewModel
 
 class VideoSActivity : AppCompatActivity() , GetAllFiles.OnFileReciveListener, FileRecievedListener {
     override fun Downloaded(list: List<FileDetails>) {
 //        Glide.with(this).load(list.get(0)).into(btn)
+//        ProgressBarHandler.hide()
         recyclerView.adapter = PhotoAdapter(this@VideoSActivity,BaseActivity.mDriveService,list,true)
     }
 
@@ -39,12 +41,13 @@ class VideoSActivity : AppCompatActivity() , GetAllFiles.OnFileReciveListener, F
         photosBinding = DataBindingUtil.setContentView(this, R.layout.activity_photos)
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
 //        setContentView(R.layout.activity_audio_recording)
-        setTitle(resources.getString(R.string.current_years_photos))
+        setTitle(resources.getString(R.string.current_years_videos))
         recyclerView = photosBinding.recyclerView
         recyclerView.layoutManager = GridLayoutManager(this, 3)
         recyclerView.itemAnimator = DefaultItemAnimator()
 //        val photoViewModel=ViewModelProviders.of(this).get(PhotoViewModel::class.java)
-
+      /*  ProgressBarHandler.getInstance()
+        ProgressBarHandler.show(this)*/
         GetAllFiles(this, "Chat Stocker videos", BaseActivity.mDriveServiceHelper, BaseActivity.mDriveService, this@VideoSActivity,"video/mp4").execute()
 
 

@@ -15,6 +15,7 @@ import stws.chatstocker.interfaces.FileRecievedListener
 import stws.chatstocker.model.FileDetails
 import stws.chatstocker.utils.DriveServiceHelper
 import stws.chatstocker.utils.GetAllFiles
+import stws.chatstocker.utils.ProgressBarHandler
 import stws.chatstocker.view.BaseActivity.mDriveService
 import stws.chatstocker.view.adapter.AudioAdapter
 import stws.chatstocker.view.adapter.PhotoAdapter
@@ -22,7 +23,8 @@ import stws.chatstocker.view.adapter.PhotoAdapter
 class AuidosActivity : AppCompatActivity()  , GetAllFiles.OnFileReciveListener, FileRecievedListener {
     override fun Downloaded(list: List<FileDetails>) {
 //        Glide.with(this).load(list.get(0)).into(btn)
-        recyclerView.adapter = AudioAdapter(list)
+        recyclerView.adapter = AudioAdapter(list,mDriveService)
+//        ProgressBarHandler.hide()
     }
 
     override fun onFileRecive(id: String) {
@@ -37,11 +39,12 @@ class AuidosActivity : AppCompatActivity()  , GetAllFiles.OnFileReciveListener, 
         photosBinding = DataBindingUtil.setContentView(this, R.layout.activity_photos)
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
 //        setContentView(R.layout.activity_audio_recording)
-        setTitle(resources.getString(R.string.current_years_photos))
+        setTitle(resources.getString(R.string.current_years_audio))
         recyclerView = photosBinding.recyclerView
         recyclerView.layoutManager = GridLayoutManager(this, 3)
         recyclerView.itemAnimator = DefaultItemAnimator()
-
+//        ProgressBarHandler.getInstance()
+//        ProgressBarHandler.show(this)
         GetAllFiles(this, "Chat Stocker audio", BaseActivity.mDriveServiceHelper, BaseActivity.mDriveService, this@AuidosActivity,"audio/mpeg").execute()
 
 

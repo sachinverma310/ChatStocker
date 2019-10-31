@@ -51,10 +51,29 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
-class ChatActivity : AppCompatActivity(), ConstantsValues {
+class ChatActivity : AppCompatActivity(), ConstantsValues, ChatAppMsgAdapter.ItemSelectedListner {
+    override fun onItemSelected(selectedList: MutableList<ChatMessage>?) {
+        if (selectedList!!.size > 0) {
+            imgMore.visibility=View.GONE
+            imgDelete.visibility=View.VISIBLE
+        }
+        else{
+            imgMore.visibility=View.VISIBLE
+            imgDelete.visibility=View.GONE
+        }
+        imgDelete.setOnClickListener(View.OnClickListener {
+            for (i in 0 until selectedList.size) {
+                list.remove(selectedList.get(i))
+                adapter.notifyDataSetChanged()
+            }
+            viewmodel.clearChat(selectedList, myUserId!!, room_type)
+            adapter.selectedMessageList.clear()
+        })
+    }
+
     private lateinit var chatActivityChatBinding: ActivityChatBinding
     private var onceLoaded: Boolean = false
-//    lateinit var adapter: ChatAdapter
+    //    lateinit var adapter: ChatAdapter
     lateinit var adapter: ChatAppMsgAdapter
     lateinit var linearLayoutManager: LinearLayoutManager
     //    private lateinit var chatPageActionBarBinding: ChatPageActionBarBinding
@@ -66,30 +85,34 @@ class ChatActivity : AppCompatActivity(), ConstantsValues {
     private val TAG: String = "firebase"
     private lateinit var mImageStorage: StorageReference
     private lateinit var otherUId: User
-     var  myUserId:String?=null
-     var  mLastKey:String="";
-    var  mPrevKey:String="";
-   lateinit var  list : ArrayList<ChatMessage>
-    private var isBlocked:Boolean?=false;
-    private  var titleMenu: String="Block User"
-    private  var room_type:String=""
-    lateinit var   viewmodel:ChatMessageViewModel
+    var myUserId: String? = null
+    var mLastKey: String = "";
+    var mPrevKey: String = "";
+    lateinit var list: ArrayList<ChatMessage>
+    private var isBlocked: Boolean? = false;
+    private var titleMenu: String = "Block User"
+    private var room_type: String = ""
+    lateinit var viewmodel: ChatMessageViewModel
+    lateinit var imgMore: ImageView
+    lateinit var imgDelete: ImageView
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         chatActivityChatBinding = DataBindingUtil.setContentView(this, R.layout.activity_chat)
         imgFile = chatActivityChatBinding.imgFileUpload
+        imgDelete=chatActivityChatBinding.include.imgDelete
+        imgMore=chatActivityChatBinding.include.imgMore
 //        chatActivityChatBinding=ActivityChatBinding.inflate(layoutInflater)
 
         chatList = java.util.ArrayList()
         otherUId = intent.getParcelableExtra(KEYOTHER_UID)
-         myUserId = Prefrences.Companion.getUserUid(this)
-         viewmodel = ViewModelProviders.of(this).get(ChatMessageViewModel::class.java)
+        myUserId = Prefrences.Companion.getUserUid(this)
+        viewmodel = ViewModelProviders.of(this).get(ChatMessageViewModel::class.java)
         viewmodel.senderUid = myUserId.toString()
         viewmodel.receiverUid = otherUId.uid.toString()
         if (otherUId.online!!)
-            viewmodel.lastSeen="Online"
+            viewmodel.lastSeen = "Online"
         else
-        viewmodel.lastSeen = otherUId.lastSeen.toString()
+            viewmodel.lastSeen = otherUId.lastSeen.toString()
         viewmodel.name = otherUId.name.toString()
         viewmodel.userPic = otherUId.image.toString()
         viewmodel.isloadedOnce = false;
@@ -100,8 +123,8 @@ class ChatActivity : AppCompatActivity(), ConstantsValues {
         linearLayoutManager = LinearLayoutManager(this)
         recyclerView.layoutManager = linearLayoutManager
 
-         list = ArrayList<ChatMessage>()
-        adapter = ChatAppMsgAdapter( list)
+        list = ArrayList<ChatMessage>()
+        adapter = ChatAppMsgAdapter(list, this)
         mImageStorage = FirebaseStorage.getInstance().getReference();
         recyclerView.adapter = adapter
         viewmodel.getChatResponse().observe(this, Observer<ChatMessage> {
@@ -115,6 +138,7 @@ class ChatActivity : AppCompatActivity(), ConstantsValues {
         chatActivityChatBinding.include.imgMore.setOnClickListener(View.OnClickListener {
             showPopup(chatActivityChatBinding.include.imgMore)
         })
+
 //         popup = PopupMenu(this, chatActivityChatBinding.include.imgMore);
     }
 
@@ -123,9 +147,9 @@ class ChatActivity : AppCompatActivity(), ConstantsValues {
         //Inflating the Popup using xml file
         popup.getMenuInflater().inflate(R.menu.chat_menu, popup.getMenu());
         if (!isBlocked!!)
-        popup.menu.getItem(0).title="Block User"
+            popup.menu.getItem(0).title = "Block User"
         else
-            popup.menu.getItem(0).title="Unblock"
+            popup.menu.getItem(0).title = "Unblock"
         //registering popup with OnMenuItemClickListener
         popup.setOnMenuItemClickListener(object : PopupMenu.OnMenuItemClickListener {
             override fun onMenuItemClick(item: MenuItem?): Boolean {
@@ -133,16 +157,15 @@ class ChatActivity : AppCompatActivity(), ConstantsValues {
                     R.id.action_block -> {
                         if (!isBlocked!!) {
                             blockUser(myUserId, otherUId.uid)
-                            title="Unblock"
+                            title = "Unblock"
 
-                        }
-                        else {
+                        } else {
                             unBlockUser(myUserId, otherUId.uid)
-                            title="Block User"
+                            title = "Block User"
                         }
                     }
-                    R.id.action_clear->{
-                        viewmodel.clearChat(list,myUserId!!,room_type)
+                    R.id.action_clear -> {
+                        viewmodel.clearChat(list, myUserId!!, room_type)
                         list.clear()
                         adapter.notifyDataSetChanged()
                     }
@@ -161,21 +184,20 @@ class ChatActivity : AppCompatActivity(), ConstantsValues {
         val room_type_2 = receiverUid + "_" + senderUid
         val databaseReference = FirebaseDatabase.getInstance()
                 .reference
-        databaseReference.child("blocked_user").ref.addValueEventListener(object :ValueEventListener{
+        databaseReference.child("blocked_user").ref.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(p0: DataSnapshot) {
                 if (p0.hasChild(room_type_1)) {
-                    titleMenu="Unblock"
-                    isBlocked=true;
-                    viewmodel.isBlocked=true
+                    titleMenu = "Unblock"
+                    isBlocked = true;
+                    viewmodel.isBlocked = true
 
                     return
-                }
-                else{
-                    if (p0.hasChild(room_type_2)){
-                        isBlocked=true;
-                        titleMenu="Block User"
-                        viewmodel.isBlocked=true
-                        room_type=room_type_2
+                } else {
+                    if (p0.hasChild(room_type_2)) {
+                        isBlocked = true;
+                        titleMenu = "Block User"
+                        viewmodel.isBlocked = true
+                        room_type = room_type_2
                         return
                     }
                 }
@@ -195,7 +217,7 @@ class ChatActivity : AppCompatActivity(), ConstantsValues {
                     override fun onDataChange(dataSnapshot: DataSnapshot) {
                         if (dataSnapshot.hasChild(room_type_1)) {
 
-                            room_type=room_type_1
+                            room_type = room_type_1
                             FirebaseDatabase.getInstance().reference.child("chat_room").child(room_type_1).addChildEventListener(object : ChildEventListener {
                                 override fun onChildAdded(dataSnapshot: DataSnapshot, s: String?) {
 
@@ -216,7 +238,7 @@ class ChatActivity : AppCompatActivity(), ConstantsValues {
 
                                         // Scroll RecyclerView to the last message.
                                         recyclerView.scrollToPosition(newMsgPosition);
-                                                editText.setText("")
+                                        editText.setText("")
 //                                                recyclerView.scrollToPosition(list.size-1);
                                     }
                                 }
@@ -238,13 +260,13 @@ class ChatActivity : AppCompatActivity(), ConstantsValues {
                                 }
                             })
                         } else if (dataSnapshot.hasChild(room_type_2)) {
-                            room_type=room_type_2
+                            room_type = room_type_2
                             FirebaseDatabase.getInstance().reference.child("chat_room").child(room_type_2).addChildEventListener(object : ChildEventListener {
                                 override fun onChildAdded(dataSnapshot: DataSnapshot, s: String?) {
                                     if (dataSnapshot.value != null) {
                                         if (!dataSnapshot.hasChild(myUserId!!)) {
-                                        val chatMessage = dataSnapshot.getValue(ChatMessage::class.java!!)
-                                        chatMessage!!.date = dataSnapshot.key.toString()
+                                            val chatMessage = dataSnapshot.getValue(ChatMessage::class.java!!)
+                                            chatMessage!!.date = dataSnapshot.key.toString()
                                             list.add(chatMessage)
                                         }
 //                                        adapter = ChatAdapter(this@ChatActivity, list)
@@ -314,7 +336,7 @@ class ChatActivity : AppCompatActivity(), ConstantsValues {
                     val download_url = downUri.toString()
                     Log.d(TAG, "onComplete: Url: " + downUri.toString());
 //                    Glide.with(this@ChatActivity).load(Uri.parse(download_url)).into(imgFile)
-                    val chat = ChatMessage(download_url, "flase", "image", senderUid, date,receiverUid,myUserId!!)
+                    val chat = ChatMessage(download_url, "flase", "image", senderUid, date, receiverUid, myUserId!!, false)
                     val messageMap = HashMap<Any, Any>();
                     messageMap.put("message", download_url);
                     messageMap.put("seen", false);
@@ -491,10 +513,11 @@ class ChatActivity : AppCompatActivity(), ConstantsValues {
         val databaseReference = FirebaseDatabase.getInstance()
                 .reference
         databaseReference.child("blocked_user")
-                                    .child(room_type_1)
-                                    .child("isBlocked")
-                                    .setValue(true)
+                .child(room_type_1)
+                .child("isBlocked")
+                .setValue(true)
     }
+
     private fun unBlockUser(senderUid: String?, receiverUid: String?) {
         val room_type_1 = senderUid + "_" + receiverUid
 

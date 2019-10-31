@@ -1,17 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:app="http://schemas.android.com/apk/res-auto">
+<layout xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:custom="http://schemas.android.com/tools">
 
     <data>
-
+        <import type="android.view.View"></import>
         <variable
             name="viewModel"
-            type="stws.chatstocker.viewmodel.PhotoViewModel" />
+            type="stws.chatstocker.viewmodel.AudioViewModel" />
     </data>
 
     <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="120dp"
         app:cardBackgroundColor="@color/white"
         android:elevation="10dp"
+        android:layout_margin="10dp"
         android:layout_height="120dp"
         android:orientation="vertical">
 
@@ -24,6 +26,7 @@
             <ImageView
                 android:id="@+id/imageView"
                 android:layout_gravity="center"
+                android:visibility="@{viewModel.isDownloaded ? View.VISIBLE : View.GONE}"
                android:src="@drawable/audio_recording_pause"
                 android:layout_width="60dp"
                 android:layout_height="60dp"></ImageView>
@@ -35,5 +38,19 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"></TextView>
         </LinearLayout>
+        <com.app.adprogressbarlib.AdCircleProgress
+            android:onClick="@{(v)->viewModel.startDownloading(v)}"
+            android:visibility="@{viewModel.isDownloaded ? View.GONE : View.VISIBLE}"
+            android:id="@+id/pgb_progress"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:backgroundTintMode="multiply"
+            android:layout_gravity="center"
+            app:adpgb_finished_color="@color/colorAccent"
+            app:adpgb_unfinished_color="@android:color/white"
+            custom:adpgb_finished_stroke_width="5dp"
+            custom:adpgb_inner_drawable="@drawable/ic_close_icon"
+            custom:adpgb_show_text="false"
+            custom:adpgb_unfinished_stroke_width="2dp" />
     </androidx.cardview.widget.CardView>
 </layout>

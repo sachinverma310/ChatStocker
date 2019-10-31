@@ -16,7 +16,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginLeft="8dp"
 
-        android:textColor="@color/white"
+        android:textColor="@color/gray"
         android:textStyle="bold"
         android:layout_marginTop="15dp"
         android:textSize="18sp"
@@ -31,7 +31,7 @@
         android:textSize="18sp"
         android:layout_width="0dp"
         android:gravity="center"
-        android:textColor="@color/white"
+        android:textColor="@color/gray"
         android:textStyle="bold"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -46,7 +46,7 @@
     <TextView
         android:id="@+id/textView11"
         android:layout_width="0dp"
-        android:textColor="@color/white"
+        android:textColor="@color/gray"
         android:textStyle="bold"
         android:layout_height="wrap_content"
         android:textSize="18sp"
