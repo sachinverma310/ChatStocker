@@ -71,7 +71,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/ivAccount"
         app:layout_constraintVertical_bias="0.006"
-        android:src="@drawable/setaccount" />
+        android:src="@drawable/notification" />
 
     <TextView
         android:id="@+id/tvNotification"
