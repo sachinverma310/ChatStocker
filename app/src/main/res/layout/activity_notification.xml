@@ -10,19 +10,22 @@
 
     <LinearLayout
         android:layout_width="match_parent"
+        android:orientation="vertical"
         android:layout_height="wrap_content">
 
-        <ImageView
-            android:layout_width="32dp"
+        <RadioButton
+            android:id="@+id/vibrateRadio"
+            android:layout_width="match_parent"
             android:layout_height="32dp"
             android:layout_marginStart="8dp"
+            android:text="Vibrate"
             android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
-            android:src="@drawable/sethelp" />
+            android:layout_marginBottom="8dp" />
 
         <TextView
             android:id="@+id/tvVibrate"
             android:layout_width="0dp"
+            android:visibility="gone"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:gravity="center|start"
@@ -42,21 +45,24 @@
 
     <LinearLayout
         android:layout_width="match_parent"
+        android:orientation="vertical"
         android:layout_height="wrap_content">
 
-        <ImageView
-            android:layout_width="32dp"
+        <RadioButton
+            android:id="@+id/silentRadio"
+            android:layout_width="match_parent"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
+            android:text="Silent"
             android:layout_marginBottom="8dp"
-            android:layout_height="32dp"
-            android:src="@drawable/sethelp" />
+            android:layout_height="32dp" />
 
         <TextView
             android:id="@+id/tvSilent"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
+            android:visibility="gone"
             android:gravity="center|start"
             android:paddingLeft="10dp"
             android:text="Silent"
@@ -74,19 +80,22 @@
 
     <LinearLayout
         android:layout_width="match_parent"
+        android:orientation="vertical"
         android:layout_height="wrap_content">
 
-        <ImageView
-            android:layout_width="32dp"
+        <RadioButton
+            android:id="@+id/toneRadio"
+            android:layout_width="match_parent"
             android:layout_height="32dp"
             android:layout_marginStart="8dp"
+            android:text="Tone"
             android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
-            android:src="@drawable/sethelp" />
+            android:layout_marginBottom="8dp" />
 
         <TextView
             android:id="@+id/tvtone"
             android:layout_width="0dp"
+            android:visibility="gone"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:gravity="center|start"
