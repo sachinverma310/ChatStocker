@@ -20,12 +20,16 @@ import android.widget.MediaController
 import android.media.AudioAttributes
 import android.os.Build
 import android.os.Environment
+import android.view.MenuItem
 import android.webkit.WebChromeClient
 import android.webkit.WebSettings
 import android.webkit.WebViewClient
 
 
 import android.webkit.WebView
+import androidx.lifecycle.ViewModelProviders
+import stws.chatstocker.model.FileDetails
+import stws.chatstocker.viewmodel.PhotoViewModel
 import java.io.File
 
 
@@ -84,6 +88,7 @@ class VideoPlayerActivity : AppCompatActivity(), SurfaceHolder.Callback, MediaPl
         super.onCreate(savedInstanceState)
         val activityVideoPlayerBinding = DataBindingUtil.setContentView<ActivityVideoPlayerBinding>(this, R.layout.activity_video_player)
         val videoId = intent.getStringExtra(ConstantsValues.KEY_VIDEO_ID)
+        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
 //        vidAddress = ConstantsValues.BASE_FILE_URL + videoId + "/preview"
 //        vidSurface = activityVideoPlayerBinding.surfView
 //
@@ -93,6 +98,13 @@ class VideoPlayerActivity : AppCompatActivity(), SurfaceHolder.Callback, MediaPl
 //        vidHolder = vidSurface.getHolder();
 //        vidHolder.addCallback(this);
 //        vidControl.setAnchorView(vidSurface);
+        val viewModel= ViewModelProviders.of(this).get(PhotoViewModel::class.java)
+        val photos=intent.getParcelableExtra<FileDetails>(ConstantsValues.KEY_FILE)
+        viewModel.photos=photos
+        viewModel.isVideo=false
+        viewModel.context=this
+        viewModel.drive=BaseActivity.mDriveService
+        activityVideoPlayerBinding.viewModel=viewModel
         val photoFile=File(photo.path+File.separator
                 + videoId+"." + "mp4")
       val videoView =activityVideoPlayerBinding.surfView
@@ -100,9 +112,13 @@ class VideoPlayerActivity : AppCompatActivity(), SurfaceHolder.Callback, MediaPl
         val mediaController=  MediaController(this);
         mediaController.setAnchorView(videoView);
         //Location of Media File
-        val uri = Uri.parse(photoFile.absolutePath)
+        var uri = Uri.parse(photoFile.absolutePath)
         //Starting VideView By Setting MediaController and URI
         videoView.setMediaController(mediaController);
+        if (intent.getBooleanExtra(ConstantsValues.KEY_ISFROM_CHAT,false))
+            uri = Uri.parse(intent.getStringExtra(ConstantsValues.KEY_FILE_URL));
+//            videoView.setVideoPath(intent.getStringExtra(ConstantsValues.KEY_FILE_URL));
+//        else
         videoView.setVideoURI(uri);
         videoView.requestFocus();
         videoView.start();
@@ -110,5 +126,11 @@ class VideoPlayerActivity : AppCompatActivity(), SurfaceHolder.Callback, MediaPl
 //        webview.loadData(vidAddress,"text/html; charset=utf-8", null)
 
 //        vidSurface.setMediaController(vidControl);
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId==android.R.id.home)
+            super.onBackPressed()
+        return super.onOptionsItemSelected(item)
     }
 }

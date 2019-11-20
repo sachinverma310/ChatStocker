@@ -1,18 +1,27 @@
 package stws.chatstocker.viewmodel
 
 import android.content.Intent
+import android.graphics.Color
 import android.view.View
 import android.widget.ImageView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.BindingAdapter
 import androidx.lifecycle.ViewModel
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
+import com.ceylonlabs.imageviewpopup.ImagePopup
 import stws.chatstocker.ConstantsValues
-import stws.chatstocker.ConstantsValues.KEYOTHER_UID
+import stws.chatstocker.ConstantsValues.*
+import stws.chatstocker.model.FileDetails
 import stws.chatstocker.model.User
+import stws.chatstocker.utils.Prefrences
 import stws.chatstocker.view.ChatActivity
+import stws.chatstocker.view.FullProfilePicViewrActivity
+import stws.chatstocker.view.GroupChatActivtiy
+import java.io.File
+import java.io.IOException
 
-class UserListDetailsViewModel(user: User) : ViewModel(),ConstantsValues {
+class UserListDetailsViewModel(user: User) : ViewModel(), ConstantsValues {
     var user: User? = user
         get() = field
         set(value) {
@@ -22,9 +31,13 @@ class UserListDetailsViewModel(user: User) : ViewModel(),ConstantsValues {
     var name: String?
     var phone: String?
     var lastSeen: String?
-    var uid: String=""
+    var uid: String = ""
     var imgUrl: String = ""
-
+    var externalUrl:ArrayList<File>?=null
+        get() = field
+        set(value) {
+            field = value
+        }
     //    set(value) {
 //        field=value
 //    }
@@ -32,7 +45,7 @@ class UserListDetailsViewModel(user: User) : ViewModel(),ConstantsValues {
 
 
     var onlineStatus: String?
-
+    var online:Boolean?
     init {
         this.user = user
 
@@ -40,16 +53,48 @@ class UserListDetailsViewModel(user: User) : ViewModel(),ConstantsValues {
         this.phone = user!!.email
         this.name = user!!.name
         this.lastSeen = user!!.lastSeen
+        this.online=user.online
         this.onlineStatus = user!!.online.toString()
-        this.uid= user!!.uid.toString();
-        this.imgUrl=user!!.image.toString()
+        this.uid = user!!.uid.toString();
+        this.imgUrl = user!!.image.toString()
     }
 
-    fun onUserClick(view:View){
-        val intent=Intent(view.context,ChatActivity::class.java)
-        intent.putExtra(KEYOTHER_UID,user)
-        view.context.startActivity(intent)
+    fun onUserClick(view: View) {
+        if (user?.isGroup!!){
+            val intent = Intent(view.context, GroupChatActivtiy::class.java)
+            intent.putExtra(KEYOTHER_UID, user)
+            intent.putExtra(KEY_FILE_URL, externalUrl)
+            view.context.startActivity(intent)
+            if (externalUrl!=null)
+                (view.context as AppCompatActivity).finish()
+        }
+        else {
+            val intent = Intent(view.context, ChatActivity::class.java)
+            intent.putExtra(KEYOTHER_UID, user)
+            intent.putExtra(KEY_FILE_URL,externalUrl)
+            view.context.startActivity(intent)
+            if (externalUrl!=null)
+                (view.context as AppCompatActivity).finish()
+        }
     }
 
+fun profilePicClick(view: View){
+    val imagePopup =  ImagePopup(view.context);
+    imagePopup.setWindowHeight(500); // Optional
+    imagePopup.setWindowWidth(500); // Optional
+    imagePopup.setBackgroundColor(Color.BLACK);  // Optional
+    imagePopup.setFullScreen(true); // Optional
+    imagePopup.setHideCloseIcon(true);  // Optional
+    imagePopup.setImageOnClickClose(true);
+    try {
+        imagePopup.initiatePopupWithGlide(imgUrl)
+    } catch (e: IOException) {
+        e.printStackTrace()
+    } catch (e: ClassNotFoundException) {
+        e.printStackTrace()
+    }
+
+    imagePopup.viewPopup()
+}
 
 }

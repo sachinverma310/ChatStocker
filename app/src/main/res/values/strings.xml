@@ -19,6 +19,7 @@
     <string name="continue_with_mobile">Continue With mobile</string>
     <string name="fb">Continue With Facebook</string>
     <string name="stocker">Stocker</string>
+    <string name="store_data">Store data automatically in a single screen</string>
     <string name="relive_your">Relive your life</string>
     <string name="otp_verification">OTP VERFIFCATION</string>
     <string name="we_have_sent">We have sent otp to your mobile number</string>
@@ -43,6 +44,9 @@
     <string name="current_years_photos">Current Years Photos</string>
     <string name="current_years_videos">Current Years Videos</string>
     <string name="current_years_audio">Current Years Audios</string>
+    <string name="prev_years_photos">Previous Years Photos</string>
+    <string name="prev_years_videos">Previous Years Videos</string>
+    <string name="prev_years_audio">Previous Years Audios</string>
     <string name="action_settings">Settings</string>
     <string name="menu_search">Search</string>
     <string name="search_hint">Search here</string>
@@ -50,6 +54,11 @@
     <string name="clear_chat">Clear chat</string>
     <string name="update">Update</string>
     <string name="audio">Audio</string>
+    <string name="create_grp">Create Group</string>
+    <string name="new_group">New Group</string>
+    <string name="type_group_name">Type group name</string>
+    <string name="change_group">Change Group Name</string>
+    <string name="add_participent">Add Participent</string>
     <string-array name="home_items">
         <item>Camera</item>
         <item>Photos</item>
@@ -61,4 +70,6 @@
         <item>Audio</item>
         <item>Audio</item>
     </string-array>
+    <string name="slide_to_cancel">Slide to cancel</string>
+    <string name="default_notification_channel_id">Notification Default channel</string>
 </resources>

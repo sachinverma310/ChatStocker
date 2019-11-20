@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:app="http://schemas.android.com/apk/res-auto"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:custom="http://schemas.android.com/tools">
 
     <data>
@@ -8,36 +9,96 @@
             name="viewModel"
             type="stws.chatstocker.viewmodel.PhotoViewModel" />
     </data>
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <TextView
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:id="@+id/tvDate"
+            android:layout_marginLeft="20dp"
+            android:textSize="16sp"
+            android:visibility="gone"
+            android:textStyle="bold"
+            android:text="@{viewModel.date.toString()}"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"></TextView>
 
-    <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="120dp"
-        android:layout_height="120dp"
-        android:elevation="10dp"
-        android:layout_margin="10dp"
-        android:onClick="@{(v)->viewModel.openfullScreenImage(v)}"
-        android:orientation="vertical"
-        app:cardBackgroundColor="@color/white">
-
-        <ImageView
-            android:id="@+id/imageView"
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardView"
             android:layout_width="120dp"
             android:layout_height="120dp"
-            android:scaleType="fitXY"></ImageView>
+            android:elevation="10dp"
+            android:onClick="@{(v)->viewModel.openfullScreenImage(v)}"
+            android:orientation="vertical"
+            app:cardBackgroundColor="@color/white"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvDate">
 
-        <com.app.adprogressbarlib.AdCircleProgress
-            android:onClick="@{(v)->viewModel.startDownloading(v)}"
-            android:visibility="@{viewModel.isDownloaded ? View.GONE : View.VISIBLE}"
-            android:id="@+id/pgb_progress"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:backgroundTintMode="multiply"
-            android:layout_gravity="center"
-            app:adpgb_finished_color="@color/colorAccent"
-            app:adpgb_unfinished_color="@android:color/white"
-            custom:adpgb_finished_stroke_width="5dp"
-            custom:adpgb_inner_drawable="@drawable/ic_close_icon"
-            custom:adpgb_show_text="false"
-            custom:adpgb_unfinished_stroke_width="2dp" />
+            <ImageView
+                android:id="@+id/imageView"
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                android:scaleType="fitXY"></ImageView>
 
-    </androidx.cardview.widget.CardView>
+            <com.app.adprogressbarlib.AdCircleProgress
+                android:id="@+id/pgb_progress"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_gravity="center"
+                android:backgroundTintMode="multiply"
+                android:onClick="@{(v)->viewModel.startDownloading(v)}"
+                android:visibility="@{viewModel.isDownloaded ? View.GONE : View.VISIBLE}"
+                app:adpgb_finished_color="@color/colorAccent"
+                app:adpgb_unfinished_color="@android:color/white"
+                custom:adpgb_finished_stroke_width="5dp"
+                custom:adpgb_inner_drawable="@drawable/ic_close_icon"
+                custom:adpgb_show_text="false"
+                custom:adpgb_unfinished_stroke_width="2dp" />
+            <CheckBox
+                android:id="@+id/chkbok"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:buttonTint="@color/red"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"></CheckBox>
+        </androidx.cardview.widget.CardView>
+//unused image so visiblity gone
+        <ImageView
+            android:visibility="gone"
+            android:id="@+id/imgShare"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:onClick="@{(v)->viewModel.shareItem(v)}"
+            app:layout_constraintStart_toStartOf="@+id/cardView"
+            app:layout_constraintTop_toBottomOf="@+id/cardView"
+            app:srcCompat="?attr/actionModeShareDrawable" />
+
+        <ImageView
+            android:visibility="gone"
+            android:id="@+id/imgDelete"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginEnd="8dp"
+            android:onClick="@{(v)->viewModel.deleteItem(v)}"
+            app:layout_constraintEnd_toEndOf="@+id/cardView"
+            app:layout_constraintTop_toBottomOf="@+id/cardView"
+            app:srcCompat="@android:drawable/ic_menu_delete" />
+
+        <ImageView
+            android:visibility="gone"
+            android:id="@+id/imageView6"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.465"
+            android:onClick="@{(v)->viewModel.sendItem(v)}"
+            app:layout_constraintStart_toEndOf="@+id/imgShare"
+            app:layout_constraintEnd_toStartOf="@+id/imgDelete"
+            app:layout_constraintTop_toTopOf="@+id/imgDelete"
+            app:srcCompat="@android:drawable/ic_menu_send" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

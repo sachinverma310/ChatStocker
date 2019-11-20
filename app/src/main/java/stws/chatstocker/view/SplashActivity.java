@@ -13,6 +13,8 @@ import android.util.Base64;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.google.firebase.database.FirebaseDatabase;
+
 import stws.chatstocker.R;
 import stws.chatstocker.databinding.ActivitySplashBinding;
 import stws.chatstocker.viewmodel.SplashViewModel;
@@ -28,6 +30,7 @@ private ActivitySplashBinding activitySplashBinding;
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         activitySplashBinding= DataBindingUtil.setContentView(this,R.layout.activity_splash);
+
 //        printHashKey();
 //        setContentView(R.layout.activity_splash);
         splashViewModel= ViewModelProviders.of(this).get(SplashViewModel.class);
@@ -42,9 +45,9 @@ private ActivitySplashBinding activitySplashBinding;
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
 
-        if (requestCode==REQUEST_PERMISION_CODE &&grantResults.length == 5&& grantResults[0] == PackageManager.PERMISSION_GRANTED
+        if (requestCode==REQUEST_PERMISION_CODE &&grantResults.length == 6&& grantResults[0] == PackageManager.PERMISSION_GRANTED
                 && grantResults[1] == PackageManager.PERMISSION_GRANTED && grantResults[2] == PackageManager.PERMISSION_GRANTED
-                && grantResults[3] == PackageManager.PERMISSION_GRANTED && grantResults[4] == PackageManager.PERMISSION_GRANTED) {
+                && grantResults[3] == PackageManager.PERMISSION_GRANTED && grantResults[4] == PackageManager.PERMISSION_GRANTED&& grantResults[5] == PackageManager.PERMISSION_GRANTED) {
 
            splashViewModel.callSplash(SplashActivity.this);
         }

@@ -9,9 +9,11 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Handler;
 import android.provider.OpenableColumns;
 import android.util.Log;
 import android.util.Pair;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
@@ -30,7 +32,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -80,9 +84,11 @@ public class DriveServiceHelper {
                 return googleFile.getId();
             });
     }
-    public void uploadFile(java.io.File path,String folderId,String type)
+    public void uploadFile(java.io.File path,String folderId,String type,Context context)
             throws Exception {
-        Thread thread = new Thread() {
+//        ProgressBarHandler.Companion.show(context);
+        Handler handler=new Handler();
+            Thread thread = new Thread() {
             @Override
             public void run() {
                 try {
@@ -110,6 +116,13 @@ public class DriveServiceHelper {
                             .setFields("id, parents")
                             .execute();
                     System.out.println("File ID: " + file.getId());
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+//                          ProgressBarHandler.Companion.hide();
+                          Toast.makeText(context,"Your file uploaded successfully",Toast.LENGTH_SHORT).show();
+                        }
+                    });
 //                    }
                 }  catch (IOException e) {
                     e.printStackTrace();
@@ -157,7 +170,7 @@ public class DriveServiceHelper {
         return result;
     }
 
-    public void createFolder(String fileName,java.io.File path,String type) {
+    public void createFolder(String fileName,java.io.File path,String type,Context context) {
 
         Thread thread=new Thread(new Runnable() {
             @Override
@@ -175,7 +188,7 @@ public class DriveServiceHelper {
                     e.printStackTrace();
                 }
                 try {
-                    uploadFile(path,file.getId(),type);
+                    uploadFile(path,file.getId(),type,context);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -288,15 +301,18 @@ public class DriveServiceHelper {
         String filedId;
         FileRecievedListener fileRecievedListener;
         Context context;
-        public GetFilesUrl(Context context,String filedId, FileRecievedListener fileRecievedListener){
+        Boolean isFromCurrent;
+        public GetFilesUrl(Context context,String filedId, FileRecievedListener fileRecievedListener,Boolean isFromCurrent){
             this.filedId=filedId;
             this.context=context;
             this.fileRecievedListener=fileRecievedListener;
+            this.isFromCurrent=isFromCurrent;
         }
 
         @Override
         protected   List<FileDetails> doInBackground(String... strings) {
             List<FileDetails> googleDriveFileHolderList = new ArrayList<>();
+
 //            List<Bitmap> googleDriveFileHolderList = new ArrayList<>();
             String parent = "root";
             if (filedId != null) {
@@ -313,6 +329,8 @@ public class DriveServiceHelper {
             do {
                 try {
                     FileList files = request.execute();
+                    if (files.getFiles().size()==0)
+                        return googleDriveFileHolderList;
                     files.getFiles().get(0).getIconLink();
                     files.getFiles().get(0).getThumbnailLink();
 //                    String fileId = "1ZdR3L3qP4Bkq8noWLJHSr_iBau0DNT4Kli4SxNc2YEo";
@@ -325,14 +343,30 @@ public class DriveServiceHelper {
 //                        Bitmap bmp = BitmapFactory.decodeByteArray(data, 0, data.length);
 //                        googleDriveFileHolderList.add(bmp);
 //                        Log.e("dta",data+"");
-
+                        Calendar now = Calendar.getInstance();
+                        int currentYear = now.get(Calendar.YEAR);
+                        int previousYear= Integer.parseInt(DateTimeUtils.Companion.convertDateTimetoDay(files.getFiles().get(i).getCreatedTime().getValue(),"yyyy"));
                         if (files.getFiles().get(i).getThumbnailLink()!=null) {
-                            FileDetails fileDetails=new FileDetails(files.getFiles().get(i).getId(),files.getFiles().get(i).getThumbnailLink());
-                            googleDriveFileHolderList.add(fileDetails);
+                            FileDetails fileDetails=new FileDetails(files.getFiles().get(i).getId(),files.getFiles().get(i).getThumbnailLink(),files.getFiles().get(i).getCreatedTime().getValue());
+                            if (isFromCurrent) {
+                                if (currentYear==previousYear)
+                                googleDriveFileHolderList.add(fileDetails);
+                            }
+                            else {
+                                if (previousYear<currentYear)
+                                    googleDriveFileHolderList.add(fileDetails);
+                            }
                         }
                         else {
-                            FileDetails fileDetails=new FileDetails(files.getFiles().get(i).getId(),files.getFiles().get(i).getName());
-                            googleDriveFileHolderList.add(fileDetails);
+                            FileDetails fileDetails=new FileDetails(files.getFiles().get(i).getId(),files.getFiles().get(i).getName(),files.getFiles().get(i).getCreatedTime().getValue());
+                            if (isFromCurrent) {
+                                if (currentYear==previousYear)
+                                    googleDriveFileHolderList.add(fileDetails);
+                            }
+                            else {
+                                if (previousYear<currentYear)
+                                    googleDriveFileHolderList.add(fileDetails);
+                            }
                         }
                     }
 //                    googleDriveFileHolderList.addAll(files.getFiles());
@@ -365,7 +399,10 @@ public class DriveServiceHelper {
         protected void onPostExecute(List<FileDetails> genericUrl) {
 
             super.onPostExecute(genericUrl);
+            if (genericUrl.size()>0)
             fileRecievedListener.Downloaded(genericUrl);
+            else
+                Toast.makeText(context,"You donot have  any files on drive",Toast.LENGTH_SHORT).show();
 //            ProgressBarHandler.Companion.hide();
 
 //            Log.e("url",genericUrl.get(0).getu+"");

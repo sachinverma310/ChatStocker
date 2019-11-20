@@ -1,6 +1,7 @@
 package stws.chatstocker.view
 
 import android.app.Activity
+import android.content.ActivityNotFoundException
 import android.content.ClipData
 import android.content.Context
 import android.content.Intent
@@ -57,10 +58,16 @@ import androidx.lifecycle.ViewModelProviders
 import com.bumptech.glide.Glide
 
 import com.google.android.gms.common.api.Scope
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.android.gms.tasks.Task
 import com.google.api.client.extensions.android.http.AndroidHttp
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
 import com.google.api.client.http.FileContent
 import com.google.api.client.json.gson.GsonFactory
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.iid.FirebaseInstanceId
+import com.google.firebase.iid.InstanceIdResult
+import com.theartofdev.edmodo.cropper.CropImage
 import org.greenrobot.eventbus.Subscribe
 import stws.chatstocker.utils.*
 import stws.chatstocker.viewmodel.HomeViewModel
@@ -72,6 +79,7 @@ import java.util.*
 
 
 class HomeActivity : BaseActivity(), ConstantsValues, HomeAdapter.OnItemClcik {
+    val CROP_PIC=110
     override fun onItemClick(post: Int) {
 //        Toast.makeText(this, post.toString(), Toast.LENGTH_SHORT).show()
         when (post) {
@@ -82,11 +90,15 @@ class HomeActivity : BaseActivity(), ConstantsValues, HomeAdapter.OnItemClcik {
                 openCamera()
             }
             1 -> {
-                startActivity(Intent(this,PhotosActivity::class.java))
+                val intent=Intent(this,PhotosActivity::class.java)
+                intent.putExtra(ConstantsValues.KEY_ISFROM_CURRENT,true)
+                startActivity(intent)
 
             }
             2 -> {
-                startActivity(Intent(this,PhotosActivity::class.java))
+                val intent=Intent(this,PhotosActivity::class.java)
+                intent.putExtra(ConstantsValues.KEY_ISFROM_CURRENT,false)
+                startActivity(intent)
             }
             3 -> {
                 photoFile = getOutputMediaFile(MEDIA_TYPE_VIDEO)!!
@@ -97,19 +109,29 @@ class HomeActivity : BaseActivity(), ConstantsValues, HomeAdapter.OnItemClcik {
                 startActivityForResult(intent, MEDIA_TYPE_VIDEO);
             }
             4 -> {
-                startActivity(Intent(this,VideoSActivity::class.java))
+                val intent=Intent(this,VideoSActivity::class.java)
+                intent.putExtra(ConstantsValues.KEY_ISFROM_CURRENT,true)
+                startActivity(intent)
+
             }
             5 -> {
-                startActivity(Intent(this,VideoSActivity::class.java))
+                val intent=Intent(this,VideoSActivity::class.java)
+                intent.putExtra(ConstantsValues.KEY_ISFROM_CURRENT,false)
+                startActivity(intent)
             }
             6 -> {
+
                 startActivity(Intent(this, AudioRecordingActivity::class.java))
             }
             7 -> {
-                startActivity(Intent(this, AuidosActivity::class.java))
+                val intent=Intent(this,AuidosActivity::class.java)
+                intent.putExtra(ConstantsValues.KEY_ISFROM_CURRENT,true)
+                startActivity(intent)
             }
             8 -> {
-                startActivity(Intent(this, AuidosActivity::class.java))
+                val intent=Intent(this,AuidosActivity::class.java)
+                intent.putExtra(ConstantsValues.KEY_ISFROM_CURRENT,false)
+                startActivity(intent)
             }
         }
 
@@ -138,16 +160,17 @@ class HomeActivity : BaseActivity(), ConstantsValues, HomeAdapter.OnItemClcik {
         val recyclerView = actvivityHomeBinding.recyclerView as RecyclerView
 
         recyclerView.layoutManager = GridLayoutManager(this@HomeActivity, 3) as RecyclerView.LayoutManager?
-        recyclerView.itemAnimator = DefaultItemAnimator()
-        val list = arrayListOf<Drawable>(resources.getDrawable(R.drawable.camera, resources.newTheme()),
-                resources.getDrawable(R.drawable.photos, resources.newTheme())
-                , resources.getDrawable(R.drawable.photos, resources.newTheme())
-                , resources.getDrawable(R.drawable.video_recording, resources.newTheme())
+        val spacingInPixels = 10
+        recyclerView.addItemDecoration( SpacesItemDecoration(10, SpacesItemDecoration.HORIZONTAL));
+        val list = arrayListOf<Drawable>(resources.getDrawable(R.drawable.photos, resources.newTheme()),
+                resources.getDrawable(R.drawable.photos_second, resources.newTheme())
+                , resources.getDrawable(R.drawable.photos_second, resources.newTheme())
                 , resources.getDrawable(R.drawable.video, resources.newTheme())
-                , resources.getDrawable(R.drawable.video, resources.newTheme())
-                , resources.getDrawable(R.drawable.audio_recording, resources.newTheme())
+                , resources.getDrawable(R.drawable.video_second, resources.newTheme())
+                , resources.getDrawable(R.drawable.video_second, resources.newTheme())
                 , resources.getDrawable(R.drawable.audio, resources.newTheme())
-                , resources.getDrawable(R.drawable.audio, resources.newTheme()))
+                , resources.getDrawable(R.drawable.audio_second, resources.newTheme())
+                , resources.getDrawable(R.drawable.audio_second, resources.newTheme()))
         val homeItemList = resources.getStringArray(R.array.home_items)
         val adapter = HomeAdapter(this, this, list, homeItemList)
         img = actvivityHomeBinding.img
@@ -181,7 +204,26 @@ class HomeActivity : BaseActivity(), ConstantsValues, HomeAdapter.OnItemClcik {
 
 //        photoFile = getOutputMediaFile()
 //        fileUri = getOutputMediaFileUri(photoFile!!)
+        getFirebaseToken()
 
+    }
+    private fun getFirebaseToken() {
+        FirebaseInstanceId.getInstance().instanceId
+                .addOnCompleteListener(OnCompleteListener { task ->
+                    if (!task.isSuccessful) {
+                        Log.w(TAG, "getInstanceId failed", task.exception)
+                        return@OnCompleteListener
+                    }
+
+                    // Get new Instance ID token
+                    val token=task.result!!.token;
+                    val userId=Prefrences.getUserUid(this)!!
+                    FirebaseDatabase.getInstance().reference.child("User").child(userId).child(ConstantsValues.KEY_DEVICE_TOKEN).setValue(token)
+
+
+
+                    // Log and toast
+                })
     }
     private fun getPathFromURI(uri: Uri) {
         var path: String = uri.path!! // uri = any content Uri
@@ -286,20 +328,68 @@ class HomeActivity : BaseActivity(), ConstantsValues, HomeAdapter.OnItemClcik {
 //                }
 //            }
             101->{
-               val imageUri = data!!.getData() as Uri
-                photoFile =  File( URI(imageUri.path));
-                GetAllFiles(this,"Chat Stocker photos",mDriveServiceHelper,mDriveService,photoFile!!,"image/jpeg").execute()
+
+                    val imageUri = data!!.getData() as Uri
+                    photoFile = File(URI(imageUri.path));
+                    GetAllFiles(this, "Chat Stocker photos", mDriveServiceHelper, mDriveService, photoFile!!, "image/jpeg").execute()
+
+
             }
             REQUEST_CODE_CAPTURE_IMAGE -> {
-                GetAllFiles(this,"Chat Stocker photos",mDriveServiceHelper,mDriveService,photoFile!!,"image/jpeg").execute()
+            if (resultCode== Activity.RESULT_OK) {
+//                CropImage.activity(fileUri)
+//                        .start(this);
+                GetAllFiles(this, "Chat Stocker photos", mDriveServiceHelper, mDriveService, photoFile!!, "image/jpeg").execute()
 //                GetAllFiles("Chat Stocker photos").execute()
+                photoFile = getOutputMediaFile(REQUEST_CODE_CAPTURE_IMAGE)!!
+                fileUri = getOutputMediaFileUri(photoFile!!)
+                openCamera()
+            }
 
 
+            }
+                CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE ->{
+                    if (resultCode== Activity.RESULT_OK) {
+                       val result = CropImage.getActivityResult(data);
+                       val resultUri = result.getUri();
+                        GetAllFiles(this, "Chat Stocker photos", mDriveServiceHelper, mDriveService, File(resultUri.path)!!, "image/jpeg").execute()
+                        photoFile = getOutputMediaFile(REQUEST_CODE_CAPTURE_IMAGE)!!
+                        fileUri = getOutputMediaFileUri(photoFile!!)
+                        openCamera()
+                    }
             }
             MEDIA_TYPE_VIDEO -> {
                 GetAllFiles(this,"Chat Stocker videos",mDriveServiceHelper,mDriveService,photoFile!!,"video/mp4").execute()
 //                GetAllFiles("Chat Stocker videos").execute()
             }
+        }
+    }
+
+    private fun performCrop(picUri:Uri) {
+        // take care of exceptions
+        try {
+            // call the standard crop action intent (the user device may not
+            // support it)
+            val cropIntent = Intent("com.android.camera.action.CROP");
+            // indicate image type and Uri
+            cropIntent.setDataAndType(picUri, "image/*");
+            // set crop properties
+            cropIntent.putExtra("crop", "true");
+            // indicate aspect of desired crop
+            cropIntent.putExtra("aspectX", 2);
+            cropIntent.putExtra("aspectY", 1);
+            // indicate output X and Y
+            cropIntent.putExtra("outputX", 256);
+            cropIntent.putExtra("outputY", 256);
+            // retrieve data on return
+            cropIntent.putExtra("return-data", true);
+            // start the activity - we handle returning in onActivityResult
+            startActivityForResult(cropIntent, CROP_PIC);
+        }
+        // respond to users whose devices do not support the crop action
+        catch (anfe: ActivityNotFoundException) {
+            Toast
+                    .makeText(this, "This device doesn't support the crop action!", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -372,4 +462,28 @@ class HomeActivity : BaseActivity(), ConstantsValues, HomeAdapter.OnItemClcik {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        Log.e("onresume","on")
+    }
+
+    override fun onPause() {
+        super.onPause()
+        Log.e("onPause","on")
+    }
+
+    override fun onStop() {
+        super.onStop()
+        Log.e("onStop","on")
+    }
+
+    override fun onStart() {
+        super.onStart()
+        Log.e("onStart","on")
+    }
+
+    override fun onRestart() {
+        super.onRestart()
+        Log.e("onRestart","on")
+    }
 }

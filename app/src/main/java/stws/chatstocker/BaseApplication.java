@@ -3,6 +3,8 @@ package stws.chatstocker;
 import android.app.Activity;
 import android.app.Application;
 
+import com.google.firebase.database.FirebaseDatabase;
+
 import stws.chatstocker.di.component.ApplicationComponent;
 import stws.chatstocker.di.component.DaggerApplicationComponent;
 
@@ -22,6 +24,7 @@ public class BaseApplication extends Application implements HasActivityInjector 
         super.onCreate();
         ApplicationComponent component = DaggerApplicationComponent.builder().application(this).build();
         component.inject(this);
+        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
 
     }
 

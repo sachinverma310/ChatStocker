@@ -10,37 +10,54 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import stws.chatstocker.R
 import stws.chatstocker.databinding.UserListBinding
+import stws.chatstocker.model.FileDetails
 import stws.chatstocker.model.User
 import stws.chatstocker.viewmodel.HomeViewModel
 import stws.chatstocker.viewmodel.UserListDetailsViewModel
 import stws.chatstocker.viewmodel.UserListViewModel
+import java.io.File
 
-class UserAdapter(val context:Context, var userList:ArrayList<User>): RecyclerView.Adapter<UserAdapter.MyViewHolder>() {
-    private lateinit var userListBinding:UserListBinding;
+class UserAdapter(val context: Context, var userList: ArrayList<User>) : RecyclerView.Adapter<UserAdapter.MyViewHolder>() {
+    private lateinit var userListBinding: UserListBinding;
+    public var url: ArrayList<File>? = null
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
-        userListBinding=DataBindingUtil.inflate(LayoutInflater.from(parent.context), R.layout.user_list,parent,false)
+        userListBinding = DataBindingUtil.inflate(LayoutInflater.from(parent.context), R.layout.user_list, parent, false)
         return MyViewHolder(userListBinding)
     }
 
     override fun getItemCount(): Int {
-     return userList.size;
+        return userList.size;
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         holder.bindItem(userList.get(position))
         Glide.with(context).load(userList.get(position).image).into(holder.imageView)
     }
-fun updateList(updateduserList:ArrayList<User>){
-    userList=updateduserList;
-    notifyDataSetChanged()
-}
-    public class MyViewHolder(val userListBinding:UserListBinding):RecyclerView.ViewHolder(userListBinding.root){
-        val imageView=userListBinding.imgUserPic
-        public fun bindItem(user:User){
-            if (userListBinding.getViewModel() == null) {
-                userListBinding.setViewModel(UserListDetailsViewModel(user))
-            } else
-                userListBinding!!.viewModel!!.user=user
+
+    fun updateList(updateduserList: ArrayList<User>) {
+        userList = updateduserList;
+        notifyDataSetChanged()
+    }
+
+    fun add(user: User) {
+        userList.add(user)
+        notifyDataSetChanged()
+    }
+
+    fun setExternalFileUrl(url: ArrayList<File>) {
+        this.url = url
+    }
+
+    inner class MyViewHolder(val userListBinding: UserListBinding) : RecyclerView.ViewHolder(userListBinding.root) {
+        val imageView = userListBinding.imgUserPic
+
+        public fun bindItem(user: User) {
+//            if (userListBinding.getViewModel() == null) {
+            userListBinding.setViewModel(UserListDetailsViewModel(user))
+            if ( url!=null)
+            userListBinding?.viewModel?.externalUrl = url!!
+//            } else
+//                userListBinding!!.viewModel!!.user = user
         }
     }
 }

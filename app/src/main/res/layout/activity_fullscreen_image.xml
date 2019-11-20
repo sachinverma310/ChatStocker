@@ -1,18 +1,95 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".view.FullscreenImageActivity">
-    <ImageView
-        android:id="@+id/imageView"
+    xmlns:tools="http://schemas.android.com/tools">
+<data>
+    <variable
+        name="viewModel"
+        type="stws.chatstocker.viewmodel.PhotoViewModel" />
+</data>
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:adjustViewBounds="true"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"/>
-</androidx.constraintlayout.widget.ConstraintLayout>
+        android:background="@color/colorPrimary"
+        android:layout_height="match_parent"
+        tools:context=".view.FullscreenImageActivity">
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+
+            android:adjustViewBounds="true"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent" />
+<!--        <View-->
+<!--            app:layout_constraintBottom_toBottomOf="parent"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            android:background="@color/black"-->
+<!--            android:alpha=".35"-->
+<!--            app:layout_constraintHorizontal_bias="0.5"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="54dp"></View>-->
+
+        <ImageView
+            android:id="@+id/imgSend"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginBottom="8dp"
+            android:onClick="@{(v)->viewModel.sendItem(v)}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/imgShare"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:srcCompat="@drawable/send_image" />
+
+        <ImageView
+            android:id="@+id/imgShare"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
+            android:onClick="@{(v)->viewModel.shareItem(v)}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/imgDelete"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/imgSend"
+            app:srcCompat="@drawable/share_img" />
+
+        <ImageView
+            android:id="@+id/imgDelete"
+            android:layout_width="44dp"
+            android:onClick="@{(v)->viewModel.deleteItem(v)}"
+            android:layout_height="44dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginBottom="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/imgShare"
+            app:srcCompat="@drawable/delete_image" />
+
+        <View
+            android:id="@+id/view"
+            android:layout_width="1dp"
+            android:background="@color/gray"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/imgShare"
+            app:layout_constraintStart_toEndOf="@+id/imgSend"
+            app:layout_constraintTop_toTopOf="@+id/imgSend" />
+
+        <View
+            android:id="@+id/view1"
+            android:background="@color/gray"
+            android:layout_width="1dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/imgDelete"
+            app:layout_constraintStart_toEndOf="@+id/imgShare"
+            app:layout_constraintTop_toTopOf="@+id/imgDelete" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

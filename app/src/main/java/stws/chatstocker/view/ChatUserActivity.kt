@@ -43,6 +43,7 @@ class ChatUserActivity : BaseActivity() {
         recyclerView.layoutManager=LinearLayoutManager(this)
         mDatabaseReference = FirebaseDatabase.getInstance().getReference().child("users");
 //        recyclerView.adapter=UserAdapter()
+
     }
 
     override fun onStart() {

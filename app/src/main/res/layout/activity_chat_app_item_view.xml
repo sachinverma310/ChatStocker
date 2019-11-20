@@ -1,9 +1,13 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:custom="http://schemas.android.com/tools"
+    android:id="@+id/parentLayout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@color/colorPrimary"
     android:orientation="vertical"
-    android:id="@+id/parentLayout"
     android:padding="1dp">
+    //start of left_msg_layout
 
     <LinearLayout
         android:id="@+id/chat_left_msg_layout"
@@ -12,7 +16,18 @@
         android:layout_gravity="left"
         android:background="@drawable/chat_bubble_recieved"
         android:orientation="vertical"
-        android:padding="10dp">
+        android:padding="2dp">
+
+        <TextView
+            android:id="@+id/tvUserNameLeft"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:paddingRight="10dp"
+            android:text="hello"
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="18sp"
+            android:visibility="gone" />
 
         <TextView
             android:id="@+id/chat_left_msg_text_view"
@@ -26,11 +41,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
 
             android:textColor="@color/black" />
 
     </LinearLayout>
+    //end of left_msg_layout
+
+    //start of right_msg_layout
 
     <LinearLayout
         android:id="@+id/chat_right_msg_layout"
@@ -40,6 +58,17 @@
         android:background="@drawable/chat_bubble_sent"
         android:orientation="vertical"
         android:padding="10dp">
+
+        <TextView
+            android:id="@+id/tvUserNameRight"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:paddingRight="10dp"
+            android:text="hello"
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="18sp"
+            android:visibility="gone" />
 
         <TextView
             android:id="@+id/chat_right_msg_text_view"
@@ -57,47 +86,192 @@
             android:text="200"
             android:textColor="@color/black" />
     </LinearLayout>
+    //end of right_msg_layout
 
-    <LinearLayout
+    //start of right_img_layout
+
+    <RelativeLayout
         android:id="@+id/right_img_layout"
-        android:visibility="gone"
         android:layout_width="120dp"
         android:layout_height="120dp"
         android:layout_gravity="left"
         android:background="@drawable/image_background"
         android:orientation="vertical"
-    >
+        android:visibility="gone"
+       >
 
         <ImageView
             android:id="@+id/imgFileRight"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:scaleType="fitXY"
             android:layout_marginTop="8dp"
-            android:adjustViewBounds="true"
             android:layout_marginEnd="8dp"
-            android:layout_marginRight="8dp"></ImageView>
-    </LinearLayout>
+            android:layout_marginRight="8dp"
+            android:adjustViewBounds="true"
+            android:scaleType="fitXY"></ImageView>
 
-    <LinearLayout
+    </RelativeLayout>
+    //end of right_img_layout
+
+    //start of left_img_layout
+
+    <RelativeLayout
         android:id="@+id/left_img_layout"
-        android:visibility="gone"
         android:layout_width="120dp"
         android:layout_height="120dp"
         android:layout_gravity="right"
         android:background="@drawable/image_background"
         android:orientation="vertical"
-      >
+        android:visibility="gone">
 
         <ImageView
             android:id="@+id/imgFileLeft"
             android:layout_width="120dp"
             android:layout_height="120dp"
-            android:adjustViewBounds="true"
-            android:scaleType="fitXY"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
-            android:layout_marginRight="8dp"></ImageView>
-    </LinearLayout>
+            android:layout_marginRight="8dp"
+            android:adjustViewBounds="true"
+            android:scaleType="fitXY"></ImageView>
+        <com.app.adprogressbarlib.AdCircleProgress
+            android:layout_centerInParent="true"
+            android:id="@+id/pgb_progress"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_gravity="center"
+            android:backgroundTintMode="multiply"
 
+            app:adpgb_finished_color="@color/colorAccent"
+            app:adpgb_unfinished_color="@android:color/white"
+            custom:adpgb_finished_stroke_width="5dp"
+            custom:adpgb_inner_drawable="@drawable/ic_close_icon"
+            custom:adpgb_show_text="false"
+            custom:adpgb_unfinished_stroke_width="2dp" />
+    </RelativeLayout>
+    //end of left_img_layout
+
+    //start of right_img_layout
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/right_audio_layout"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="left"
+        android:background="@drawable/chat_bubble_recieved"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <ImageView
+            android:id="@+id/imgPlayRight"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginLeft="30dp"
+            android:layout_marginTop="10dp"
+            android:src="@drawable/ic_play_button_chat"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"></ImageView>
+
+        <SeekBar
+            android:id="@+id/seekbarRight"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="16dp"
+            android:layout_marginLeft="10dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/imgPlayRight"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/textViewRight"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/seekbarRight" />
+
+        <TextView
+            android:id="@+id/tvFileNameRight"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textViewRight" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+    //end of right_img_layout
+
+    //start of left_img_layout
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/left_audio_layout"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right"
+        android:background="@drawable/chat_bubble_sent"
+        android:orientation="vertical"
+        android:padding="10dp"
+        android:visibility="visible">
+
+        <ImageView
+            android:id="@+id/imgPlay"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginLeft="30dp"
+
+            android:src="@drawable/ic_play_button_chat"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"></ImageView>
+
+        <SeekBar
+            android:id="@+id/seekbarLeft"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginLeft="10dp"
+
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/imgPlay"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/textViewLeft"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:visibility="gone"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/seekbarLeft" />
+
+        <TextView
+            android:id="@+id/tvFileNameLeft"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:visibility="gone"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textViewLeft" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+    //end of left_img_layout
+    <ImageView
+        android:visibility="gone"
+        android:layout_gravity="right"
+        android:id="@+id/imgTickSingle"
+        android:layout_marginRight="10dp"
+        android:layout_width="24dp"
+        android:src="@drawable/ic_check_mark"
+        android:layout_height="24dp"></ImageView>
+    <ImageView
+        android:visibility="gone"
+        android:layout_gravity="right"
+        android:id="@+id/imgTickDouble"
+        android:layout_marginRight="10dp"
+        android:layout_width="24dp"
+        android:src="@drawable/ic_check_mark"
+        android:layout_height="24dp"></ImageView>
 </LinearLayout>

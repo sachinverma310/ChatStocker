@@ -3,19 +3,21 @@ package stws.chatstocker.model
 import android.os.Parcel
 import android.os.Parcelable
 
-data class LoginResponse(var name: String?, var uid: String?, var emailOrPhone: String?, var profile: String?) : Parcelable {
+data class LoginResponse(var name: String?, var uid: String?, var email: String?, var profile: String?,var phone: String?,var deviceToken: String?) : Parcelable {
 
 
     constructor(parcel: Parcel) : this(
             parcel.readString(),
             parcel.readString(),
-            parcel.readString(),parcel.readString())
+            parcel.readString(),parcel.readString(),parcel.readString(),parcel.readString())
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeString(name)
         parcel.writeString(uid)
-        parcel.writeString(emailOrPhone)
+        parcel.writeString(email)
         parcel.writeString(profile)
+        parcel.writeString(phone)
+        parcel.writeString(deviceToken)
     }
 
     override fun describeContents(): Int {

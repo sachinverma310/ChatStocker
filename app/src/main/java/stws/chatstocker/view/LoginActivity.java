@@ -23,6 +23,7 @@ import stws.chatstocker.ConstantsValues;
 import stws.chatstocker.R;
 import stws.chatstocker.databinding.ActivityLoginBinding;
 import stws.chatstocker.model.LoginResponse;
+import stws.chatstocker.model.User;
 import stws.chatstocker.utils.Prefrences;
 import stws.chatstocker.utils.ProgressBarHandler;
 import stws.chatstocker.utils.ViewModelFactory;
@@ -51,6 +52,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
 
@@ -213,24 +215,24 @@ public class LoginActivity extends DaggerAppCompatActivity implements ConstantsV
         super.onActivityResult(requestCode, resultCode, data);
 
         // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
-        if (resultCode == RESULT_OK) {
-            if (requestCode == RC_SIGN_IN) {
-                Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
-                try {
-                    // Google Sign In was successful, authenticate with Firebase
-                    GoogleSignInAccount account = task.getResult(ApiException.class);
-                    firebaseAuthWithGoogle(account, LoginActivity.this);
+//        if (resultCode == RESULT_OK) {
+        if (requestCode == RC_SIGN_IN) {
+            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+            try {
+                // Google Sign In was successful, authenticate with Firebase
+                GoogleSignInAccount account = task.getResult(ApiException.class);
+                firebaseAuthWithGoogle(account, LoginActivity.this);
 //                firebaseAuthWithGoogle(account);
-                } catch (ApiException e) {
-                    // Google Sign In failed, update UI appropriately
-                    Log.w(TAG, "Google sign in failed", e);
-                    // ...
-                }
-            } else if (requestCode == PHONE_NO_REUEST_CODE) {
-                verifyPhoneNumberWithCode(data.getStringExtra(KEY_VERIFICATION_ID), data.getStringExtra(KEY_OTP));
-
+            } catch (ApiException e) {
+                // Google Sign In failed, update UI appropriately
+                Log.w(TAG, "Google sign in failed", e);
+                // ...
             }
+        } else if (requestCode == PHONE_NO_REUEST_CODE) {
+            verifyPhoneNumberWithCode(data.getStringExtra(KEY_VERIFICATION_ID), data.getStringExtra(KEY_OTP));
+
         }
+//        }
     }
 
     @Override
@@ -248,7 +250,7 @@ public class LoginActivity extends DaggerAppCompatActivity implements ConstantsV
     }
 
     public void firebaseAuthWithGoogle(GoogleSignInAccount acct, Context context) {
-        Log.d("TAG", "firebaseAuthWithGoogle:" + acct.getId()+" "+acct.getIdToken());
+        Log.d("TAG", "firebaseAuthWithGoogle:" + acct.getId() + " " + acct.getIdToken());
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
         mAuth.signInWithCredential(credential)
                 .addOnCompleteListener((AppCompatActivity) context, new OnCompleteListener<AuthResult>() {
@@ -260,7 +262,7 @@ public class LoginActivity extends DaggerAppCompatActivity implements ConstantsV
                             FirebaseUser user = mAuth.getCurrentUser();
                             ProgressBarHandler.Companion.hide();
 
-                            updateUi(user);
+                            updateUi(user, false);
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w("TAG", "signInWithCredential:failure", task.getException());
@@ -272,44 +274,95 @@ public class LoginActivity extends DaggerAppCompatActivity implements ConstantsV
                 });
     }
 
-    private void updateUi(FirebaseUser user) {
+    private void updateUi(FirebaseUser user, boolean isFromMobile) {
+        LoginResponse loginResponse = null;
+        Map addValue = new HashMap();
+        if (isFromMobile) {
+            loginResponse = new LoginResponse("", user.getUid(), "", "", user.getPhoneNumber(), token);
 
-        LoginResponse loginResponse = new LoginResponse(user.getDisplayName(), user.getUid(), user.getEmail(),user.getPhotoUrl().toString());
+            addValue.put("device_token", token);
+            addValue.put("online", true);
+            addValue.put("name", "");
+            addValue.put("email", "");
+            addValue.put("numbers", user.getPhoneNumber());
+            addValue.put("profileImage", "");
+            addValue.put("lastSeen", String.valueOf(Calendar.getInstance().getTimeInMillis()));
+            addValue.put("uid", user.getUid());
+        } else {
+            loginResponse = new LoginResponse(user.getDisplayName(), user.getUid(), user.getEmail(), user.getPhotoUrl().toString(), "", token);
+            addValue.put("device_token", token);
+            addValue.put("online", true);
+            addValue.put("name", user.getDisplayName());
+            addValue.put("email", user.getEmail());
+            addValue.put("numbers", user.getPhoneNumber());
+            addValue.put("profileImage", user.getPhotoUrl().toString());
+            addValue.put("lastSeen", String.valueOf(Calendar.getInstance().getTimeInMillis()));
+            addValue.put("uid", user.getUid());
+        }
         try {
             Prefrences.Companion.saveUser(LoginActivity.this, KEY_LOGIN_DATA, loginResponse);
 
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        Map addValue = new HashMap();
-        addValue.put("device_token", token);
-        addValue.put("online", true);
-        addValue.put("name", user.getDisplayName());
-        addValue.put("email", user.getEmail());
-        addValue.put("numbers", user.getPhoneNumber());
-        addValue.put("profileImage", user.getPhotoUrl().toString());
-        addValue.put("lastSeen", Calendar.getInstance().getTime().toString());
-        addValue.put("uid", user.getUid());
-        //---IF UPDATE IS SUCCESSFULL , THEN OPEN MAIN ACTIVITY---
-        mUserDatabase.child(user.getUid()).updateChildren(addValue, new DatabaseReference.CompletionListener() {
-
+        mUserDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+            public void onDataChange(DataSnapshot snapshot) {
+                if (snapshot.hasChild(user.getUid())) {
+                    // run some code
+                    mUserDatabase.child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            String name = (String) dataSnapshot.child("name").getValue();
+                            String email = (String) dataSnapshot.child("email").getValue();
+                            String phone = "";
+                            String profileUrl = "";
+                            if (dataSnapshot.hasChild("numbers"))
+                                phone = (String) dataSnapshot.child("numbers").getValue();
+                            if (dataSnapshot.hasChild("profileImage")) {
+                                addValue.put("profileImage",(String) dataSnapshot.child("profileImage").getValue());
+                                profileUrl = (String) dataSnapshot.child("profileImage").getValue();
+                            }
 
-                if (databaseError == null) {
+                            LoginResponse loginResponse = new LoginResponse(name, user.getUid(), email, profileUrl, phone, token);
+                            try {
+                                Prefrences.Companion.saveUser(LoginActivity.this, KEY_LOGIN_DATA, loginResponse);
+                                Prefrences.Companion.saveBoolean(LoginActivity.this, KEY_IS_LOGIN, true);
+                                updateChild(user, addValue);
+                                startActivity(new Intent(LoginActivity.this, HomeActivity.class));
 
-                    //---OPENING MAIN ACTIVITY---
-                    Log.e("Login : ", "Logged in Successfully");
-                    Prefrences.Companion.saveBoolean(LoginActivity.this, KEY_IS_LOGIN, true);
-                    startActivity(new Intent(LoginActivity.this, HomeActivity.class));
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
                 } else {
-                    Toast.makeText(LoginActivity.this, databaseError.toString(), Toast.LENGTH_SHORT).show();
-                    Log.e("Error is : ", databaseError.toString());
-
+                    updateChild(user, addValue);
                 }
             }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
         });
+
+//        Map addValue = new HashMap();
+//        addValue.put("device_token", token);
+//        addValue.put("online", true);
+//        addValue.put("name", user.getDisplayName());
+//        addValue.put("email", user.getEmail());
+//        addValue.put("numbers", user.getPhoneNumber());
+//        addValue.put("profileImage", user.getPhotoUrl().toString());
+//        addValue.put("lastSeen", Calendar.getInstance().getTime().toString());
+//        addValue.put("uid", user.getUid());
+        //---IF UPDATE IS SUCCESSFULL , THEN OPEN MAIN ACTIVITY---
+
 //        mUserDatabase.child("letters").push().setValue("a");
 //        mUserDatabase.child("letters").push().setValue("z");
 //        mUserDatabase.child("letters").push().setValue("c");
@@ -382,6 +435,26 @@ public class LoginActivity extends DaggerAppCompatActivity implements ConstantsV
 
     }
 
+    private void updateChild(FirebaseUser user, Map addValue) {
+        mUserDatabase.child(user.getUid()).updateChildren(addValue, new DatabaseReference.CompletionListener() {
+
+            @Override
+            public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+
+                if (databaseError == null) {
+
+                    //---OPENING MAIN ACTIVITY---
+                    Log.e("Login : ", "Logged in Successfully");
+                    Prefrences.Companion.saveBoolean(LoginActivity.this, KEY_IS_LOGIN, true);
+                    startActivity(new Intent(LoginActivity.this, HomeActivity.class));
+                } else {
+                    Toast.makeText(LoginActivity.this, databaseError.toString(), Toast.LENGTH_SHORT).show();
+                    Log.e("Error is : ", databaseError.toString());
+
+                }
+            }
+        });
+    }
 
     private void startPhoneNumberVerification(String phoneNumber) {
         ProgressBarHandler.Companion.getInstance();
@@ -410,6 +483,7 @@ public class LoginActivity extends DaggerAppCompatActivity implements ConstantsV
 
                         // Get new Instance ID token
                         token = task.getResult().getToken();
+                        Prefrences.Companion.saveString(LoginActivity.this, KEY_DEVICE_TOKEN, token);
 
                         // Log and toast
 
@@ -451,7 +525,11 @@ public class LoginActivity extends DaggerAppCompatActivity implements ConstantsV
                             Log.d(TAG, "signInWithCredential:success");
 
                             FirebaseUser user = task.getResult().getUser();
-                            updateUi(user);
+//                            Intent intent=new Intent(LoginActivity.this,HomeActivity.class);
+////                            intent.putExtra(KEY_USER_ID,user.getUid());
+//                            Prefrences.Companion.saveString(LoginActivity.this,KEY_USER_ID,user.getUid());
+//                            startActivity(intent);
+                            updateUi(user, true);
 
                             // [START_EXCLUDE]
 //                            updateUI(STATE_SIGNIN_SUCCESS, user);

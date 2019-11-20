@@ -40,7 +40,7 @@ class GetAllFiles : AsyncTask<String, String, List<File>> {
     }
 
 
-    lateinit var progressBarHandler: ProgressBarHandler
+
     override fun doInBackground(vararg strings: String): List<com.google.api.services.drive.model.File> {
         val result = ArrayList<File>()
         var request: Drive.Files.List? = null
@@ -84,9 +84,9 @@ class GetAllFiles : AsyncTask<String, String, List<File>> {
             return
         }
         if (isExist!!)
-            mDriveServiceHelper!!.uploadFile(photoFile, id,fileType)
+            mDriveServiceHelper!!.uploadFile(photoFile, id,fileType,context)
         else
-            mDriveServiceHelper!!.createFolder(folderName, photoFile,fileType)
+            mDriveServiceHelper!!.createFolder(folderName, photoFile,fileType,context)
 
 
     }

@@ -21,8 +21,13 @@ import android.icu.lang.UCharacter.GraphemeClusterBreak.T
 import android.view.MenuItem
 
 import android.view.View
+import androidx.lifecycle.ViewModelProviders
 import stws.chatstocker.ConstantsValues
+import stws.chatstocker.ConstantsValues.KEY_ISFROM_CHAT
 import stws.chatstocker.ConstantsValues.KEY_PATH
+import stws.chatstocker.model.FileDetails
+import stws.chatstocker.viewmodel.AudioViewModel
+import stws.chatstocker.viewmodel.PhotoViewModel
 
 
 class AudioPalyerActivity : AppCompatActivity(),Runnable,ConstantsValues  {
@@ -35,6 +40,15 @@ class AudioPalyerActivity : AppCompatActivity(),Runnable,ConstantsValues  {
         super.onCreate(savedInstanceState)
         val binding=DataBindingUtil.setContentView<ActivityAudioPalyerBinding>(this,R.layout.activity_audio_palyer)
         fab=binding.button
+        val viewModel= ViewModelProviders.of(this).get(AudioViewModel::class.java)
+        val photos=intent.getParcelableExtra<FileDetails>(ConstantsValues.KEY_FILE)
+        if (intent.getBooleanExtra(KEY_ISFROM_CHAT,false))
+            binding.bottomLayout.visibility=View.GONE
+        viewModel.context=this
+        viewModel.drive=BaseActivity.mDriveService
+        viewModel.photos=photos
+        viewModel.fileName= intent.getStringExtra(KEY_PATH)
+        binding.viewModel=viewModel
         seekBar=binding.seekbar
         val seekBarHint=binding.textView
         path=intent.getStringExtra(KEY_PATH)
@@ -110,6 +124,7 @@ class AudioPalyerActivity : AppCompatActivity(),Runnable,ConstantsValues  {
 //                val descriptor: AssetFileDescriptor = getAssets().openFd("suits.mp3");
 //                mediaPlayer.setDataSource(descriptor.getFileDescriptor(), descriptor.getStartOffset(), descriptor.getLength());
 //                descriptor.close();
+
                 mediaPlayer!!.setDataSource(path)
                 mediaPlayer!!.prepare();
                 mediaPlayer!!.setVolume(0.5f, 0.5f);

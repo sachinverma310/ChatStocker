@@ -15,19 +15,46 @@
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:hardwareAccelerated="false"
         android:largeHeap="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".view.AudioPalyerActivity"
-            android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar"></activity>
+        <activity android:name=".view.ImageViewActivity"></activity>
+        <activity
+            android:name=".view.FullProfilePicViewrActivity"
+            android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar" />
+        <activity android:name=".view.EditGroupActivity" />
+        <activity android:name=".view.GroupChatActivtiy"    android:windowSoftInputMode="stateHidden" />
+        <activity
+            android:name=".view.CreateGroupActivity"
+            android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar" />
+        <activity android:name=".view.GorupChatUserListActivity" />
+        <activity
+            android:name=".view.AudioPalyerActivity"
+            android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar" />
         <activity
             android:name=".view.ProfileActivity"
             android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar" />
         <activity
+            android:name=".view.SettingActivity"
+            android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar" />
+        <activity
             android:name=".view.VideoPlayerActivity"
             android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar" />
-        <activity android:name=".view.FullscreenImageActivity" />
+
+        <activity
+            android:name=".view.AccountActvity"
+            android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar" />
+        <activity
+            android:name=".view.NotificationActivity"
+            android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar" />
+        <activity
+            android:name=".view.HelpActivity"
+            android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar" />
+        <activity
+            android:name=".view.FullscreenImageActivity"
+            android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar" />
         <activity
             android:name=".view.AuidosActivity"
             android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar" />
@@ -36,17 +63,22 @@
             android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar" />
         <activity
             android:name=".view.PhotosActivity"
-            android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar"></activity>
+            android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar" />
         <activity
             android:name=".view.AudioRecordingActivity"
             android:theme="@style/AppTheme.ActionBar" />
-        <activity android:name=".view.ChatActivity" />
+        <activity android:name=".view.ChatActivity"
+            android:windowSoftInputMode="stateHidden"/>
         <activity android:name=".view.ChatUserActivity" />
         <activity android:name=".view.fragments.UserFragment" />
         <activity android:name=".view.fragments.ContactsFragment" />
+        <activity
+            android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
+            android:theme="@style/Base.Theme.AppCompat" />
         <activity android:name=".view.HomeActivity">
             <intent-filter>
-                <action android:name="android.intent.action.SEND" /> <!-- Send action required to display activity in share list -->
+                <action android:name="android.intent.action.SEND_MULTIPLE" />
+<!--                <action android:name="android.intent.action.SEND" /> &lt;!&ndash; Send action required to display activity in share list &ndash;&gt;-->
 
                 <category android:name="android.intent.category.DEFAULT" /> <!-- Make activity default to launch -->
 
@@ -76,6 +108,25 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/filepaths" />
         </provider>
+
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/logo" />
+        <!--
+ Set color used with incoming notification messages. This is used when no color is set for the incoming
+             notification message. See README(https://goo.gl/6BKBk7) for more.
+        -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_color"
+            android:resource="@color/colorAccent" />
+
+        <service
+            android:name=".fcm.FirebaseService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
     </application>
 
 </manifest>
