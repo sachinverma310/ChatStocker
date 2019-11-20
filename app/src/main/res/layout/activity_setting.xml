@@ -81,7 +81,7 @@
         android:layout_marginTop="8dp"
         android:gravity="center|start"
         android:text="Notification"
-        android:onClick="account"
+        android:onClick="notification"
         android:textColor="@color/black"
         android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="parent"

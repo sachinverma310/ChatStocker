@@ -30,4 +30,8 @@ class SettingActivity : BaseActivity() {
             finishAffinity()
 
     }
+    fun notification(view: View){
+        startActivity(Intent(this, NotificationActivity::class.java))
+        finishAffinity()
+    }
 }
