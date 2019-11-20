@@ -26,7 +26,7 @@ class SettingActivity : BaseActivity() {
     }
     fun account(view: View){
 //        client.signOut().addOnSuccessListener(OnSuccessListener<Void> {
-            startActivity(Intent(this, ProfileActivity::class.java))
+            startActivity(Intent(this, AccountActvity::class.java))
             finishAffinity()
 
     }
