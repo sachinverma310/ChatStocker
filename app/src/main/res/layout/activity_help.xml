@@ -59,14 +59,14 @@
         android:layout_width="32dp"
         android:layout_height="32dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/ivContactUs"
         app:layout_constraintVertical_bias="0.006"
-        android:src="@drawable/setaccount" />
+        android:src="@drawable/sethelp" />
     <TextView
         android:id="@+id/tvFaqs"
         android:layout_width="0dp"
@@ -111,7 +111,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/ivFaqs"
         app:layout_constraintVertical_bias="0.024"
-        android:src="@drawable/setprivacy" />
+        android:src="@drawable/term" />
     <TextView
         android:id="@+id/tvTerms"
         android:layout_width="0dp"
@@ -157,7 +157,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/ivTerms"
         app:layout_constraintVertical_bias="0.02"
-        android:src="@drawable/sethelp" />
+        android:src="@drawable/setprivacy" />
     <TextView
         android:id="@+id/tvHelp"
         android:layout_width="0dp"
