@@ -32,4 +32,5 @@ public interface ConstantsValues {
     String KEY_ISFROM_CHAT="is_from_chat";
     String KEY_ISFROM_CURRENT="is_from_Current";
     String KEY_POS="pos";
+    String KEY_URL_LIST="file_url_list";
 }

@@ -42,6 +42,7 @@ import stws.chatstocker.model.User
 import stws.chatstocker.utils.GetRealPathUtil
 import stws.chatstocker.utils.Prefrences
 import stws.chatstocker.view.adapter.ChatAppMsgAdapter
+import stws.chatstocker.view.fragments.UserFragment
 import stws.chatstocker.viewmodel.ChatMessageViewModel
 import stws.chatstocker.viewmodel.GroupChatMessgeViewModel
 import java.io.File
@@ -49,15 +50,49 @@ import java.io.IOException
 import java.lang.Exception
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.ArrayList
 
 class GroupChatActivtiy : AppCompatActivity(),ChatAppMsgAdapter.ItemSelectedListner {
-    override fun onItemSelected(list: MutableList<ChatMessage>?) {
+    override fun onItemSelected(selectedList: ArrayList<ChatMessage>?) {
+        if (selectedList!!.size > 0) {
+            imgMore.visibility = View.GONE
+            imgDelete.visibility = View.VISIBLE
+            imgSend.visibility=View.VISIBLE
+        } else {
+            imgMore.visibility = View.VISIBLE
+            imgDelete.visibility = View.GONE
+            imgSend.visibility=View.GONE
+        }
+        imgDelete.setOnClickListener(View.OnClickListener {
+            for (i in 0 until selectedList.size) {
+                list.remove(selectedList.get(i))
+                adapter.notifyDataSetChanged()
+            }
+            viewmodel.clearChat(selectedList, myUserId!!)
+            adapter.selectedMessageList.clear()
+        })
+        imgSend.setOnClickListener(View.OnClickListener {
 
+            for (i in 0 until selectedList.size) {
+                selectedList.get(i).isSelected=false
+            }
+//            if (filelist.size>0) {
+            val intent = Intent(this, UserFragment::class.java)
+            intent.putParcelableArrayListExtra(ConstantsValues.KEY_URL_LIST, selectedList!!)
+//                intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
+            startActivity(intent)
+            finish()
+//            }
+        }
+        )
     }
 
     private var photoFile: File? = null
     private var fileUri: Uri? = null
     private lateinit var imageStoragePath: String
+    lateinit var imgMore: ImageView
+    lateinit var imgDelete: ImageView
+    lateinit var imgSend: ImageView
 //    private lateinit var imgFile: ImageView
     private val TAG: String = "firebase"
     private lateinit var myUserId:String
@@ -80,6 +115,9 @@ class GroupChatActivtiy : AppCompatActivity(),ChatAppMsgAdapter.ItemSelectedList
         chatList = java.util.ArrayList()
         otherUId = intent.getParcelableExtra(ConstantsValues.KEYOTHER_UID)
         mImageStorage = FirebaseStorage.getInstance().getReference();
+        imgDelete = binding.include.imgDelete
+        imgSend= binding.include.imgSend
+        imgMore = binding.include.imgMore
 //        imgFile=binding.imgFileUpload
         audioRecordingView = binding.editText
         viewmodel.senderUid=myUserId
@@ -115,6 +153,7 @@ class GroupChatActivtiy : AppCompatActivity(),ChatAppMsgAdapter.ItemSelectedList
         })
         Handler().postDelayed(Runnable {
             checkifFilesentFromExternal()
+            checkifForwardingUrl()
         }, 1000)
         audioRecordingView.sendView.setOnClickListener(View.OnClickListener {
             viewmodel.message = audioRecordingView.messageView.text.toString()
@@ -207,7 +246,16 @@ class GroupChatActivtiy : AppCompatActivity(),ChatAppMsgAdapter.ItemSelectedList
 //        if (intent.getStringExtra(ConstantsValues.KEY_FILE_URL)!="")
 //            sendFile(myUserId,otherUId.uid,Uri.fromFile(File(intent.getStringExtra(ConstantsValues.KEY_FILE_URL))))
     }
-
+    fun checkifForwardingUrl() {
+        if (intent.getParcelableArrayListExtra<ChatMessage>(ConstantsValues.KEY_URL_LIST) != null) {
+            val list = intent.getParcelableArrayListExtra<ChatMessage>(ConstantsValues.KEY_URL_LIST)
+            for (i in 0 until list!!.size) {
+//                viewmodel.room_type=room_type;
+                viewmodel.forwardMessage(list.get(i),this)
+            }
+//            intent.putExtra(KEY_FILE_URL, "")
+        }
+    }
     fun showPopup(view: ImageView) {
         val popup = PopupMenu(view.context, view);
         //Inflating the Popup using xml file

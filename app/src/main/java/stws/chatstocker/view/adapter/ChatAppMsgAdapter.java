@@ -39,7 +39,7 @@ import stws.chatstocker.view.VideoPlayerActivity;
 public class ChatAppMsgAdapter extends RecyclerView.Adapter<ChatAppMsgAdapter.ChatAppMsgViewHolder> {
 
     private List<ChatMessage> msgDtoList = null;
-    private List<ChatMessage> selectedMessageList = new ArrayList<>();
+    private ArrayList<ChatMessage> selectedMessageList = new ArrayList<>();
     private int rowIndex = -1;
     ItemSelectedListner itemSelectedListner;
     private boolean isGroup;
@@ -294,6 +294,7 @@ public class ChatAppMsgAdapter extends RecyclerView.Adapter<ChatAppMsgAdapter.Ch
             imgFileRight.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
+                    selectImage();
 //                    msgDtoList.get(getAdapterPosition()).setSelected(!msgDtoList.get(getAdapterPosition()).isSelected());
 //                    parentLayout.setBackgroundColor(msgDtoList.get(getAdapterPosition()).isSelected() ? Color.GRAY : Color.TRANSPARENT);
 ////                notifyDataSetChanged();
@@ -314,6 +315,7 @@ public class ChatAppMsgAdapter extends RecyclerView.Adapter<ChatAppMsgAdapter.Ch
             imgFileLeft.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
+                    selectImage();
 //                    msgDtoList.get(getAdapterPosition()).setSelected(!msgDtoList.get(getAdapterPosition()).isSelected());
 //                    parentLayout.setBackgroundColor(msgDtoList.get(getAdapterPosition()).isSelected() ? Color.GRAY : Color.TRANSPARENT);
 ////                notifyDataSetChanged();
@@ -334,6 +336,7 @@ public class ChatAppMsgAdapter extends RecyclerView.Adapter<ChatAppMsgAdapter.Ch
             leftMsgLayout.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
+                    selectImage();
 //                    msgDtoList.get(getAdapterPosition()).setSelected(!msgDtoList.get(getAdapterPosition()).isSelected());
 //                    parentLayout.setBackgroundColor(msgDtoList.get(getAdapterPosition()).isSelected() ? Color.GRAY : Color.TRANSPARENT);
 ////                notifyDataSetChanged();
@@ -354,6 +357,7 @@ public class ChatAppMsgAdapter extends RecyclerView.Adapter<ChatAppMsgAdapter.Ch
             rightMsgLayout.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
+                    selectImage();
 //                    msgDtoList.get(getAdapterPosition()).setSelected(!msgDtoList.get(getAdapterPosition()).isSelected());
 //                    parentLayout.setBackgroundColor(msgDtoList.get(getAdapterPosition()).isSelected() ? Color.GRAY : Color.TRANSPARENT);
 //                    if (msgDtoList.get(getAdapterPosition()).isSelected()) {
@@ -374,19 +378,20 @@ public class ChatAppMsgAdapter extends RecyclerView.Adapter<ChatAppMsgAdapter.Ch
             leftAudioLayout.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
-                    msgDtoList.get(getAdapterPosition()).setSelected(!msgDtoList.get(getAdapterPosition()).isSelected());
-                    parentLayout.setBackgroundColor(msgDtoList.get(getAdapterPosition()).isSelected() ? Color.GRAY : Color.TRANSPARENT);
-                    if (msgDtoList.get(getAdapterPosition()).isSelected()) {
-                        selectedMessageList.add(msgDtoList.get(getAdapterPosition()));
-                        itemSelectedListner.onItemSelected(selectedMessageList);
-                    } else {
-                        selectedMessageList.remove(msgDtoList.get(getAdapterPosition()));
-                        itemSelectedListner.onItemSelected(selectedMessageList);
-                    }
-                    if (selectedMessageList.size() > 0)
-                        isSelected = true;
-                    else
-                        isSelected = false;
+                    selectImage();
+//                    msgDtoList.get(getAdapterPosition()).setSelected(!msgDtoList.get(getAdapterPosition()).isSelected());
+//                    parentLayout.setBackgroundColor(msgDtoList.get(getAdapterPosition()).isSelected() ? Color.GRAY : Color.TRANSPARENT);
+//                    if (msgDtoList.get(getAdapterPosition()).isSelected()) {
+//                        selectedMessageList.add(msgDtoList.get(getAdapterPosition()));
+//                        itemSelectedListner.onItemSelected(selectedMessageList);
+//                    } else {
+//                        selectedMessageList.remove(msgDtoList.get(getAdapterPosition()));
+//                        itemSelectedListner.onItemSelected(selectedMessageList);
+//                    }
+//                    if (selectedMessageList.size() > 0)
+//                        isSelected = true;
+//                    else
+//                        isSelected = false;
                     //                notifyDataSetChanged();
                     return true;
                 }
@@ -394,19 +399,20 @@ public class ChatAppMsgAdapter extends RecyclerView.Adapter<ChatAppMsgAdapter.Ch
             rightAudioLayout.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
-                    msgDtoList.get(getAdapterPosition()).setSelected(!msgDtoList.get(getAdapterPosition()).isSelected());
-                    parentLayout.setBackgroundColor(msgDtoList.get(getAdapterPosition()).isSelected() ? Color.GRAY : Color.TRANSPARENT);
-                    if (msgDtoList.get(getAdapterPosition()).isSelected()) {
-                        selectedMessageList.add(msgDtoList.get(getAdapterPosition()));
-                        itemSelectedListner.onItemSelected(selectedMessageList);
-                    } else {
-                        selectedMessageList.remove(msgDtoList.get(getAdapterPosition()));
-                        itemSelectedListner.onItemSelected(selectedMessageList);
-                    }
-                    if (selectedMessageList.size() > 0)
-                        isSelected = true;
-                    else
-                        isSelected = false;
+                    selectImage();
+//                    msgDtoList.get(getAdapterPosition()).setSelected(!msgDtoList.get(getAdapterPosition()).isSelected());
+//                    parentLayout.setBackgroundColor(msgDtoList.get(getAdapterPosition()).isSelected() ? Color.GRAY : Color.TRANSPARENT);
+//                    if (msgDtoList.get(getAdapterPosition()).isSelected()) {
+//                        selectedMessageList.add(msgDtoList.get(getAdapterPosition()));
+//                        itemSelectedListner.onItemSelected(selectedMessageList);
+//                    } else {
+//                        selectedMessageList.remove(msgDtoList.get(getAdapterPosition()));
+//                        itemSelectedListner.onItemSelected(selectedMessageList);
+//                    }
+//                    if (selectedMessageList.size() > 0)
+//                        isSelected = true;
+//                    else
+//                        isSelected = false;
                     //                notifyDataSetChanged();
                     return true;
                 }
@@ -415,21 +421,34 @@ public class ChatAppMsgAdapter extends RecyclerView.Adapter<ChatAppMsgAdapter.Ch
 
         public void selectImage() {
 //            if (isSelected) {
-            msgDtoList.get(getAdapterPosition()).setSelected(!msgDtoList.get(getAdapterPosition()).isSelected());
-            parentLayout.setBackgroundColor(msgDtoList.get(getAdapterPosition()).isSelected() ? Color.GRAY : Color.TRANSPARENT);
-            if (msgDtoList.get(getAdapterPosition()).isSelected()) {
+//            msgDtoList.get(getAdapterPosition()).setSelected(!msgDtoList.get(getAdapterPosition()).isSelected());
+
+            if (!msgDtoList.get(getAdapterPosition()).isSelected()) {
+                msgDtoList.get(getAdapterPosition()).setSelected(true);
                 selectedMessageList.add(msgDtoList.get(getAdapterPosition()));
+                notifyDataSetChanged();
+//                parentLayout.setBackgroundColor( Color.GRAY );
                 itemSelectedListner.onItemSelected(selectedMessageList);
             } else {
+                msgDtoList.get(getAdapterPosition()).setSelected(false);
                 selectedMessageList.remove(msgDtoList.get(getAdapterPosition()));
+                notifyDataSetChanged();
+//                parentLayout.setBackgroundColor( Color.TRANSPARENT);
                 itemSelectedListner.onItemSelected(selectedMessageList);
             }
+
+
+            if (selectedMessageList.size()>=1)
+            isSelected=true;
+            else
+                isSelected=false;
         }
+
 //        }
     }
 
     public interface ItemSelectedListner {
-        public void onItemSelected(List<ChatMessage> list);
+        public void onItemSelected(ArrayList<ChatMessage> list);
 
     }
 

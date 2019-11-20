@@ -70,7 +70,8 @@
         <activity android:name=".view.ChatActivity"
             android:windowSoftInputMode="stateHidden"/>
         <activity android:name=".view.ChatUserActivity" />
-        <activity android:name=".view.fragments.UserFragment" />
+        <activity android:name=".view.fragments.UserFragment"
+            android:launchMode="singleTask"/>
         <activity android:name=".view.fragments.ContactsFragment" />
         <activity
             android:name="com.theartofdev.edmodo.cropper.CropImageActivity"

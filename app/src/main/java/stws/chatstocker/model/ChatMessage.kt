@@ -1,7 +1,26 @@
 package stws.chatstocker.model
 
-class  ChatMessage {
-     var msg:String=""
+import android.os.Parcel
+import android.os.Parcelable
+
+class  ChatMessage :Parcelable {
+    override fun writeToParcel(dest: Parcel?, flags: Int) {
+        dest!!.writeString(msg)
+        dest!!.writeString(seen)
+        dest!!.writeString(type)
+        dest!!.writeString(from)
+        dest!!.writeString(to)
+        dest!!.writeString(deletedFrom)
+        dest!!.writeString(senderName)
+        dest.writeByte(if (isSelected) 1 else 0)
+        dest!!.writeString(date)
+    }
+
+    override fun describeContents(): Int {
+        return 0
+    }
+
+    var msg:String=""
      var seen:String=""
      var type:String=""
      var from:String=""
@@ -33,6 +52,19 @@ class  ChatMessage {
             field=value
         }
         get() =field
+
+    constructor(parcel: Parcel) : this() {
+        msg = parcel.readString()!!
+        seen = parcel.readString()!!
+        type = parcel.readString()!!
+        from = parcel.readString()!!
+        to = parcel.readString()!!
+        deletedFrom = parcel.readString()!!
+        senderName = parcel.readString()!!
+        isSelected = parcel.readByte() != 0.toByte()
+        date = parcel.readString()!!
+    }
+
     constructor( ) {
         //code
     }
@@ -49,6 +81,16 @@ class  ChatMessage {
         this.isSelected=isSelected
         this.senderName=senderName
 //        this.istoDeleted=istoDeleted
+    }
+
+    companion object CREATOR : Parcelable.Creator<ChatMessage> {
+        override fun createFromParcel(parcel: Parcel): ChatMessage {
+            return ChatMessage(parcel)
+        }
+
+        override fun newArray(size: Int): Array<ChatMessage?> {
+            return arrayOfNulls(size)
+        }
     }
 
 }

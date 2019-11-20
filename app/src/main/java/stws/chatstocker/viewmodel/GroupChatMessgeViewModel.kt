@@ -13,6 +13,7 @@ import com.android.volley.Response
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
 import com.bumptech.glide.Glide
+import com.google.android.gms.tasks.OnSuccessListener
 import com.google.firebase.database.*
 import org.json.JSONObject
 import stws.chatstocker.ConstantsValues
@@ -63,6 +64,7 @@ class GroupChatMessgeViewModel:ViewModel() {
             field = value
         }
         get() = field
+
     var name: String = ""
         get() = field
         set(value) {
@@ -113,7 +115,37 @@ class GroupChatMessgeViewModel:ViewModel() {
         if (message.length > 0)
             sendMessageClick(view)
     }
+    fun forwardMessage(chatMessage: ChatMessage,context: Context) {
+        isCleared=false
 
+        var databaseReference = FirebaseDatabase.getInstance().reference
+        val date = Calendar.getInstance().timeInMillis.toString();
+//        val chat = ChatMessage(message, "flase", "text", senderUid, date,groupUid,"",false,name)
+
+        getAllGroupUser(groupUid,context,chatMessage.msg)
+        onchatMessageSendResponse!!.postValue(chatMessage)
+        sendMessageEventListener=object : ValueEventListener {
+            override fun onCancelled(p0: DatabaseError) {
+
+            }
+
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                if (isCleared)
+                    return
+                Log.e(TAG, "sendMessageToFirebaseUser: success")
+                databaseReference.child("chat_room")
+                        .child(groupUid)
+                        .child(date)
+                        .setValue(chatMessage)
+
+            }
+
+        }
+        databaseReference.child("chat_room")
+                .ref
+                .addListenerForSingleValueEvent(sendMessageEventListener!!)
+
+    }
     private fun sendMessageClick(view: View) {
         isCleared=false
 //        if (isBlocked) {

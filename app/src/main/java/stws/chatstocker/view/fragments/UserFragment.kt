@@ -22,6 +22,7 @@ import kotlinx.android.synthetic.main.user_action_bar.*
 import stws.chatstocker.ConstantsValues
 import stws.chatstocker.R
 import stws.chatstocker.databinding.ActivityUserBinding
+import stws.chatstocker.model.ChatMessage
 import stws.chatstocker.model.FileDetails
 import stws.chatstocker.model.LoginResponse
 import stws.chatstocker.model.User
@@ -42,6 +43,7 @@ class UserFragment : BaseActivity() {
     private val mauth: FirebaseAuth? = null
     private lateinit var loginResponse: LoginResponse
     private var fileUrl: ArrayList<File>? = null
+    private var urlList: ArrayList<ChatMessage>? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         actviUserBinding = DataBindingUtil.inflate(layoutInflater, R.layout.activity_user, frameLayout, true)
@@ -55,14 +57,16 @@ class UserFragment : BaseActivity() {
         recyclerView.layoutManager = LinearLayoutManager(this)
         if (intent.getSerializableExtra(ConstantsValues.KEY_FILE_LIST) != null)
             fileUrl = intent.getSerializableExtra(ConstantsValues.KEY_FILE_LIST) as ArrayList<File>?
-
-
+        else if (intent.getSerializableExtra(ConstantsValues.KEY_URL_LIST) != null)
+            urlList = intent.getParcelableArrayListExtra<ChatMessage>(ConstantsValues.KEY_URL_LIST)
         userAdapter = UserAdapter(this@UserFragment, userList)
         viewModel.userList(this)!!.observe(this, Observer<ArrayList<User>> { users ->
             userList.addAll(users)
 
-            if (fileUrl!=null)
-            userAdapter.setExternalFileUrl(fileUrl!!)
+            if (fileUrl != null)
+                userAdapter.setExternalFileUrl(fileUrl!!)
+            else if (urlList != null)
+                userAdapter.setForwardingUrl(urlList!!)
             recyclerView.adapter = userAdapter
         })
         viewModel.getGroupList(this)
@@ -110,6 +114,16 @@ class UserFragment : BaseActivity() {
         //update recyclerview
         userAdapter.updateList(temp);
     }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        if (intent!!.getSerializableExtra(ConstantsValues.KEY_URL_LIST) != null) {
+            urlList = intent.getParcelableArrayListExtra<ChatMessage>(ConstantsValues.KEY_URL_LIST)
+            userAdapter.setForwardingUrl(urlList!!)
+        }
+        userAdapter.notifyDataSetChanged()
+    }
+
 
     override fun onStart() {
         super.onStart()

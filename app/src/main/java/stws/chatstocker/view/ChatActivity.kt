@@ -52,6 +52,7 @@ import stws.chatstocker.utils.GetRealPathUtil
 import stws.chatstocker.utils.Prefrences
 import stws.chatstocker.view.adapter.ChatAdapter
 import stws.chatstocker.view.adapter.ChatAppMsgAdapter
+import stws.chatstocker.view.fragments.UserFragment
 import stws.chatstocker.viewmodel.ChatMessageViewModel
 import java.io.File
 import java.io.IOException
@@ -61,13 +62,15 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 class ChatActivity : AppCompatActivity(), ConstantsValues, ChatAppMsgAdapter.ItemSelectedListner {
-    override fun onItemSelected(selectedList: MutableList<ChatMessage>?) {
+    override fun onItemSelected(selectedList: ArrayList<ChatMessage>?) {
         if (selectedList!!.size > 0) {
             imgMore.visibility = View.GONE
             imgDelete.visibility = View.VISIBLE
+            imgSend.visibility=View.VISIBLE
         } else {
             imgMore.visibility = View.VISIBLE
             imgDelete.visibility = View.GONE
+            imgSend.visibility=View.GONE
         }
         imgDelete.setOnClickListener(View.OnClickListener {
             for (i in 0 until selectedList.size) {
@@ -77,6 +80,22 @@ class ChatActivity : AppCompatActivity(), ConstantsValues, ChatAppMsgAdapter.Ite
             viewmodel.clearChat(selectedList, myUserId!!, room_type)
             adapter.selectedMessageList.clear()
         })
+        imgSend.setOnClickListener(View.OnClickListener {
+
+            for (i in 0 until selectedList.size) {
+                selectedList.get(i).isSelected=false
+                selectedList.get(i).from=Prefrences.getUserUid(this)!!
+            }
+//            if (filelist.size>0) {
+                val intent = Intent(this, UserFragment::class.java)
+                intent.putParcelableArrayListExtra(KEY_URL_LIST, selectedList!!)
+//                intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
+                startActivity(intent)
+                finish()
+//            }
+        }
+           )
+
     }
 
     private lateinit var chatActivityChatBinding: ActivityChatBinding
@@ -103,6 +122,7 @@ class ChatActivity : AppCompatActivity(), ConstantsValues, ChatAppMsgAdapter.Ite
     lateinit var viewmodel: ChatMessageViewModel
     lateinit var imgMore: ImageView
     lateinit var imgDelete: ImageView
+    lateinit var imgSend: ImageView
     lateinit var recordView: RecordView
     lateinit var recordButton: RecordButton
     lateinit var audioRecordingView: AudioRecordView
@@ -117,6 +137,7 @@ class ChatActivity : AppCompatActivity(), ConstantsValues, ChatAppMsgAdapter.Ite
         scoresRef.keepSynced(true)
 
         imgDelete = chatActivityChatBinding.include.imgDelete
+        imgSend= chatActivityChatBinding.include.imgSend
         imgMore = chatActivityChatBinding.include.imgMore
         chatList = java.util.ArrayList()
         otherUId = intent.getParcelableExtra(KEYOTHER_UID)
@@ -173,6 +194,7 @@ class ChatActivity : AppCompatActivity(), ConstantsValues, ChatAppMsgAdapter.Ite
 //         popup = PopupMenu(this, chatActivityChatBinding.include.imgMore);
         Handler().postDelayed(Runnable {
             checkifFilesentFromExternal()
+            checkifForwardingUrl()
         }, 1000)
 
         audioRecordingView.sendView.setOnClickListener(View.OnClickListener {
@@ -270,6 +292,17 @@ class ChatActivity : AppCompatActivity(), ConstantsValues, ChatAppMsgAdapter.Ite
                 sendFile(myUserId, otherUId.uid, null
                         , intent.getSerializableExtra(KEY_FILE_URL) as ArrayList<File>?, i)
             intent.putExtra(KEY_FILE_URL, "")
+        }
+    }
+
+    fun checkifForwardingUrl() {
+        if (intent.getParcelableArrayListExtra<ChatMessage>(KEY_URL_LIST) != null) {
+            val list = intent.getParcelableArrayListExtra<ChatMessage>(KEY_URL_LIST)
+            for (i in 0 until list!!.size) {
+                viewmodel.room_type=room_type;
+                viewmodel.forwardMessage(list.get(i),this)
+            }
+//            intent.putExtra(KEY_FILE_URL, "")
         }
     }
 

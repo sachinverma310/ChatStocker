@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import stws.chatstocker.R
 import stws.chatstocker.databinding.UserListBinding
+import stws.chatstocker.model.ChatMessage
 import stws.chatstocker.model.FileDetails
 import stws.chatstocker.model.User
 import stws.chatstocker.viewmodel.HomeViewModel
@@ -20,6 +21,7 @@ import java.io.File
 class UserAdapter(val context: Context, var userList: ArrayList<User>) : RecyclerView.Adapter<UserAdapter.MyViewHolder>() {
     private lateinit var userListBinding: UserListBinding;
     public var url: ArrayList<File>? = null
+    var forwardingurl: ArrayList<ChatMessage>? = null
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         userListBinding = DataBindingUtil.inflate(LayoutInflater.from(parent.context), R.layout.user_list, parent, false)
         return MyViewHolder(userListBinding)
@@ -47,6 +49,9 @@ class UserAdapter(val context: Context, var userList: ArrayList<User>) : Recycle
     fun setExternalFileUrl(url: ArrayList<File>) {
         this.url = url
     }
+    fun setForwardingUrl(forwardingurl:ArrayList<ChatMessage>){
+        this.forwardingurl=forwardingurl
+    }
 
     inner class MyViewHolder(val userListBinding: UserListBinding) : RecyclerView.ViewHolder(userListBinding.root) {
         val imageView = userListBinding.imgUserPic
@@ -56,6 +61,9 @@ class UserAdapter(val context: Context, var userList: ArrayList<User>) : Recycle
             userListBinding.setViewModel(UserListDetailsViewModel(user))
             if ( url!=null)
             userListBinding?.viewModel?.externalUrl = url!!
+            else if (forwardingurl!=null)
+                userListBinding?.viewModel?.forwardingurl = forwardingurl!!
+
 //            } else
 //                userListBinding!!.viewModel!!.user = user
         }

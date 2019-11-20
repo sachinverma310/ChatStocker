@@ -12,6 +12,7 @@ import com.bumptech.glide.request.RequestOptions
 import com.ceylonlabs.imageviewpopup.ImagePopup
 import stws.chatstocker.ConstantsValues
 import stws.chatstocker.ConstantsValues.*
+import stws.chatstocker.model.ChatMessage
 import stws.chatstocker.model.FileDetails
 import stws.chatstocker.model.User
 import stws.chatstocker.utils.Prefrences
@@ -38,6 +39,12 @@ class UserListDetailsViewModel(user: User) : ViewModel(), ConstantsValues {
         set(value) {
             field = value
         }
+    var forwardingurl:ArrayList<ChatMessage>?=null
+        get() = field
+        set(value) {
+            field = value
+        }
+
     //    set(value) {
 //        field=value
 //    }
@@ -64,6 +71,7 @@ class UserListDetailsViewModel(user: User) : ViewModel(), ConstantsValues {
             val intent = Intent(view.context, GroupChatActivtiy::class.java)
             intent.putExtra(KEYOTHER_UID, user)
             intent.putExtra(KEY_FILE_URL, externalUrl)
+            intent.putExtra(KEY_URL_LIST,forwardingurl)
             view.context.startActivity(intent)
             if (externalUrl!=null)
                 (view.context as AppCompatActivity).finish()
@@ -72,6 +80,7 @@ class UserListDetailsViewModel(user: User) : ViewModel(), ConstantsValues {
             val intent = Intent(view.context, ChatActivity::class.java)
             intent.putExtra(KEYOTHER_UID, user)
             intent.putExtra(KEY_FILE_URL,externalUrl)
+            intent.putExtra(KEY_URL_LIST,forwardingurl)
             view.context.startActivity(intent)
             if (externalUrl!=null)
                 (view.context as AppCompatActivity).finish()
