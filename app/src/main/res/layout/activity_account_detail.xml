@@ -15,6 +15,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
+        android:visibility="gone"
         android:layout_height="wrap_content">
 
         <ImageView
@@ -23,7 +24,7 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp"
-            android:src="@drawable/sethelp" />
+            android:src="@drawable/setaccount" />
 
         <TextView
             android:id="@+id/tvAccount"
@@ -41,6 +42,7 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_marginStart="8dp"
+        android:visibility="gone"
         android:layout_marginEnd="8dp"
         android:alpha=".5"
         android:background="@color/gray" />
@@ -87,7 +89,7 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp"
-            android:src="@drawable/sethelp" />
+            android:src="@drawable/app_info" />
 
         <TextView
             android:id="@+id/tvAppInfo"
@@ -120,7 +122,7 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp"
-            android:src="@drawable/sethelp" />
+            android:src="@drawable/delete_account" />
 
         <TextView
             android:id="@+id/tvDeleteAccount"
