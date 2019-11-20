@@ -1,6 +1,7 @@
 package stws.chatstocker.view
 
 import android.os.Bundle
+import android.view.MenuItem
 import android.view.View
 import android.widget.ImageView
 import android.widget.RadioButton
@@ -11,7 +12,7 @@ import stws.chatstocker.R
 import stws.chatstocker.databinding.ActivityFullscreenImageBinding
 import stws.chatstocker.databinding.ActivityNotificationBinding
 
-class NotificationActivity: AppCompatActivity(),View.OnClickListener {
+class NotificationActivity : AppCompatActivity(), View.OnClickListener {
 
     lateinit var vibrate: RadioButton
     lateinit var silent: RadioButton
@@ -22,17 +23,24 @@ class NotificationActivity: AppCompatActivity(),View.OnClickListener {
         activityFullscreenImageBinding = DataBindingUtil.setContentView(this, R.layout.activity_notification)
 
 
+        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId==android.R.id.home)
+            super.onBackPressed()
+        return super.onOptionsItemSelected(item)
     }
 
     override fun onClick(v: View?) {
-        when(v!!.id){
-            R.id.vibrateRadio->{
-vibrate.isChecked=true;
+        when (v!!.id) {
+            R.id.vibrateRadio -> {
+                vibrate.isChecked = true;
             }
-            R.id.silentRadio->{
+            R.id.silentRadio -> {
 
             }
-            R.id.toneRadio->{
+            R.id.toneRadio -> {
 
             }
         }

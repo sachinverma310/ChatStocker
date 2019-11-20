@@ -27,11 +27,11 @@ class SettingActivity : BaseActivity() {
     fun account(view: View){
 //        client.signOut().addOnSuccessListener(OnSuccessListener<Void> {
             startActivity(Intent(this, AccountActvity::class.java))
-            finishAffinity()
+//            finishAffinity()
 
     }
     fun notification(view: View){
         startActivity(Intent(this, NotificationActivity::class.java))
-        finishAffinity()
+//        finishAffinity()
     }
 }
