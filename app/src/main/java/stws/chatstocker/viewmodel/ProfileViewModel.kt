@@ -33,33 +33,33 @@ class ProfileViewModel() : ViewModel() {
 //
 //    }
     fun onProfileClick(view: View) {
-        val imagePopup =  ImagePopup(view.context);
-        imagePopup.setWindowHeight(500); // Optional
-        imagePopup.setWindowWidth(500); // Optional
-        imagePopup.setBackgroundColor(Color.BLACK);  // Optional
-        imagePopup.setFullScreen(true); // Optional
-        imagePopup.setHideCloseIcon(true);  // Optional
-        imagePopup.setImageOnClickClose(true);
-        try {
-            imagePopup.initiatePopupWithGlide(Prefrences.getUserDetails(view.context, ConstantsValues.KEY_LOGIN_DATA).profile)
-        } catch (e: IOException) {
-            e.printStackTrace()
-        } catch (e: ClassNotFoundException) {
-            e.printStackTrace()
-        }
-
-        imagePopup.viewPopup()
-//        val intent = Intent(view.context, FullProfilePicViewrActivity::class.java)
-//        intent.putExtra(ConstantsValues.KEY_USER_ID, "")
+//        val imagePopup =  ImagePopup(view.context);
+//        imagePopup.setWindowHeight(500); // Optional
+//        imagePopup.setWindowWidth(500); // Optional
+//        imagePopup.setBackgroundColor(Color.BLACK);  // Optional
+//        imagePopup.setFullScreen(true); // Optional
+//        imagePopup.setHideCloseIcon(true);  // Optional
+//        imagePopup.setImageOnClickClose(true);
 //        try {
-//            intent.putExtra(ConstantsValues.KEY_FILE_URL, Prefrences.getUserDetails(view.context, ConstantsValues.KEY_LOGIN_DATA).profile)
+//            imagePopup.initiatePopupWithGlide(Prefrences.getUserDetails(view.context, ConstantsValues.KEY_LOGIN_DATA).profile)
 //        } catch (e: IOException) {
 //            e.printStackTrace()
 //        } catch (e: ClassNotFoundException) {
 //            e.printStackTrace()
 //        }
 //
-//        view.context.startActivity(intent)
+//        imagePopup.viewPopup()
+        val intent = Intent(view.context, FullProfilePicViewrActivity::class.java)
+        intent.putExtra(ConstantsValues.KEY_USER_ID, "")
+        try {
+            intent.putExtra(ConstantsValues.KEY_FILE_URL, Prefrences.getUserDetails(view.context, ConstantsValues.KEY_LOGIN_DATA).profile)
+        } catch (e: IOException) {
+            e.printStackTrace()
+        } catch (e: ClassNotFoundException) {
+            e.printStackTrace()
+        }
+
+        view.context.startActivity(intent)
 
     }
 }

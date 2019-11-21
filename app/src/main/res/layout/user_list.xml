@@ -42,7 +42,7 @@
                 android:layout_height="18dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="8dp"
-                android:visibility="@{viewModel.online? View.VISIBLE : View.GONE}"
+                android:visibility="@{viewModel.online? View.VISIBLE : View.INVISIBLE}"
                 android:layout_marginRight="8dp"
                 android:src="@drawable/online_dot"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -50,7 +50,7 @@
             <ImageView
 
                 android:id="@+id/imgOffline"
-                android:visibility="@{viewModel.online? View.GONE : View.VISIBLE}"
+                android:visibility="@{viewModel.online? View.INVISIBLE : View.VISIBLE}"
                 android:layout_width="18dp"
                 android:layout_height="18dp"
                 android:layout_marginTop="8dp"
@@ -87,7 +87,7 @@
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="8dp"
                 android:layout_marginRight="8dp"
-                android:text="@{viewModel.lastSeen}"
+                android:text="@{viewModel.convertMillistoTime()}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/imgOnline" />
 

@@ -1,6 +1,7 @@
 package stws.chatstocker.viewmodel
 
 import android.content.DialogInterface
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -11,6 +12,9 @@ import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import stws.chatstocker.ConstantsValues
 import stws.chatstocker.utils.Prefrences
+
+import java.io.File
+
 
 class AccountDetailsViewModel:ViewModel() {
     fun deleteAccount(view:View){
@@ -35,8 +39,36 @@ class AccountDetailsViewModel:ViewModel() {
 //                    })
                     val user = FirebaseAuth.getInstance().currentUser
                     user!!.delete()
+                    clearApplicationData(view)
+
                     (view.context as AppCompatActivity).finishAffinity()
                 })
                 .setNegativeButton(android.R.string.no, null).show()
+    }
+    fun clearApplicationData(view: View) {
+        val cache = view.context.cacheDir
+        val appDir = File(cache.getParent())
+        if (appDir.exists()) {
+            val children = appDir.list()
+            for (s in children) {
+                if (s != "lib") {
+                    deleteDir(File(appDir, s))
+                    Log.i("TAG", "File /data/data/APP_PACKAGE/$s DELETED")
+                }
+            }
+        }
+    }
+    fun deleteDir(dir: File?): Boolean {
+        if (dir != null && dir.isDirectory) {
+            val children = dir.list()
+            for (i in children!!.indices) {
+                val success = deleteDir(File(dir, children[i]))
+                if (!success) {
+                    return false
+                }
+            }
+        }
+
+        return dir!!.delete()
     }
 }

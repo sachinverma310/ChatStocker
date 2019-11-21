@@ -13,11 +13,10 @@
         android:layout_height="match_parent"
         tools:context=".view.FullscreenImageActivity">
 
-        <ImageView
+        <stws.chatstocker.utils.TouchImageView
             android:id="@+id/imageView"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-
+            android:layout_height="match_parent"
             android:adjustViewBounds="true"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"

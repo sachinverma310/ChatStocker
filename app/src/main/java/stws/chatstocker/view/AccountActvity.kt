@@ -19,6 +19,7 @@ class AccountActvity: AppCompatActivity() {
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         val viewModel=ViewModelProviders.of(this).get(AccountDetailsViewModel::class.java)
         activityFullscreenImageBinding.viewModel=viewModel
+        setTitle("Account Settings")
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

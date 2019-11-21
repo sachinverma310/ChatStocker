@@ -15,12 +15,14 @@ import stws.chatstocker.ConstantsValues.*
 import stws.chatstocker.model.ChatMessage
 import stws.chatstocker.model.FileDetails
 import stws.chatstocker.model.User
+import stws.chatstocker.utils.DateTimeUtils
 import stws.chatstocker.utils.Prefrences
 import stws.chatstocker.view.ChatActivity
 import stws.chatstocker.view.FullProfilePicViewrActivity
 import stws.chatstocker.view.GroupChatActivtiy
 import java.io.File
 import java.io.IOException
+import java.lang.Exception
 
 class UserListDetailsViewModel(user: User) : ViewModel(), ConstantsValues {
     var user: User? = user
@@ -86,7 +88,18 @@ class UserListDetailsViewModel(user: User) : ViewModel(), ConstantsValues {
                 (view.context as AppCompatActivity).finish()
         }
     }
+    fun convertMillistoTime():String{
+        try {
+            lastSeen!!.toLong()
+            val date= DateTimeUtils.convertDateTimetoDay(lastSeen!!.toLong() ,"yyyy-MM-dd hh:mm")
+            return date;
+        }
+        catch (e: Exception){
+            return lastSeen!!
+        }
 
+
+    }
 fun profilePicClick(view: View){
     val imagePopup =  ImagePopup(view.context);
     imagePopup.setWindowHeight(500); // Optional

@@ -66,11 +66,11 @@ class ChatActivity : AppCompatActivity(), ConstantsValues, ChatAppMsgAdapter.Ite
         if (selectedList!!.size > 0) {
             imgMore.visibility = View.GONE
             imgDelete.visibility = View.VISIBLE
-            imgSend.visibility=View.VISIBLE
+            imgSend.visibility = View.VISIBLE
         } else {
             imgMore.visibility = View.VISIBLE
             imgDelete.visibility = View.GONE
-            imgSend.visibility=View.GONE
+            imgSend.visibility = View.GONE
         }
         imgDelete.setOnClickListener(View.OnClickListener {
             for (i in 0 until selectedList.size) {
@@ -83,18 +83,18 @@ class ChatActivity : AppCompatActivity(), ConstantsValues, ChatAppMsgAdapter.Ite
         imgSend.setOnClickListener(View.OnClickListener {
 
             for (i in 0 until selectedList.size) {
-                selectedList.get(i).isSelected=false
-                selectedList.get(i).from=Prefrences.getUserUid(this)!!
+                selectedList.get(i).isSelected = false
+                selectedList.get(i).from = Prefrences.getUserUid(this)!!
             }
 //            if (filelist.size>0) {
-                val intent = Intent(this, UserFragment::class.java)
-                intent.putParcelableArrayListExtra(KEY_URL_LIST, selectedList!!)
+            val intent = Intent(this, UserFragment::class.java)
+            intent.putParcelableArrayListExtra(KEY_URL_LIST, selectedList!!)
 //                intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
-                startActivity(intent)
-                finish()
+            startActivity(intent)
+            finish()
 //            }
         }
-           )
+        )
 
     }
 
@@ -137,7 +137,7 @@ class ChatActivity : AppCompatActivity(), ConstantsValues, ChatAppMsgAdapter.Ite
         scoresRef.keepSynced(true)
 
         imgDelete = chatActivityChatBinding.include.imgDelete
-        imgSend= chatActivityChatBinding.include.imgSend
+        imgSend = chatActivityChatBinding.include.imgSend
         imgMore = chatActivityChatBinding.include.imgMore
         chatList = java.util.ArrayList()
         otherUId = intent.getParcelableExtra(KEYOTHER_UID)
@@ -217,22 +217,22 @@ class ChatActivity : AppCompatActivity(), ConstantsValues, ChatAppMsgAdapter.Ite
                 fileName = "$file" + File.separator + "Audio_" + timeStamp + "." + "mp3"
 //                if (audioRecordingView.timeText.text.length>0)
                 startRecording()
-                Log.e("rec","start")
+                Log.e("rec", "start")
             }
 
             override fun onRecordingLocked() {
 //            startRecording()
-                Log.e("rec","locked")
+                Log.e("rec", "locked")
             }
 
             override fun onRecordingCompleted() {
 //                if (audioRecordingView.timeText.text.length>0)
-               stopRecording()
-                Log.e("rec","comp")
+                stopRecording()
+                Log.e("rec", "comp")
             }
 
             override fun onRecordingCanceled() {
-               Log.e("rec","cancled")
+                Log.e("rec", "cancled")
             }
 
         })
@@ -245,9 +245,9 @@ class ChatActivity : AppCompatActivity(), ConstantsValues, ChatAppMsgAdapter.Ite
             try {
 
 
-            stop()
-            release()
-            val from = File(file, "Audio_" + timeStamp + ".mp3")
+                stop()
+                release()
+                val from = File(file, "Audio_" + timeStamp + ".mp3")
 //            var to: File? = null
 //            if (userInput.length() > 0)
 //                to = File(file, userInput.text.toString() + ".mp3")
@@ -257,11 +257,11 @@ class ChatActivity : AppCompatActivity(), ConstantsValues, ChatAppMsgAdapter.Ite
 //                from.renameTo(to);
 //            GetAllFiles(this@ChatActivity, "Chat Stocker audio", BaseActivity.mDriveServiceHelper, BaseActivity.mDriveService, from, "audio/mpeg").execute()
 //            openeRenameDialog()
-            var listFile: ArrayList<File> = ArrayList()
-            listFile.add(from)
-            sendFile(Prefrences.Companion.getUserUid(this@ChatActivity), otherUId.uid, Uri.fromFile(from), listFile, 0)
-            }catch (e:Exception){
-                Log.e("exception",e.message)
+                var listFile: ArrayList<File> = ArrayList()
+                listFile.add(from)
+                sendFile(Prefrences.Companion.getUserUid(this@ChatActivity), otherUId.uid, Uri.fromFile(from), listFile, 0)
+            } catch (e: Exception) {
+                Log.e("exception", e.message)
             }
         }
 
@@ -299,8 +299,8 @@ class ChatActivity : AppCompatActivity(), ConstantsValues, ChatAppMsgAdapter.Ite
         if (intent.getParcelableArrayListExtra<ChatMessage>(KEY_URL_LIST) != null) {
             val list = intent.getParcelableArrayListExtra<ChatMessage>(KEY_URL_LIST)
             for (i in 0 until list!!.size) {
-                viewmodel.room_type=room_type;
-                viewmodel.forwardMessage(list.get(i),this)
+                viewmodel.room_type = room_type;
+                viewmodel.forwardMessage(list.get(i), this)
             }
 //            intent.putExtra(KEY_FILE_URL, "")
         }
@@ -385,136 +385,142 @@ class ChatActivity : AppCompatActivity(), ConstantsValues, ChatAppMsgAdapter.Ite
 
                     override fun onDataChange(dataSnapshot: DataSnapshot) {
                         if (dataSnapshot.hasChild(room_type_1)) {
-                            viewmodel.room_type="1"
+                            viewmodel.room_type = "1"
                             room_type = room_type_1
 
                             FirebaseDatabase.getInstance().reference.child("chat_room").child(room_type_1).addChildEventListener(object : ChildEventListener {
                                 override fun onChildAdded(dataSnapshot: DataSnapshot, s: String?) {
 
-                                    if (dataSnapshot.value != null) {
-                                        if (!dataSnapshot.hasChild(myUserId!!)) {
+                                    updateChatLayout(dataSnapshot)
+                                }
 
-                                            val chatMessage = dataSnapshot.getValue(ChatMessage::class.java!!)
-                                            chatMessage!!.date = dataSnapshot.key.toString()
-                                            chatMessage.isSent = true
-                                            if (!dataSnapshot.hasChild("now")) {
-                                                list.add(chatMessage)
-                                                scrollChatLayouttoBottom()
-                                            }
-//                                            if (list.size > 0) {
-//                                                if (!list.get(adapter.itemCount - 1).date.equals(chatMessage.date)) {
-//                                                    list.add(chatMessage)
-//                                                    scrollChatLayouttoBottom()
-//                                                }
-//                                            }
-                                            else if (dataSnapshot.hasChild("now")) {
-                                                val isNow = dataSnapshot.child("now").getValue();
-                                                if (!isNow!!.equals(dataSnapshot.key.toString())) {
-                                                    list.add(chatMessage)
-                                                    scrollChatLayouttoBottom()
+                                override fun onCancelled(p0: DatabaseError) {
+                                    Log.e("str", p0.message)
+                                }
 
-                                                }
-                                                databaseReference.child("chat_room").child(room_type)
-                                                        .child(dataSnapshot.key.toString()).child("now").removeValue()
-                                            }
-                                        }
-//                                        adapter = ChatAdapter(this@ChatActivity, list)
-//                                        adapter.addMessage(chatMessage)
+                                override fun onChildMoved(p0: DataSnapshot, p1: String?) {
+                                    Log.e("strp1", p1)
+                                }
 
-
-                                        editText.messageView.setText("")
-//                                                recyclerView.scrollToPosition(list.size-1);
+                                override fun onChildChanged(p0: DataSnapshot, p1: String?) {
+                                    if (p0.child("sentToserver").getValue() as Boolean) {
+                                        list.get(list.size - 1).isSentToserver = p0.child("sentToserver").getValue() as Boolean
+                                        adapter.notifyDataSetChanged()
                                     }
+                                    Log.e("strp2", p0.child("sentToserver").getValue().toString())
+                                    Log.e("strp2", p0.child("seen").getValue().toString())
                                 }
 
-                                override fun onChildChanged(dataSnapshot: DataSnapshot, s: String?) {
 
-                                }
-
-                                override fun onChildRemoved(dataSnapshot: DataSnapshot) {
-
-                                }
-
-                                override fun onChildMoved(dataSnapshot: DataSnapshot, s: String?) {
-
-                                }
-
-                                override fun onCancelled(databaseError: DatabaseError) {
-
+                                override fun onChildRemoved(p0: DataSnapshot) {
+                                    Log.e("strp4", p0.key)
                                 }
                             })
                         } else if (dataSnapshot.hasChild(room_type_2)) {
                             room_type = room_type_2
-                            viewmodel.room_type="2"
+                            viewmodel.room_type = "2"
                             FirebaseDatabase.getInstance().reference.child("chat_room").child(room_type_2).addChildEventListener(object : ChildEventListener {
                                 override fun onChildAdded(dataSnapshot: DataSnapshot, s: String?) {
-                                    if (dataSnapshot.value != null) {
-                                        if (!dataSnapshot.hasChild(myUserId!!)) {
-                                            val chatMessage = dataSnapshot.getValue(ChatMessage::class.java!!)
-                                            chatMessage!!.date = dataSnapshot.key.toString()
-                                            chatMessage.isSent = true
-                                            if (!dataSnapshot.hasChild("now")) {
-                                                list.add(chatMessage)
-                                                scrollChatLayouttoBottom()
-                                            }
+                                    updateChatLayout(dataSnapshot)
+                                }
+
+                                override fun onCancelled(p0: DatabaseError) {
+                                    Log.e("str", p0.message)
+                                }
+
+                                override fun onChildMoved(p0: DataSnapshot, p1: String?) {
+                                    Log.e("strp1", p1)
+                                }
+
+                                override fun onChildChanged(p0: DataSnapshot, p1: String?) {
+                                    if (p0.child("sentToserver").getValue() as Boolean) {
+                                        list.get(list.size - 1).isSentToserver = p0.child("sentToserver").getValue() as Boolean
+                                        adapter.notifyDataSetChanged()
+                                    }
+                                    Log.e("strp2", p0.child("sentToserver").getValue().toString())
+                                    Log.e("strp2", p0.child("seen").getValue().toString())
+
+                                }
+
+
+                                override fun onChildRemoved(p0: DataSnapshot) {
+                                    Log.e("strp4", p0.key)
+                                }
+                            })
+                        } else {
+                            room_type = room_type_1
+                            viewmodel.room_type = "1"
+                            FirebaseDatabase.getInstance().reference.child("chat_room").child(room_type_1).addChildEventListener(object : ChildEventListener {
+                                override fun onChildAdded(dataSnapshot: DataSnapshot, s: String?) {
+                                    updateChatLayout(dataSnapshot)
+                                }
+
+                                override fun onCancelled(p0: DatabaseError) {
+                                    Log.e("str", p0.message)
+                                }
+
+                                override fun onChildMoved(p0: DataSnapshot, p1: String?) {
+                                    Log.e("strp1", p1)
+                                }
+
+                                override fun onChildChanged(p0: DataSnapshot, p1: String?) {
+                                    if (p0.child("sentToserver").getValue() as Boolean) {
+                                        list.get(list.size - 1).isSentToserver = p0.child("sentToserver").getValue() as Boolean
+                                        adapter.notifyDataSetChanged()
+                                    }
+                                    Log.e("strp2", p0.child("sentToserver").getValue().toString())
+                                    Log.e("strp2", p0.child("seen").getValue().toString())
+                                }
+
+
+                                override fun onChildRemoved(p0: DataSnapshot) {
+                                    Log.e("strp4", p0.key)
+                                }
+                            })
+                        }
+
+
+                    }
+
+                })
+
+    }
+
+    private fun updateChatLayout(dataSnapshot: DataSnapshot) {
+        if (dataSnapshot.value != null) {
+            if (!dataSnapshot.hasChild(myUserId!!)) {
+
+                val chatMessage = dataSnapshot.getValue(ChatMessage::class.java!!)
+                chatMessage!!.date = dataSnapshot.key.toString()
+                chatMessage.isSent = false
+                if (!dataSnapshot.hasChild("now")) {
+                    list.add(chatMessage)
+                    scrollChatLayouttoBottom()
+                }
 //                                            if (list.size > 0) {
 //                                                if (!list.get(adapter.itemCount - 1).date.equals(chatMessage.date)) {
 //                                                    list.add(chatMessage)
 //                                                    scrollChatLayouttoBottom()
 //                                                }
 //                                            }
-                                            else if (dataSnapshot.hasChild("now")) {
-                                                val isNow = dataSnapshot.child("now").getValue();
-                                                if (!isNow!!.equals(dataSnapshot.key.toString())) {
-                                                    list.add(chatMessage)
+                else if (dataSnapshot.hasChild("now")) {
+                    val isNow = dataSnapshot.child("now").getValue();
+                    if (!isNow!!.equals(dataSnapshot.key.toString())) {
+                        list.add(chatMessage)
+                        scrollChatLayouttoBottom()
 
-                                                    scrollChatLayouttoBottom()
-                                                }
-                                                databaseReference.child("chat_room").child(room_type)
-                                                        .child(dataSnapshot.key.toString()).child("now").removeValue()
-
-                                            }
-                                        }
-//                                        adapter = ChatAdapter(this@ChatActivity, list)
-//                                        adapter.addMessage(chatMessage)
-//                                        val newMsgPosition = list.size - 1;
-//
-//                                        // Notify recycler view insert one new data.
-//                                        adapter.notifyItemInserted(newMsgPosition);
-//
-//                                        // Scroll RecyclerView to the last message.
-//                                        recyclerView.scrollToPosition(newMsgPosition);
-//
-//                                        editText.setText("")
-//                                        recyclerView.scrollToPosition(list.size-1);
-//                                        adapter = ChatAdapter(this@ChatActivity, list)
-//                                        adapter.addMessage(chatMessage)
-//                                        recyclerView.adapter = adapter
-//                                        recyclerView.adapter = adapter
-                                    }
-                                }
-
-                                override fun onChildChanged(dataSnapshot: DataSnapshot, s: String?) {
-
-                                }
-
-                                override fun onChildRemoved(dataSnapshot: DataSnapshot) {
-
-                                }
-
-                                override fun onChildMoved(dataSnapshot: DataSnapshot, s: String?) {
-
-                                }
-
-                                override fun onCancelled(databaseError: DatabaseError) {
-
-                                }
-                            })
-                        }
                     }
+                    FirebaseDatabase.getInstance().reference.child("chat_room").child(room_type)
+                            .child(dataSnapshot.key.toString()).child("now").removeValue()
+                }
+            }
+//                                        adapter = ChatAdapter(this@ChatActivity, list)
+//                                        adapter.addMessage(chatMessage)
 
-                })
 
+            editText.messageView.setText("")
+//                                                recyclerView.scrollToPosition(list.size-1);
+        }
     }
 
     private fun scrollChatLayouttoBottom() {
@@ -623,7 +629,7 @@ class ChatActivity : AppCompatActivity(), ConstantsValues, ChatAppMsgAdapter.Ite
                             .setValue(chat)
 
 
-
+                    viewmodel.sendNotifcationtoUser(Prefrences.getUserDetails(this@ChatActivity, KEY_LOGIN_DATA).name!!,chat.msg,this@ChatActivity,list.get(index).date,room_type)
                     count++
                     /*  databaseReference.child("chat_room")
                               .ref

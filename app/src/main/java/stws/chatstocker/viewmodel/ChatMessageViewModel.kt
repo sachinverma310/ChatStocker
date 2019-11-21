@@ -33,6 +33,8 @@ import com.google.gson.JsonObject
 import org.json.JSONObject
 import stws.chatstocker.ConstantsValues
 import stws.chatstocker.ConstantsValues.SERVER_KEY
+import stws.chatstocker.utils.DateTimeUtils
+import java.lang.Exception
 import kotlin.collections.ArrayList
 
 
@@ -110,7 +112,18 @@ class ChatMessageViewModel : ViewModel() {
         onchatMessageSendResponse = MutableLiveData<ChatMessage>()
         return onchatMessageSendResponse as MutableLiveData<ChatMessage>
     }
+fun convertMillistoTime():String{
+    try {
+        lastSeen.toLong()
+        val date= DateTimeUtils.convertDateTimetoDay(lastSeen.toLong() ,"yyyy-MM-dd hh:mm")
+        return date;
+    }
+    catch (e:Exception){
+        return lastSeen
+    }
 
+
+}
 //    fun getAllChatResponse(): LiveData<ChatMessage> {
 ////        if (onchatSendResponse == null) {
 //        onchatSendResponse = MutableLiveData<ChatMessage>()
@@ -177,6 +190,30 @@ class ChatMessageViewModel : ViewModel() {
                             .child(date)
                             .setValue(chat).addOnSuccessListener(object:OnSuccessListener<Void>{
                                 override fun onSuccess(p0: Void?) {
+//                                    databaseReference.child("chat_room")
+//                                            .child(room_type_1)
+//                                            .child(date).child("sentToserver").addChildEventListener(object :ChildEventListener{
+//                                                override fun onCancelled(p0: DatabaseError) {
+//                                                    Log.e("str",p0.message)
+//                                                }
+//
+//                                                override fun onChildMoved(p0: DataSnapshot, p1: String?) {
+//                                                    Log.e("strp1",p1)
+//                                                }
+//
+//                                                override fun onChildChanged(p0: DataSnapshot, p1: String?) {
+//                                                    Log.e("strp2",p1)
+//                                                }
+//
+//                                                override fun onChildAdded(p0: DataSnapshot, p1: String?) {
+//                                                    Log.e("strp3",p1)
+//                                                }
+//
+//                                                override fun onChildRemoved(p0: DataSnapshot) {
+//                                                    Log.e("strp4",p0.key)
+//                                                }
+//
+//                                            })
                                     sendNotifcationtoUser(receiverName,message,view.context,date,room_type_1)
                                 }
 

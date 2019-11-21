@@ -15,6 +15,7 @@ class SettingActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_setting)
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+        setTitle("Settings")
 
     }
     fun logout(view: View){

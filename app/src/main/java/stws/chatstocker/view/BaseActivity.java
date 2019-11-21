@@ -156,24 +156,24 @@ public abstract class BaseActivity extends AppCompatActivity implements Constant
         imgProfile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                Intent intent =new Intent(BaseActivity.this, FullProfilePicViewrActivity.class);
-//                intent.putExtra(KEY_USER_ID, "");
-//                try {
-//                    intent.putExtra(KEY_FILE_URL,Prefrences.Companion.getUserDetails(BaseActivity.this,KEY_LOGIN_DATA).getProfile());
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                } catch (ClassNotFoundException e) {
-//                    e.printStackTrace();
-//                }
-//               startActivity(intent);
+                Intent intent =new Intent(BaseActivity.this, FullProfilePicViewrActivity.class);
+                intent.putExtra(KEY_USER_ID, "");
                 try {
-                    imagePopup.initiatePopupWithGlide(Prefrences.Companion.getUserDetails(BaseActivity.this,KEY_LOGIN_DATA).getProfile());
+                    intent.putExtra(KEY_FILE_URL,Prefrences.Companion.getUserDetails(BaseActivity.this,KEY_LOGIN_DATA).getProfile());
                 } catch (IOException e) {
                     e.printStackTrace();
                 } catch (ClassNotFoundException e) {
                     e.printStackTrace();
                 }
-                imagePopup.viewPopup();
+               startActivity(intent);
+//                try {
+//                    imagePopup.initiatePopupWithGlide(Prefrences.Companion.getUserDetails(BaseActivity.this,KEY_LOGIN_DATA).getProfile());
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                } catch (ClassNotFoundException e) {
+//                    e.printStackTrace();
+//                }
+//                imagePopup.viewPopup();
             }
         });
         if (this instanceof HomeActivity) {

@@ -4,7 +4,7 @@
     android:id="@+id/parentLayout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/colorPrimary"
+
     android:orientation="vertical"
     android:padding="1dp">
     //start of left_msg_layout
@@ -65,6 +65,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:paddingRight="10dp"
+            android:paddingLeft="10dp"
             android:text="hello"
             android:textColor="@color/colorPrimaryDark"
             android:textSize="18sp"
@@ -75,6 +76,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:paddingLeft="10dp"
             android:paddingRight="10dp" />
 
         <TextView
@@ -85,6 +87,24 @@
             android:paddingLeft="10dp"
             android:text="200"
             android:textColor="@color/black" />
+
+        <ImageView
+            android:id="@+id/imgTickSingle"
+            android:layout_width="24dp"
+            android:layout_height="10dp"
+
+            android:layout_gravity="right"
+            android:src="@drawable/tick"
+            android:visibility="visible"></ImageView>
+
+        <ImageView
+            android:id="@+id/imgTickDouble"
+            android:layout_width="24dp"
+            android:layout_height="10dp"
+
+            android:layout_gravity="right"
+            android:src="@drawable/tick"
+            android:visibility="gone"></ImageView>
     </LinearLayout>
     //end of right_msg_layout
 
@@ -97,8 +117,7 @@
         android:layout_gravity="left"
         android:background="@drawable/image_background"
         android:orientation="vertical"
-        android:visibility="gone"
-       >
+        android:visibility="gone">
 
         <ImageView
             android:id="@+id/imgFileRight"
@@ -115,12 +134,12 @@
 
     //start of left_img_layout
 
-    <RelativeLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/left_img_layout"
         android:layout_width="120dp"
-        android:layout_height="120dp"
+        android:layout_height="wrap_content"
         android:layout_gravity="right"
-        android:background="@drawable/image_background"
+
         android:orientation="vertical"
         android:visibility="gone">
 
@@ -128,26 +147,58 @@
             android:id="@+id/imgFileLeft"
             android:layout_width="120dp"
             android:layout_height="120dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginRight="8dp"
             android:adjustViewBounds="true"
-            android:scaleType="fitXY"></ImageView>
-        <com.app.adprogressbarlib.AdCircleProgress
-            android:layout_centerInParent="true"
-            android:id="@+id/pgb_progress"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:layout_gravity="center"
-            android:backgroundTintMode="multiply"
+            android:scaleType="fitXY"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"></ImageView>
 
-            app:adpgb_finished_color="@color/colorAccent"
-            app:adpgb_unfinished_color="@android:color/white"
+        <com.app.adprogressbarlib.AdCircleProgress
+            android:id="@+id/pgb_progress"
             custom:adpgb_finished_stroke_width="5dp"
             custom:adpgb_inner_drawable="@drawable/ic_close_icon"
             custom:adpgb_show_text="false"
-            custom:adpgb_unfinished_stroke_width="2dp" />
-    </RelativeLayout>
+            custom:adpgb_unfinished_stroke_width="2dp"
+            android:layout_width="60dp"
+
+            android:layout_height="60dp"
+            android:layout_centerInParent="true"
+            android:layout_gravity="center"
+            android:backgroundTintMode="multiply"
+            app:adpgb_finished_color="@color/colorAccent"
+            app:adpgb_unfinished_color="@android:color/white"
+            app:layout_constraintBottom_toBottomOf="@+id/imgFileLeft"
+            app:layout_constraintEnd_toEndOf="@+id/imgFileLeft"
+            app:layout_constraintStart_toStartOf="@+id/imgFileLeft"
+            app:layout_constraintTop_toTopOf="@+id/imgFileLeft" />
+
+        <ImageView
+            android:id="@+id/imgTickSingleImage"
+            android:layout_width="24dp"
+            android:layout_height="10dp"
+            android:layout_above="@+id/imgTickDoubleImage"
+            android:layout_alignParentRight="true"
+
+            android:src="@drawable/tick"
+
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="@+id/imgFileLeft"
+            app:layout_constraintEnd_toEndOf="@+id/imgFileLeft"></ImageView>
+
+        <ImageView
+            android:id="@+id/imgTickDoubleImage"
+            android:layout_width="24dp"
+            android:layout_height="10dp"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentBottom="true"
+            android:layout_gravity="right"
+            android:src="@drawable/tick"
+            app:layout_constraintBottom_toTopOf="@+id/imgTickSingleImage"
+            android:visibility="invisible"
+            app:layout_constraintEnd_toEndOf="@+id/imgFileLeft"></ImageView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
     //end of left_img_layout
 
     //start of right_img_layout
@@ -255,23 +306,26 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textViewLeft" />
 
+        <ImageView
+            android:id="@+id/imgTickSingleAudio"
+            android:layout_width="24dp"
+            android:layout_height="10dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvFileNameLeft"
+            android:layout_gravity="right"
+            android:src="@drawable/tick"
+            android:visibility="visible"></ImageView>
 
+        <ImageView
+            android:id="@+id/imgTickDoubleAudio"
+            android:layout_width="24dp"
+            android:layout_height="10dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/imgTickSingleAudio"
+            android:layout_gravity="right"
+            android:src="@drawable/tick"
+            android:visibility="invisible"></ImageView>
     </androidx.constraintlayout.widget.ConstraintLayout>
     //end of left_img_layout
-    <ImageView
-        android:visibility="gone"
-        android:layout_gravity="right"
-        android:id="@+id/imgTickSingle"
-        android:layout_marginRight="10dp"
-        android:layout_width="24dp"
-        android:src="@drawable/ic_check_mark"
-        android:layout_height="24dp"></ImageView>
-    <ImageView
-        android:visibility="gone"
-        android:layout_gravity="right"
-        android:id="@+id/imgTickDouble"
-        android:layout_marginRight="10dp"
-        android:layout_width="24dp"
-        android:src="@drawable/ic_check_mark"
-        android:layout_height="24dp"></ImageView>
+
 </LinearLayout>

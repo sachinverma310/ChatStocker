@@ -60,6 +60,27 @@ public class ChatAppMsgAdapter extends RecyclerView.Adapter<ChatAppMsgAdapter.Ch
     @Override
     public void onBindViewHolder(ChatAppMsgViewHolder holder, int position) {
         ChatMessage msgDto = this.msgDtoList.get(position);
+        if (msgDto.isSentToserver()){
+            if (msgDto.getType().equals("image")){
+                holder.imgTickSingleImage.setVisibility(View.VISIBLE);
+                holder.imgTickDoubleImage.setVisibility(View.VISIBLE);
+            }
+            else if (msgDto.getType().equals("text")) {
+                holder.imgTickDouble.setVisibility(View.VISIBLE);
+                holder.imgTickSingle.setVisibility(View.VISIBLE);
+            }
+            else if (msgDto.getType().equals("audio")){
+                holder.imgTickDoubleAudio.setVisibility(View.VISIBLE);
+                holder.imgTickDoubleAudio.setVisibility(View.VISIBLE);
+            }
+        }
+        else {
+            holder.imgTickDouble.setVisibility(View.GONE);
+            holder.imgTickSingleImage.setVisibility(View.VISIBLE);
+            holder.imgTickSingleAudio.setVisibility(View.VISIBLE);
+//            holder.imgTickSingle.setVisibility(View.GONE);
+        }
+
         String cuurentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
         holder.parentLayout.setBackgroundColor(msgDtoList.get(position).isSelected() ? Color.GRAY : Color.TRANSPARENT);
         // If the message is a received message.
@@ -133,6 +154,8 @@ public class ChatAppMsgAdapter extends RecyclerView.Adapter<ChatAppMsgAdapter.Ch
             holder.leftMsgLayout.setVisibility(LinearLayout.GONE);
 
         }
+//        holder.imgTickDoubleImage.bringToFront();
+//        holder.imgTickSingleImage.bringToFront();
 
 
     }
@@ -160,13 +183,14 @@ public class ChatAppMsgAdapter extends RecyclerView.Adapter<ChatAppMsgAdapter.Ch
         LinearLayout leftMsgLayout, parentLayout;
         AdCircleProgress pgb_progress;
         LinearLayout rightMsgLayout;
-        RelativeLayout rightImgLayout, leftImgLayout;
+        RelativeLayout rightImgLayout;
+        ConstraintLayout leftImgLayout;
         ConstraintLayout rightAudioLayout, leftAudioLayout;
 
         TextView leftMsgTextView, leftDate, tvUserNameLeft;
 
         TextView rightMsgTextView, rightDate, tvUserNameRight;
-        ImageView imgFileLeft, imgFileRight;
+        ImageView imgFileLeft, imgFileRight,imgTickSingle,imgTickDouble,imgTickSingleImage,imgTickDoubleImage,imgTickSingleAudio,imgTickDoubleAudio;
 
         public ChatAppMsgViewHolder(View itemView) {
             super(itemView);
@@ -179,6 +203,12 @@ public class ChatAppMsgAdapter extends RecyclerView.Adapter<ChatAppMsgAdapter.Ch
                 rightMsgTextView = (TextView) itemView.findViewById(R.id.chat_right_msg_text_view);
                 rightDate = itemView.findViewById(R.id.chatRightdate);
                 leftDate = itemView.findViewById(R.id.chatLeftdate);
+                imgTickDouble= itemView.findViewById(R.id.imgTickDouble);
+                imgTickSingle= itemView.findViewById(R.id.imgTickSingle);
+                imgTickDoubleAudio= itemView.findViewById(R.id.imgTickDoubleAudio);
+                imgTickDoubleImage= itemView.findViewById(R.id.imgTickDoubleImage);
+                imgTickSingleAudio= itemView.findViewById(R.id.imgTickSingleAudio);
+                imgTickSingleImage= itemView.findViewById(R.id.imgTickSingleImage);
                 leftImgLayout = itemView.findViewById(R.id.left_img_layout);
                 rightImgLayout = itemView.findViewById(R.id.right_img_layout);
                 imgFileLeft = itemView.findViewById(R.id.imgFileLeft);

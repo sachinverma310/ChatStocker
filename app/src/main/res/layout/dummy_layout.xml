@@ -2,39 +2,65 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical" android:layout_width="match_parent"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="319dp"
-        android:background="@drawable/shape_edit_chat"
-        android:layout_height="wrap_content"
+
+    <ImageView
+        android:id="@+id/imgFileLeft"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:adjustViewBounds="true"
+        android:scaleType="fitXY"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"></ImageView>
 
-        <EditText
-            android:id="@+id/editText"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="0dp"
-            android:ems="10"
-            android:inputType="textPersonName"
-            android:text="Name"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/imageView7"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+    <com.app.adprogressbarlib.AdCircleProgress
+        android:id="@+id/pgb_progress"
+        custom:adpgb_finished_stroke_width="5dp"
+        custom:adpgb_inner_drawable="@drawable/ic_close_icon"
+        custom:adpgb_show_text="false"
+        custom:adpgb_unfinished_stroke_width="2dp"
+        android:layout_width="60dp"
 
-        <ImageView
-            android:id="@+id/imageView7"
-            android:layout_width="42dp"
-            android:layout_height="42dp"
-            app:layout_constraintBottom_toBottomOf="@+id/editText"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/editText"
-            app:layout_constraintTop_toTopOf="@+id/editText"
-            app:srcCompat="@drawable/send" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+        android:layout_height="60dp"
+        android:layout_centerInParent="true"
+        android:layout_gravity="center"
+        android:backgroundTintMode="multiply"
+        app:adpgb_finished_color="@color/colorAccent"
+        app:adpgb_unfinished_color="@android:color/white"
+        app:layout_constraintBottom_toBottomOf="@+id/imgFileLeft"
+        app:layout_constraintEnd_toEndOf="@+id/imgFileLeft"
+        app:layout_constraintStart_toStartOf="@+id/imgFileLeft"
+        app:layout_constraintTop_toTopOf="@+id/imgFileLeft" />
+
+    <ImageView
+        android:id="@+id/imgTickSingleImage"
+        android:layout_width="24dp"
+        android:layout_height="10dp"
+        android:layout_above="@+id/imgTickDoubleImage"
+        android:layout_alignParentRight="true"
+
+        android:src="@drawable/tick"
+
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="@+id/imgFileLeft"
+        app:layout_constraintEnd_toEndOf="@+id/imgFileLeft"></ImageView>
+
+    <ImageView
+        android:id="@+id/imgTickDoubleImage"
+        android:layout_width="24dp"
+        android:layout_height="10dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_gravity="right"
+        android:src="@drawable/tick"
+        app:layout_constraintBottom_toTopOf="@+id/imgTickSingleImage"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="@+id/imgFileLeft"></ImageView>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

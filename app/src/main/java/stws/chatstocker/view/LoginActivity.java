@@ -330,6 +330,7 @@ public class LoginActivity extends DaggerAppCompatActivity implements ConstantsV
                                 Prefrences.Companion.saveBoolean(LoginActivity.this, KEY_IS_LOGIN, true);
                                 updateChild(user, addValue);
                                 startActivity(new Intent(LoginActivity.this, HomeActivity.class));
+                                finish();
 
                             } catch (IOException e) {
                                 e.printStackTrace();

@@ -30,11 +30,11 @@ class FullProfilePicViewrActivity : AppCompatActivity() {
         setTitle(title)
 //        getSupportActionBar()!!.hide();
         val imageView = activityFullscreenImageBinding.imageView;
-        imageView.getLayoutParams().height = ViewGroup.LayoutParams.MATCH_PARENT;
-        imageView.getLayoutParams().width = ViewGroup.LayoutParams.MATCH_PARENT;
-        imageView.setAdjustViewBounds(false);
+//        imageView.getLayoutParams().height = ViewGroup.LayoutParams.MATCH_PARENT;
+//        imageView.getLayoutParams().width = ViewGroup.LayoutParams.MATCH_PARENT;
+//        imageView.setAdjustViewBounds(false);
         Glide.with(this).load(intent.getStringExtra(ConstantsValues.KEY_FILE_URL)).into(imageView)
-        imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+//        imageView.setScaleType(ImageView.ScaleType.FIT_XY);
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

@@ -24,6 +24,7 @@ class NotificationActivity : AppCompatActivity(), View.OnClickListener {
 
 
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+        setTitle("Notification Settings")
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
