@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
     <data>
         <variable
             name="viewModel"
             type="stws.chatstocker.viewmodel.AccountDetailsViewModel" />
     </data>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+<LinearLayout
     android:layout_width="match_parent"
     android:background="@drawable/sign_in_bg"
     android:layout_height="match_parent"
@@ -57,6 +57,7 @@
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_marginStart="8dp"
+            android:scaleType="fitXY"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp"
             android:src="@drawable/sethelp" />
@@ -68,6 +69,7 @@
             android:layout_weight="1"
             android:gravity="center|start"
             android:paddingLeft="10dp"
+            android:onClick="accountInfo"
             android:text="Account Information"
             android:textColor="@color/black"
             android:textSize="16sp" />
@@ -91,6 +93,7 @@
             android:layout_height="32dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
+            android:scaleType="fitXY"
             android:layout_marginBottom="8dp"
             android:src="@drawable/app_info" />
 
@@ -100,6 +103,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:gravity="center|start"
+            android:onClick="appinformation"
             android:paddingLeft="10dp"
             android:text="App Information"
             android:textColor="@color/black"
@@ -124,6 +128,7 @@
             android:layout_height="32dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
+            android:scaleType="fitXY"
             android:layout_marginBottom="8dp"
             android:src="@drawable/delete_account" />
 
@@ -134,6 +139,7 @@
             android:layout_weight="1"
             android:gravity="center|start"
             android:paddingLeft="10dp"
+            android:onClick="deleteAccount"
             android:text="Delete My Account"
             android:textColor="@color/black"
             android:textSize="16sp" />

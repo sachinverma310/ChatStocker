@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
     <data>
         <variable
             name="viewModel"
             type="stws.chatstocker.viewmodel.SettingViewModel" />
     </data>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+<androidx.constraintlayout.widget.ConstraintLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#EDF6FF"
@@ -18,6 +18,7 @@
         android:layout_width="32dp"
         android:layout_height="32dp"
         android:layout_marginStart="8dp"
+        android:scaleType="fitXY"
         android:layout_marginTop="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -64,7 +65,8 @@
         android:layout_width="32dp"
         android:layout_height="32dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="10dp"
+        android:scaleType="fitXY"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -78,7 +80,7 @@
         android:layout_width="0dp"
         android:layout_height="32dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="10dp"
         android:gravity="center|start"
         android:text="Notification"
         android:onClick="notification"
@@ -157,6 +159,7 @@
         android:layout_height="32dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
+        android:scaleType="fitXY"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.011"
@@ -203,6 +206,7 @@
         android:layout_height="32dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
+        android:scaleType="fitXY"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.011"
@@ -216,19 +220,16 @@
         android:layout_width="0dp"
         android:layout_height="32dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="452dp"
+        android:layout_marginTop="18dp"
         android:gravity="center|start"
+        android:onClick="logout"
         android:text="Logout"
         android:textColor="@color/black"
-        android:onClick="logout"
         android:textSize="16sp"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toEndOf="@+id/ivLogout"
-        app:layout_constraintTop_toBottomOf="@+id/tvHelp"
-        app:layout_constraintVertical_bias="0.125" />
+        app:layout_constraintTop_toBottomOf="@+id/tvHelp" />
 
     <view
         android:id="@+id/view6"
