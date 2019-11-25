@@ -7,6 +7,7 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProviders
+import stws.chatstocker.ConstantsValues
 import stws.chatstocker.R
 import stws.chatstocker.databinding.ActivityAccountDetailBinding
 import stws.chatstocker.viewmodel.AccountDetailsViewModel
@@ -38,6 +39,9 @@ class AccountActvity: AppCompatActivity() {
         //startActivity(Intent(this, AccountActvity::class.java))
     }
     fun appinformation(view: View){
+        val intent=Intent(this, AppInfromation::class.java)
+        intent.putExtra(ConstantsValues.KEY_FROM,"appinfo")
+        startActivity(intent)
       //  startActivity(Intent(this, AccountActvity::class.java))
     }
 }
