@@ -111,7 +111,7 @@ public class LoginActivity extends DaggerAppCompatActivity implements ConstantsV
         btnLoginWithMobile = activityLoginBinding.btnSignIn;
         btnFb = activityLoginBinding.btnFb;
         mPhoneNumberField = activityLoginBinding.edtMobile;
-        mPhoneNumberField.setText("+919016990951");
+//        mPhoneNumberField.setText("+919016990951");
 //        setContentView(R.layout.activity_login);
         loginViewModel = ViewModelProviders.of(this, viewModelFactory).get(LoginViewModel.class);
         mAuth = FirebaseAuth.getInstance();

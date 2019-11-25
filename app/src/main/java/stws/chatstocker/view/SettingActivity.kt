@@ -21,6 +21,7 @@ class SettingActivity : BaseActivity() {
     fun logout(view: View){
         BaseActivity.client.signOut().addOnSuccessListener(OnSuccessListener<Void> {
             Prefrences.saveBoolean(this, ConstantsValues.KEY_IS_LOGIN,false)
+            Prefrences.saveInt(this,ConstantsValues.KEY_Noti_RADIO_ID,0)
             startActivity(Intent(this, LoginActivity::class.java))
             finishAffinity()
         })
@@ -33,6 +34,10 @@ class SettingActivity : BaseActivity() {
     }
     fun notification(view: View){
         startActivity(Intent(this, NotificationActivity::class.java))
+//        finishAffinity()
+    }
+    fun help(view: View){
+        startActivity(Intent(this, HelpActivity::class.java))
 //        finishAffinity()
     }
 }

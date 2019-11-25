@@ -75,6 +75,7 @@ class GroupChatActivtiy : AppCompatActivity(),ChatAppMsgAdapter.ItemSelectedList
 
             for (i in 0 until selectedList.size) {
                 selectedList.get(i).isSelected=false
+                selectedList.get(i).senderName=Prefrences.getUserDetails(this,ConstantsValues.KEY_LOGIN_DATA).name!!
             }
 //            if (filelist.size>0) {
             val intent = Intent(this, UserFragment::class.java)
@@ -251,6 +252,7 @@ class GroupChatActivtiy : AppCompatActivity(),ChatAppMsgAdapter.ItemSelectedList
             val list = intent.getParcelableArrayListExtra<ChatMessage>(ConstantsValues.KEY_URL_LIST)
             for (i in 0 until list!!.size) {
 //                viewmodel.room_type=room_type;
+                list.get(i).senderName=Prefrences.getUserDetails(this,ConstantsValues.KEY_LOGIN_DATA).name!!
                 viewmodel.forwardMessage(list.get(i),this)
             }
 //            intent.putExtra(KEY_FILE_URL, "")

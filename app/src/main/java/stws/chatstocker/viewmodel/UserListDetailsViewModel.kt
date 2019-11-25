@@ -101,22 +101,33 @@ class UserListDetailsViewModel(user: User) : ViewModel(), ConstantsValues {
 
     }
 fun profilePicClick(view: View){
-    val imagePopup =  ImagePopup(view.context);
-    imagePopup.setWindowHeight(500); // Optional
-    imagePopup.setWindowWidth(500); // Optional
-    imagePopup.setBackgroundColor(Color.BLACK);  // Optional
-    imagePopup.setFullScreen(true); // Optional
-    imagePopup.setHideCloseIcon(true);  // Optional
-    imagePopup.setImageOnClickClose(true);
+//    val imagePopup =  ImagePopup(view.context);
+//    imagePopup.setWindowHeight(500); // Optional
+//    imagePopup.setWindowWidth(500); // Optional
+//    imagePopup.setBackgroundColor(Color.BLACK);  // Optional
+//    imagePopup.setFullScreen(true); // Optional
+//    imagePopup.setHideCloseIcon(true);  // Optional
+//    imagePopup.setImageOnClickClose(true);
+//    try {
+//        imagePopup.initiatePopupWithGlide(imgUrl)
+//    } catch (e: IOException) {
+//        e.printStackTrace()
+//    } catch (e: ClassNotFoundException) {
+//        e.printStackTrace()
+//    }
+//
+    val intent = Intent(view.context, FullProfilePicViewrActivity::class.java)
+    intent.putExtra(ConstantsValues.KEY_USER_ID, "")
     try {
-        imagePopup.initiatePopupWithGlide(imgUrl)
+        intent.putExtra(ConstantsValues.KEY_FILE_URL, imgUrl)
     } catch (e: IOException) {
         e.printStackTrace()
     } catch (e: ClassNotFoundException) {
         e.printStackTrace()
     }
 
-    imagePopup.viewPopup()
+    view.context.startActivity(intent)
+//    imagePopup.viewPopup()
 }
 
 }

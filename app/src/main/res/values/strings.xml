@@ -72,4 +72,52 @@
     </string-array>
     <string name="slide_to_cancel">Slide to cancel</string>
     <string name="default_notification_channel_id">Notification Default channel</string>
+    <string name="app_information">
+        1.Autosave the phone data like pics, audio and video in the app without occupying the phone storage.\n
+2.Personal and group chat option is available\n
+3.You can share images, videos and audios to the users using the Stocker App and other apps too.\n
+4.Mobile data in Stocker App remain safe and secure in the case of calamities like mobile lost or damage.\n
+5.All the app data is shown on a single screen.\n
+6.Has easy functionalities\n
+7.The data is stored in the cloud that you can delete any time.\n
+8.You can save the data of social media sites like WhatsApp, Facebook, Tiktok etc.\n
+9.Use the app camera too that gets saved automatically in the app.
+    </string>
+    <string name="faqs">
+        1.Autosave the phone data like pics, audio and video in the app without occupying the phone storage.\n
+2.Personal and group chat option is available\n
+3.You can share images, videos and audios to the users using the Stocker App and other apps too.\n
+4.Mobile data in Stocker App remain safe and secure in the case of calamities like mobile lost or damage.\n
+5.All the app data is shown on a single screen.\n
+6.Has easy functionalities\n
+7.The data is stored in the cloud that you can delete any time.\n
+8.You can save the data of social media sites like WhatsApp, Facebook, Tiktok etc.\n
+9.Use the app camera too that gets saved automatically in the app.
+    </string>
+    <string name="tc">
+        1.Autosave the phone data like pics, audio and video in the app without occupying the phone storage.\n
+2.Personal and group chat option is available\n
+3.You can share images, videos and audios to the users using the Stocker App and other apps too.\n
+4.Mobile data in Stocker App remain safe and secure in the case of calamities like mobile lost or damage.\n
+5.All the app data is shown on a single screen.\n
+6.Has easy functionalities\n
+7.The data is stored in the cloud that you can delete any time.\n
+8.You can save the data of social media sites like WhatsApp, Facebook, Tiktok etc.\n
+9.Use the app camera too that gets saved automatically in the app.
+    </string>
+    <string name="privacy">
+        1.Autosave the phone data like pics, audio and video in the app without occupying the phone storage.\n
+2.Personal and group chat option is available\n
+3.You can share images, videos and audios to the users using the Stocker App and other apps too.\n
+4.Mobile data in Stocker App remain safe and secure in the case of calamities like mobile lost or damage.\n
+5.All the app data is shown on a single screen.\n
+6.Has easy functionalities\n
+7.The data is stored in the cloud that you can delete any time.\n
+8.You can save the data of social media sites like WhatsApp, Facebook, Tiktok etc.\n
+9.Use the app camera too that gets saved automatically in the app.
+    </string>
+    <string name="subject">Subject</string>
+    <string name="message">Message</string>
+    <string name="support">Support</string>
+    <string name="attach_file_from_gallery">Attach File from Gallery</string>
 </resources>

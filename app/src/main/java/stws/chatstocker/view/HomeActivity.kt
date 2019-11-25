@@ -178,9 +178,17 @@ class HomeActivity : BaseActivity(), ConstantsValues, HomeAdapter.OnItemClcik {
         val intent=intent;
 //        signIn()
         if (intent.type!=null) {
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         if (intent.data==null)
             for (i in 0 until intent.clipData!!.itemCount) {
-                photoFile = File(GetRealPathUtil.getPath(this, intent!!.clipData!!.getItemAt(i).uri));
+                try {
+                    photoFile = File(RealPathUtil.getRealPath(this, intent!!.clipData!!.getItemAt(i).uri));
+//                    photoFile=  FileProvider.getUriForFile(this, packageName + ".provider", file)
+                }
+                catch (e:Exception){
+
+                }
+
 //            if (data.getClipData() != null) {
 //                var count = data.clipData!!.itemCount
 //                for (i in 0..count - 1) {

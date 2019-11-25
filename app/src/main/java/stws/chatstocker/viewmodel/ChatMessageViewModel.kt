@@ -22,6 +22,7 @@ import android.R.attr.name
 import android.content.Context
 import android.view.View
 import android.widget.ImageView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.BindingAdapter
 import com.android.volley.RequestQueue
 import com.android.volley.Response
@@ -589,4 +590,7 @@ fun convertMillistoTime():String{
         requestQueue.add(jsonObjectRequest)
     }
 
+    fun back(view: View){
+        (view.context as AppCompatActivity).onBackPressed()
+    }
 }

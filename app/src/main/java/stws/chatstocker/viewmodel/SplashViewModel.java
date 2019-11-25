@@ -22,7 +22,7 @@ public class SplashViewModel extends ViewModel implements ConstantsValues {
     private int SPLASH_TIME_OUT = 3000;
     int REQUEST_PERMISION_CODE=101;
     String REQUEST_PERMISSION[]=new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE
-            ,Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.CAMERA  ,Manifest.permission.READ_CONTACTS ,Manifest.permission.WRITE_CONTACTS,Manifest.permission.RECORD_AUDIO};
+            ,Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.CAMERA  ,Manifest.permission.READ_CONTACTS ,Manifest.permission.WRITE_CONTACTS,Manifest.permission.RECORD_AUDIO,Manifest.permission.VIBRATE};
 
     public void callSplash(final Context context) {
         new Handler().postDelayed(new Runnable() {

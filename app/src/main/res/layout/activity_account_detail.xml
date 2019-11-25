@@ -9,6 +9,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:background="@drawable/sign_in_bg"
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".view.NotificationActivity">
@@ -48,6 +49,7 @@
         android:background="@color/gray" />
 
     <LinearLayout
+        android:onClick="@{(v)->viewModel.accounInfromation(v)}"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -80,6 +82,7 @@
         android:background="@color/gray" />
 
     <LinearLayout
+        android:onClick="@{(v)->viewModel.appInfo(v)}"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 

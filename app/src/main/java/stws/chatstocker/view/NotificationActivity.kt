@@ -5,26 +5,39 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.ImageView
 import android.widget.RadioButton
+import android.widget.RadioGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import kotlinx.android.synthetic.main.activity_notification.*
+import stws.chatstocker.ConstantsValues
 import stws.chatstocker.R
 import stws.chatstocker.databinding.ActivityFullscreenImageBinding
 import stws.chatstocker.databinding.ActivityNotificationBinding
+import stws.chatstocker.utils.Prefrences
 
-class NotificationActivity : AppCompatActivity(), View.OnClickListener {
+class NotificationActivity : AppCompatActivity() {
 
     lateinit var vibrate: RadioButton
     lateinit var silent: RadioButton
-    lateinit var tone: RadioButton
+    lateinit var rbGrp: RadioGroup
     private lateinit var activityFullscreenImageBinding: ActivityNotificationBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         activityFullscreenImageBinding = DataBindingUtil.setContentView(this, R.layout.activity_notification)
-
-
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         setTitle("Notification Settings")
+        rbGrp=activityFullscreenImageBinding.rbgrp
+        if (Prefrences.getIntValue(this@NotificationActivity,ConstantsValues.KEY_Noti_RADIO_ID)!=0) {
+            val radioButton=rbGrp.findViewById<RadioButton>(Prefrences.getIntValue(this@NotificationActivity,ConstantsValues.KEY_Noti_RADIO_ID)!!)
+            radioButton.isChecked=true;
+        }
+        rbGrp.setOnCheckedChangeListener(object :RadioGroup.OnCheckedChangeListener{
+            override fun onCheckedChanged(group: RadioGroup?, checkedId: Int) {
+                val radioButton=group!!.findViewById<RadioButton>(checkedId)
+                Prefrences.saveInt(this@NotificationActivity,ConstantsValues.KEY_Noti_RADIO_ID,checkedId)
+                Prefrences.saveString(this@NotificationActivity,ConstantsValues.KEY_NotI_SETTING,radioButton.text.toString())
+            }
+        })
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -33,17 +46,5 @@ class NotificationActivity : AppCompatActivity(), View.OnClickListener {
         return super.onOptionsItemSelected(item)
     }
 
-    override fun onClick(v: View?) {
-        when (v!!.id) {
-            R.id.vibrateRadio -> {
-                vibrate.isChecked = true;
-            }
-            R.id.silentRadio -> {
 
-            }
-            R.id.toneRadio -> {
-
-            }
-        }
-    }
 }

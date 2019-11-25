@@ -24,6 +24,7 @@ import android.widget.Toast
 import androidx.annotation.NonNull
 import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.PopupMenu
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.databinding.DataBindingUtil
@@ -34,12 +35,20 @@ import com.bumptech.glide.Glide
 import com.devlomi.record_view.RecordButton
 import com.devlomi.record_view.RecordView
 import com.google.android.gms.tasks.*
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.firebase.database.*
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.OnProgressListener
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.UploadTask
+import droidninja.filepicker.FilePickerBuilder
+import droidninja.filepicker.FilePickerConst
+
+
 import kotlinx.android.synthetic.main.activity_chat.*
+import kotlinx.android.synthetic.main.bottom_sheet_layout.*
+import kotlinx.android.synthetic.main.chat_bottom_sheets.*
+import kotlinx.android.synthetic.main.chat_bottom_sheets.view.*
 import stws.chatstocker.ConstantsValues
 import stws.chatstocker.ConstantsValues.*
 import stws.chatstocker.R
@@ -130,6 +139,12 @@ class ChatActivity : AppCompatActivity(), ConstantsValues, ChatAppMsgAdapter.Ite
     private var recorder: MediaRecorder? = null
     var file: File? = null
     var timeStamp: String? = null
+    var mediaFiles = ArrayList<String>();
+    lateinit var imgAudio: ImageView
+    lateinit var imgVideo: ImageView
+    lateinit var imggalley: ImageView
+//    private lateinit var sheetBehavior: BottomSheetBehavior<ConstraintLayout>
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         chatActivityChatBinding = DataBindingUtil.setContentView(this, R.layout.activity_chat)
@@ -139,6 +154,10 @@ class ChatActivity : AppCompatActivity(), ConstantsValues, ChatAppMsgAdapter.Ite
         imgDelete = chatActivityChatBinding.include.imgDelete
         imgSend = chatActivityChatBinding.include.imgSend
         imgMore = chatActivityChatBinding.include.imgMore
+
+        imggalley = bottom_sheet_chats.imgSend
+        imgVideo = bottom_sheet_chats.imgShare
+        imgAudio = bottom_sheet_chats.imgDelete
         chatList = java.util.ArrayList()
         otherUId = intent.getParcelableExtra(KEYOTHER_UID)
         audioRecordingView = chatActivityChatBinding.editText
@@ -202,9 +221,11 @@ class ChatActivity : AppCompatActivity(), ConstantsValues, ChatAppMsgAdapter.Ite
             viewmodel.onSendClick(audioRecordingView.messageView)
         })
         audioRecordingView.attachmentView.setOnClickListener(View.OnClickListener {
-            showCameraGalaryPopup()
-            photoFile = getOutputMediaFile()
-            fileUri = getOutputMediaFileUri(photoFile!!)
+            bottom_sheet_chats.visibility=View.VISIBLE
+//            sheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED)
+//            showCameraGalaryPopup()
+//            photoFile = getOutputMediaFile()
+//            fileUri = getOutputMediaFileUri(photoFile!!)
         })
         audioRecordingView.setRecordingListener(object : AudioRecordView.RecordingListener {
             override fun onRecordingStarted() {
@@ -237,6 +258,69 @@ class ChatActivity : AppCompatActivity(), ConstantsValues, ChatAppMsgAdapter.Ite
 
         })
 
+//        sheetBehavior = BottomSheetBehavior.from(bottom_sheet_chat)
+////        expandCloseSheet()
+//        sheetBehavior.setBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+//            override fun onStateChanged(bottomSheet: View, newState: Int) {
+//                when (newState) {
+//                    BottomSheetBehavior.STATE_HIDDEN -> {
+//                    }
+//                    BottomSheetBehavior.STATE_EXPANDED -> {
+//                    }
+////                        btBottomSheet.text = "Close Bottom Sheet"
+//                    BottomSheetBehavior.STATE_COLLAPSED -> {
+//                    }
+////                        btBottomSheet.text = "Expand Bottom Sheet"
+//                    BottomSheetBehavior.STATE_DRAGGING -> {
+//                    }
+//                    BottomSheetBehavior.STATE_SETTLING -> {
+//                    }
+//                }
+//            }
+//
+//            override fun onSlide(bottomSheet: View, slideOffset: Float) {
+//            }
+//        })
+        imgVideo.setOnClickListener(View.OnClickListener {
+            FilePickerBuilder.instance.setMaxCount(5)
+                    .setSelectedFiles(mediaFiles)
+                    .setActivityTheme(R.style.LibAppTheme)
+                    .enableVideoPicker(true)
+                    .enableImagePicker(false)
+                    .pickPhoto(this);
+            bottom_sheet_chats.visibility=View.GONE
+        })
+        imgAudio.setOnClickListener(View.OnClickListener {
+            val fileTypeLis = arrayOf(".mp3",".wav")
+
+            FilePickerBuilder.instance.setMaxCount(5)
+                    .setSelectedFiles(mediaFiles)
+                    .setActivityTheme(R.style.LibAppTheme)
+                    .enableVideoPicker(false)
+                    .enableImagePicker(true)
+                    .addFileSupport("ZIP",fileTypeLis, R.drawable.mike)
+                    .pickFile(this);
+            bottom_sheet_chats.visibility=View.GONE
+        })
+        imggalley.setOnClickListener(View.OnClickListener {
+            FilePickerBuilder.instance.setMaxCount(5)
+                    .setSelectedFiles(mediaFiles)
+                    .setActivityTheme(R.style.LibAppTheme)
+                    .enableVideoPicker(false)
+                    .enableImagePicker(true)
+                    .pickPhoto(this);
+            bottom_sheet_chats.visibility=View.GONE
+        })
+        recyclerView.setOnTouchListener(object :View.OnTouchListener {
+            override fun onTouch(v: View?, event: MotionEvent?): Boolean {
+                bottom_sheet_chats.visibility=View.GONE
+                return false
+            }
+
+        })
+        editText.setOnClickListener(View.OnClickListener {
+            bottom_sheet_chats.visibility=View.GONE
+        })
     }
 
     private fun stopRecording() {
@@ -510,6 +594,7 @@ class ChatActivity : AppCompatActivity(), ConstantsValues, ChatAppMsgAdapter.Ite
                         scrollChatLayouttoBottom()
 
                     }
+                    scrollChatLayouttoBottom()
                     FirebaseDatabase.getInstance().reference.child("chat_room").child(room_type)
                             .child(dataSnapshot.key.toString()).child("now").removeValue()
                 }
@@ -629,7 +714,7 @@ class ChatActivity : AppCompatActivity(), ConstantsValues, ChatAppMsgAdapter.Ite
                             .setValue(chat)
 
 
-                    viewmodel.sendNotifcationtoUser(Prefrences.getUserDetails(this@ChatActivity, KEY_LOGIN_DATA).name!!,chat.msg,this@ChatActivity,list.get(index).date,room_type)
+                    viewmodel.sendNotifcationtoUser(Prefrences.getUserDetails(this@ChatActivity, KEY_LOGIN_DATA).name!!, chat.msg, this@ChatActivity, list.get(index).date, room_type)
                     count++
                     /*  databaseReference.child("chat_room")
                               .ref
@@ -736,13 +821,23 @@ class ChatActivity : AppCompatActivity(), ConstantsValues, ChatAppMsgAdapter.Ite
         })
         tvCancel.setOnClickListener(View.OnClickListener { dialog.dismiss() })
         dialog.show()
+
     }
 
 
     fun choosePhotoFromGallary() {
-        val galleryIntent = Intent(Intent.ACTION_PICK,
-                MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-        startActivityForResult(galleryIntent, 200)
+        FilePickerBuilder.instance.setMaxCount(5)
+                .setSelectedFiles(mediaFiles)
+                .setActivityTheme(R.style.LibAppTheme)
+                .enableVideoPicker(true)
+                .enableImagePicker(false)
+                .pickPhoto(this);
+//        val galleryIntent =  Intent(Intent.ACTION_GET_CONTENT);
+//    intent.setType("*/*");
+//    intent.addCategory(Intent.CATEGORY_OPENABLE)
+////        val galleryIntent = Intent(Intent.ACTION_PICK,
+////                MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+//        startActivityForResult(galleryIntent, 200)
 
     }
 
@@ -753,17 +848,38 @@ class ChatActivity : AppCompatActivity(), ConstantsValues, ChatAppMsgAdapter.Ite
 
             if (resultCode == RESULT_OK) {
                 var list: ArrayList<File> = ArrayList()
+//                var listFile: ArrayList<ImageFile> = ArrayList()
+                if (requestCode == FilePickerConst.REQUEST_CODE_PHOTO) {
+//                    Log.e("path", photoFile!!.getAbsolutePath())
+                    mediaFiles = ArrayList<String>();
+                    mediaFiles.addAll(data!!.getStringArrayListExtra(FilePickerConst.KEY_SELECTED_MEDIA));
+//                    val takenImage = BitmapFactory.decodeFile(photoFile!!.getAbsolutePath())
+//                    val realPath: String
+//                    realPath = photoFile!!.getAbsolutePath()
+//                    list.add(File(realPath))
+                    for (i in 0 until mediaFiles.size) {
+                        list.add(File(mediaFiles.get(i)))
+                        sendFile(Prefrences.Companion.getUserUid(this), otherUId.uid, Uri.fromFile(File(mediaFiles.get(i))), list, i)
 
-                if (requestCode == 100) {
-                    Log.e("path", photoFile!!.getAbsolutePath())
-                    val takenImage = BitmapFactory.decodeFile(photoFile!!.getAbsolutePath())
-                    val realPath: String
-                    realPath = photoFile!!.getAbsolutePath()
-                    list.add(File(realPath))
-                    sendFile(Prefrences.Companion.getUserUid(this), otherUId.uid, Uri.fromFile(File(realPath)), list, 0)
-//                    Glide.with(this@ChatActivity).load(realPath).into(imgFile)
+                    }//                    Glide.with(this@ChatActivity).load(realPath).into(imgFile)
 
-                } else if (requestCode == 200) {
+                }
+                if (requestCode == FilePickerConst.REQUEST_CODE_DOC) {
+//                    Log.e("path", photoFile!!.getAbsolutePath())
+                    mediaFiles = ArrayList<String>();
+                    mediaFiles.addAll(data!!.getStringArrayListExtra(FilePickerConst.KEY_SELECTED_DOCS));
+//                    val takenImage = BitmapFactory.decodeFile(photoFile!!.getAbsolutePath())
+//                    val realPath: String
+//                    realPath = photoFile!!.getAbsolutePath()
+//                    list.add(File(realPath))
+                    for (i in 0 until mediaFiles.size) {
+                        list.add(File(mediaFiles.get(i)))
+                        sendFile(Prefrences.Companion.getUserUid(this), otherUId.uid, Uri.fromFile(File(mediaFiles.get(i))), list, i)
+
+                    }//                    Glide.with(this@ChatActivity).load(realPath).into(imgFile)
+
+                }
+                else if (requestCode == 200) {
 
                     val realPath: String
                     realPath = GetRealPathUtil.getPath(this@ChatActivity, data!!.data)

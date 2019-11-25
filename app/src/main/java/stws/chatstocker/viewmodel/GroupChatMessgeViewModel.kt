@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.BindingAdapter
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -263,7 +264,9 @@ class GroupChatMessgeViewModel:ViewModel() {
                     .child(userId).setValue(true)
         }
     }
-
+    fun back(view: View){
+        (view.context as AppCompatActivity).onBackPressed()
+    }
     fun exitGroup(){
         FirebaseDatabase.getInstance().reference.child("User")
                 .ref.child(senderUid).child(ConstantsValues.KEY_ADDED_GRP).child(groupUid).removeValue()

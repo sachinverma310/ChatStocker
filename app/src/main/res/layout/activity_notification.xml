@@ -6,10 +6,12 @@
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@drawable/sign_in_bg"
         android:orientation="vertical"
         tools:context=".view.NotificationActivity">
 
         <RadioGroup
+            android:id="@+id/rbgrp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">

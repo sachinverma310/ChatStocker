@@ -173,7 +173,7 @@
         android:layout_marginTop="8dp"
         android:gravity="center|start"
         android:text="Help"
-        android:onClick="@{(v)->viewModel.helpClick(v)}"
+        android:onClick="help"
         android:textColor="@color/black"
         android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="parent"

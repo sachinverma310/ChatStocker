@@ -54,53 +54,61 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 
 class ProfileActivity : AppCompatActivity() {
-private lateinit var activityProfileBinding:ActivityProfileBinding
-    private lateinit var fabCamera:FloatingActionButton
-    private  lateinit var photoFile:File
-    private lateinit var fileUri:Uri
-    private lateinit var realPath:String
-    private lateinit var profilePic:CircleImageView
+    private lateinit var activityProfileBinding: ActivityProfileBinding
+    private lateinit var fabCamera: FloatingActionButton
+    private lateinit var photoFile: File
+    private lateinit var fileUri: Uri
+    private lateinit var realPath: String
+    private lateinit var profilePic: CircleImageView
     private lateinit var mImageStorage: StorageReference
-    private lateinit var btnUpdate:Button
-    var PHONE_NO_REUEST_CODE:Int = 101;
-    val CROP_PIC=105
+    private lateinit var btnUpdate: Button
+    var PHONE_NO_REUEST_CODE: Int = 101;
+    val CROP_PIC = 105
     private var mResendToken: PhoneAuthProvider.ForceResendingToken? = null
     private lateinit var mCallbacks: PhoneAuthProvider.OnVerificationStateChangedCallbacks
     private var token: String? = null
-    private lateinit var mVerificationId:String
-    private val TAG:String="MyTag"
-    private var mVerificationInProgress:Boolean=false
-    private lateinit var edtMobile:EditText
-    private lateinit var   loginResponse:LoginResponse;
+    private lateinit var mVerificationId: String
+    private val TAG: String = "MyTag"
+    private var mVerificationInProgress: Boolean = false
+    private lateinit var edtMobile: EditText
+    private lateinit var loginResponse: LoginResponse;
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        activityProfileBinding=DataBindingUtil.setContentView(this,R.layout.activity_profile)
-     // Op
+        activityProfileBinding = DataBindingUtil.setContentView(this, R.layout.activity_profile)
+        // Op
 //        setContentView(R.layout.activity_profile)
-        val profileViewModel=ViewModelProviders.of(this).get(ProfileViewModel::class.java)
-        activityProfileBinding.viewModel=profileViewModel
-         loginResponse=Prefrences.getUserDetails(this, ConstantsValues.KEY_LOGIN_DATA)
-        profileViewModel.email=loginResponse.email!!
-        profileViewModel.phone=loginResponse.phone!!
-        profileViewModel.name=loginResponse.name!!
-        btnUpdate=activityProfileBinding.btnUpdate
-        edtMobile=activityProfileBinding.etPhoneNo
-        fabCamera=activityProfileBinding.fabCamera
-        profilePic=activityProfileBinding.ivProfile;
+        val profileViewModel = ViewModelProviders.of(this).get(ProfileViewModel::class.java)
+        val isfromAct = intent.getBooleanExtra(ConstantsValues.KEY_ISFROM_ACT, false)
+
+        activityProfileBinding.viewModel = profileViewModel
+        loginResponse = Prefrences.getUserDetails(this, ConstantsValues.KEY_LOGIN_DATA)
+        profileViewModel.email = loginResponse.email!!
+        profileViewModel.phone = loginResponse.phone!!
+        profileViewModel.name = loginResponse.name!!
+        btnUpdate = activityProfileBinding.btnUpdate
+        edtMobile = activityProfileBinding.etPhoneNo
+        fabCamera = activityProfileBinding.fabCamera
+        profilePic = activityProfileBinding.ivProfile;
         mImageStorage = FirebaseStorage.getInstance().getReference();
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         setTitle("Profile")
+        if (isfromAct) {
+            btnUpdate.visibility = View.INVISIBLE
+            edtMobile.isFocusableInTouchMode=false
+            setTitle("Account Information")
+            fabCamera.isClickable=false;
+        }
         Glide.with(this).load(loginResponse.profile).into(profilePic)
         fabCamera.setOnClickListener(View.OnClickListener {
             photoFile = getOutputMediaFile()!!
             fileUri = getOutputMediaFileUri(photoFile)
-            val intent=Intent(Intent.ACTION_PICK,
+            val intent = Intent(Intent.ACTION_PICK,
                     android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
             intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
-                startActivityForResult(intent, 101);
+            startActivityForResult(intent, 101);
         })
 
 
@@ -145,9 +153,9 @@ private lateinit var activityProfileBinding:ActivityProfileBinding
         }
 
         btnUpdate.setOnClickListener(View.OnClickListener {
-            if (!edtMobile.text.toString().equals(profileViewModel.phone)){
-                if (edtMobile.length()==10){
-                    startPhoneNumberVerification("+91"+edtMobile.text.toString())
+            if (!edtMobile.text.toString().equals(profileViewModel.phone)) {
+                if (edtMobile.length() == 10) {
+                    startPhoneNumberVerification("+91" + edtMobile.text.toString())
                 }
             }
         })
@@ -182,34 +190,33 @@ private lateinit var activityProfileBinding:ActivityProfileBinding
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == RESULT_OK) {
-            if (requestCode==101) {
+            if (requestCode == 101) {
                 realPath = GetRealPathUtil.getPath(this, data!!.getData());
                 CropImage.activity(Uri.fromFile(File(realPath)))
                         .start(this);
 //                CropImage.activity(Uri.parse(realPath))
 //                        .start(this);
-            }
-            else if (requestCode== CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE){
+            } else if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
                 val result = CropImage.getActivityResult(data);
                 val resultUri = result.getUri();
                 Glide.with(this).load(resultUri).into(ivProfile)
-                sendFile(Prefrences.getUserUid(this)!!,resultUri)
+                sendFile(Prefrences.getUserUid(this)!!, resultUri)
             }
         }
         if (requestCode == PHONE_NO_REUEST_CODE) {
 //            verifyPhoneNumberWithCode(data!!.getStringExtra(ConstantsValues.KEY_VERIFICATION_ID), data.getStringExtra(ConstantsValues.KEY_OTP))
 //            if (lastPhone.equals(phone)){
-                FirebaseDatabase.getInstance().reference.child("User").child(Prefrences.getUserUid(this)!!).child("numbers")
-                        .setValue(edtMobile.text.toString())
-            loginResponse.phone=edtMobile.text.toString()
-            Prefrences.saveUser(this,ConstantsValues.KEY_LOGIN_DATA,loginResponse)
+            FirebaseDatabase.getInstance().reference.child("User").child(Prefrences.getUserUid(this)!!).child("numbers")
+                    .setValue(edtMobile.text.toString())
+            loginResponse.phone = edtMobile.text.toString()
+            Prefrences.saveUser(this, ConstantsValues.KEY_LOGIN_DATA, loginResponse)
 
         }
     }
 
     private fun sendFile(senderUid: String, path: Uri) {
         var databaseReference = FirebaseDatabase.getInstance().reference
-        val progressBarHandler=ProgressBarHandler.getInstance() as ProgressBarHandler
+        val progressBarHandler = ProgressBarHandler.getInstance() as ProgressBarHandler
         ProgressBarHandler.show(this)
 
 //        val room_type_1 = senderUid + "_" + receiverUid;
@@ -232,15 +239,15 @@ private lateinit var activityProfileBinding:ActivityProfileBinding
             override fun onComplete(task: Task<Uri>) {
                 if (task.isSuccessful()) {
                     ProgressBarHandler.hide()
-                    Toast.makeText(this@ProfileActivity,"Uploaded Sucessfully",Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@ProfileActivity, "Uploaded Sucessfully", Toast.LENGTH_SHORT).show()
                     val downUri = task.getResult();
                     val download_url = downUri.toString()
-                    val loginResponse=Prefrences.getUserDetails(this@ProfileActivity,ConstantsValues.KEY_LOGIN_DATA)
-                    loginResponse.profile=download_url
-                    Prefrences.saveUser(this@ProfileActivity,ConstantsValues.KEY_LOGIN_DATA,loginResponse)
+                    val loginResponse = Prefrences.getUserDetails(this@ProfileActivity, ConstantsValues.KEY_LOGIN_DATA)
+                    loginResponse.profile = download_url
+                    Prefrences.saveUser(this@ProfileActivity, ConstantsValues.KEY_LOGIN_DATA, loginResponse)
                     Log.d("TAG", "onComplete: Url: " + downUri.toString());
 //                    Glide.with(this@ChatActivity).load(Uri.parse(download_url)).into(imgFile)
-                   databaseReference.child("User").child(senderUid).child("profileImage").setValue(download_url)
+                    databaseReference.child("User").child(senderUid).child("profileImage").setValue(download_url)
 
                 }
             }
@@ -249,7 +256,7 @@ private lateinit var activityProfileBinding:ActivityProfileBinding
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId==android.R.id.home)
+        if (item.itemId == android.R.id.home)
             super.onBackPressed()
         return super.onOptionsItemSelected(item)
     }
@@ -271,12 +278,12 @@ private lateinit var activityProfileBinding:ActivityProfileBinding
         mVerificationInProgress = true
     }
 
-private fun performCrop(picUri:Uri) {
+    private fun performCrop(picUri: Uri) {
         // take care of exceptions
         try {
             // call the standard crop action intent (the user device may not
             // support it)
-            val cropIntent =  Intent("com.android.camera.action.CROP");
+            val cropIntent = Intent("com.android.camera.action.CROP");
             // indicate image type and Uri
             cropIntent.setDataAndType(picUri, "image/*");
             // set crop properties
@@ -293,8 +300,8 @@ private fun performCrop(picUri:Uri) {
             startActivityForResult(cropIntent, CROP_PIC);
         }
         // respond to users whose devices do not support the crop action
-        catch ( anfe: ActivityNotFoundException) {
-             Toast
+        catch (anfe: ActivityNotFoundException) {
+            Toast
                     .makeText(this, "This device doesn't support the crop action!", Toast.LENGTH_SHORT).show();
         }
     }

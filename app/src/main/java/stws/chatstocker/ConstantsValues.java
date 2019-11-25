@@ -30,7 +30,11 @@ public interface ConstantsValues {
     String SERVER_KEY="key=AAAA8uN4rmU:APA91bG2wAdP2mSKdZMv9YRjf2WXM3xKqJVZdrt0GeT82KUKxc6lsB2lcxM8OBvni78T6jaMNR7bAMu2Sp3FdkJTdn1PB5x2IoVomkemMOsjUFqcWIuE6AJU87m3XzgIIqzY1H-B2vj-";
     String KEY_DEVICE_TOKEN="device_token";
     String KEY_ISFROM_CHAT="is_from_chat";
+    String KEY_ISFROM_ACT="is_from_ACT";
     String KEY_ISFROM_CURRENT="is_from_Current";
     String KEY_POS="pos";
     String KEY_URL_LIST="file_url_list";
+    String KEY_Noti_RADIO_ID="radiob_btn_id";
+    String KEY_NotI_SETTING="noti_setting";
+    String KEY_FROM="is_from";
 }

@@ -78,7 +78,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Constant
     public static Drive mDriveService;
     public static DriveServiceHelper mDriveServiceHelper;
     int REQUEST_CODE_SIGN_IN = 103;
-    public ImageView imgCall, imgSearchBar, imgLogout, imgSetting;
+    public ImageView imgCall, imgSearchBar, imgLogout, imgSetting,imgBack;
     CircleImageView imgProfile;
     public static GoogleSignInClient client;
     private FirebaseAuth mAuth;
@@ -111,12 +111,19 @@ public abstract class BaseActivity extends AppCompatActivity implements Constant
         tvSetting = findViewById(R.id.tvSetting);
         tvCall = findViewById(R.id.tvCall);
         tvLogout = findViewById(R.id.tvLogout);
+        imgBack=findViewById(R.id.imgBack);
         imgCall.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(Intent.ACTION_DIAL);
 //                intent.setData(Uri.parse("tel:0123456789"));
                 startActivity(intent);
+            }
+        });
+        imgBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+               BaseActivity.super.onBackPressed();
             }
         });
         tvCall.setOnClickListener(new View.OnClickListener() {
@@ -221,6 +228,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Constant
             public void onSuccess(Void aVoid) {
                 startActivity(new Intent(BaseActivity.this, LoginActivity.class));
                 Prefrences.Companion.saveBoolean(BaseActivity.this, KEY_IS_LOGIN, false);
+                Prefrences.Companion.saveInt(BaseActivity.this,ConstantsValues.KEY_Noti_RADIO_ID,0);
                 finishAffinity();
             }
         });

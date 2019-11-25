@@ -19,12 +19,13 @@
         android:layout_width="32dp"
         android:layout_height="32dp"
         android:layout_marginStart="16dp"
-
+        android:onClick="@{(v)->includeviewModel.back(v)}"
         android:layout_marginLeft="16dp"
         android:layout_marginTop="8dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:src="@drawable/arrow_white" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:src="@drawable/arrow_white"/>
 
 
     <TextView
@@ -32,10 +33,12 @@
         android:layout_width="wrap_content"
         android:textColor="@color/white"
         android:layout_height="wrap_content"
+        android:textSize="18sp"
         android:layout_marginStart="8dp"
         android:layout_marginLeft="8dp"
         android:layout_marginTop="8dp"
         android:text="@{includeviewModel.name}"
+
         app:layout_constraintStart_toEndOf="@+id/imgProfile"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -55,16 +58,16 @@
 
     <ImageView
         android:id="@+id/imgSend"
-        android:layout_width="32dp"
+        android:layout_width="24dp"
         android:visibility="gone"
-        android:layout_height="32dp"
+        android:layout_height="24dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
         android:scaleX="1.5"
         android:scaleY="1.2"
         android:paddingTop="4dp"
-        android:src="@drawable/send"
+        android:src="@drawable/ic_chat_send"
         app:layout_constraintEnd_toStartOf="@+id/imgDelete"
         app:layout_constraintTop_toTopOf="parent" />
     <ImageView
@@ -102,5 +105,7 @@
         android:text="@{includeviewModel.convertMillistoTime()}"
         app:layout_constraintStart_toStartOf="@+id/tvTitle"
         app:layout_constraintTop_toBottomOf="@+id/tvTitle" />
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

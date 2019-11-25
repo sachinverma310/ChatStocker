@@ -46,6 +46,14 @@ class Prefrences : ConstantsValues {
             var preferences = context.getSharedPreferences(context.packageName, MODE_PRIVATE)
             return preferences.getString(key,null)
         }
+        fun saveInt(context: Context, key: String, value: Int) {
+            editor = context.getSharedPreferences(context.packageName, MODE_PRIVATE).edit()
+            editor.putInt(key, value).commit()
+        }
+        fun getIntValue(context: Context, key: String): Int? {
+            var preferences = context.getSharedPreferences(context.packageName, MODE_PRIVATE)
+            return preferences.getInt(key,0)
+        }
         fun getBoolean(context: Context, key: String): Boolean {
             var preferences = context.getSharedPreferences(context.packageName, MODE_PRIVATE)
             return preferences.getBoolean(key, false)

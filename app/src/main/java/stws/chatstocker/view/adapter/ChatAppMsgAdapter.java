@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.app.adprogressbarlib.AdCircleProgress;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.firebase.auth.FirebaseAuth;
 
 import java.io.File;
@@ -33,6 +34,7 @@ import stws.chatstocker.R;
 import stws.chatstocker.model.ChatMessage;
 import stws.chatstocker.utils.DateTimeUtils;
 import stws.chatstocker.view.AudioPalyerActivity;
+import stws.chatstocker.view.FullProfilePicViewrActivity;
 import stws.chatstocker.view.FullscreenImageActivity;
 import stws.chatstocker.view.VideoPlayerActivity;
 
@@ -131,7 +133,7 @@ public class ChatAppMsgAdapter extends RecyclerView.Adapter<ChatAppMsgAdapter.Ch
                 holder.leftAudioLayout.setVisibility(View.GONE);
                 holder.leftImgLayout.setVisibility(View.VISIBLE);
                 holder.rightMsgLayout.setVisibility(LinearLayout.GONE);
-                Glide.with(holder.rightImgLayout.getContext()).load(msgDto.getMsg()).into(holder.imgFileLeft);
+                Glide.with(holder.rightImgLayout.getContext()).load(msgDto.getMsg()).into(holder.imgFileLeft) ;
             } else if (msgDto.getType().equals("audio")) {
                 holder.rightAudioLayout.setVisibility(View.GONE);
                 holder.leftAudioLayout.setVisibility(View.VISIBLE);
@@ -226,7 +228,7 @@ public class ChatAppMsgAdapter extends RecyclerView.Adapter<ChatAppMsgAdapter.Ch
                             return;
                         }
                         if (msgDtoList.get(getAdapterPosition()).getType().equals("image")) {
-                            Intent intent = new Intent(v.getContext(), FullscreenImageActivity.class);
+                            Intent intent = new Intent(v.getContext(), FullProfilePicViewrActivity.class);
                             intent.putExtra(ConstantsValues.KEY_ISFROM_CHAT, true);
                             intent.putExtra(ConstantsValues.KEY_FILE_URL, msgDtoList.get(getAdapterPosition()).getMsg());
                             v.getContext().startActivity(intent);
@@ -252,7 +254,7 @@ public class ChatAppMsgAdapter extends RecyclerView.Adapter<ChatAppMsgAdapter.Ch
                             return;
                         }
                         if (msgDtoList.get(getAdapterPosition()).getType().equals("image")) {
-                            Intent intent = new Intent(v.getContext(), FullscreenImageActivity.class);
+                            Intent intent = new Intent(v.getContext(), FullProfilePicViewrActivity.class);
                             intent.putExtra(ConstantsValues.KEY_FILE_URL, msgDtoList.get(getAdapterPosition()).getMsg());
                             intent.putExtra(ConstantsValues.KEY_ISFROM_CHAT, true);
                             v.getContext().startActivity(intent);
