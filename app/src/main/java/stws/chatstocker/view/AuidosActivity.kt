@@ -33,18 +33,18 @@ import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
-class AuidosActivity : AppCompatActivity()  , GetAllFiles.OnFileReciveListener, FileRecievedListener,AudioAdapter.FileSelectedListener {
+class AuidosActivity : AppCompatActivity(), GetAllFiles.OnFileReciveListener, FileRecievedListener, AudioAdapter.FileSelectedListener {
     override fun selectedFile(photos: ArrayList<FileDetails>) {
         if (photos.size > 0)
             sheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED)
         else
             sheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED)
-        photoViewModel.list=photos;
+        photoViewModel.list = photos;
     }
 
     lateinit var fileList: MutableList<FileDetails>
     var hashMapFileList: HashMap<String, Int> = HashMap()
-    lateinit var adapter:AudioAdapter
+    lateinit var adapter: AudioAdapter
     override fun Downloaded(list: List<FileDetails>) {
 //        Glide.with(this).load(list.get(0)).into(btn)
         fileList.addAll(list)
@@ -65,7 +65,7 @@ class AuidosActivity : AppCompatActivity()  , GetAllFiles.OnFileReciveListener, 
         var prevValue = 0
         //Sections
         var count = 0;
-        val result =   hashMapFileList.toSortedMap(compareByDescending { it })
+        val result = hashMapFileList.toSortedMap(compareByDescending { it })
         result.forEach { (key, value) ->
             if (count == 0)
                 sections.add(SectionedGridRecyclerViewAdapter.Section(0, key))
@@ -78,7 +78,7 @@ class AuidosActivity : AppCompatActivity()  , GetAllFiles.OnFileReciveListener, 
 
 
         //Add your adapter to the sectionAdapter
-        adapter = AudioAdapter(fileList, BaseActivity.mDriveService,this)
+        adapter = AudioAdapter(fileList, BaseActivity.mDriveService, this)
 
         val mSectionedAdapter = SectionedGridRecyclerViewAdapter(this, R.layout.section, R.id.section_text, recyclerView, adapter)
         mSectionedAdapter.setSections(sections.toTypedArray<SectionedGridRecyclerViewAdapter.Section>())
@@ -89,8 +89,9 @@ class AuidosActivity : AppCompatActivity()  , GetAllFiles.OnFileReciveListener, 
     }
 
     override fun onFileRecive(id: String) {
-        val isfromCurrent=intent.getBooleanExtra(ConstantsValues.KEY_ISFROM_CURRENT,false)
-        DriveServiceHelper.getInstance(mDriveService).GetFilesUrl(this,id, this,isfromCurrent).execute()
+        ProgressBarHandler.hide()
+        val isfromCurrent = intent.getBooleanExtra(ConstantsValues.KEY_ISFROM_CURRENT, false)
+        DriveServiceHelper.getInstance(mDriveService).GetFilesUrl(this, id, this, isfromCurrent).execute()
     }
 
     lateinit var photosBinding: ActivityAuidosBinding
@@ -104,7 +105,7 @@ class AuidosActivity : AppCompatActivity()  , GetAllFiles.OnFileReciveListener, 
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
 //        setContentView(R.layout.activity_audio_recording)
         setTitle(resources.getString(R.string.current_years_audio))
-        val isfromCurrent=intent.getBooleanExtra(ConstantsValues.KEY_ISFROM_CURRENT,false)
+        val isfromCurrent = intent.getBooleanExtra(ConstantsValues.KEY_ISFROM_CURRENT, false)
         if (!isfromCurrent)
             setTitle(resources.getString(R.string.prev_years_audio))
         recyclerView = photosBinding.recyclerView
@@ -113,8 +114,8 @@ class AuidosActivity : AppCompatActivity()  , GetAllFiles.OnFileReciveListener, 
 //        ProgressBarHandler.getInstance()
 //        ProgressBarHandler.show(this)
         photoViewModel = ViewModelProviders.of(this).get(AudioViewModel::class.java)
-        photosBinding.viewModel=photoViewModel
-        photoViewModel.drive=BaseActivity.mDriveService
+        photosBinding.viewModel = photoViewModel
+        photoViewModel.drive = BaseActivity.mDriveService
 
 //        val photoViewModel=ViewModelProviders.of(this).get(PhotoViewModel::class.java)
         /*  ProgressBarHandler.getInstance()
@@ -143,15 +144,18 @@ class AuidosActivity : AppCompatActivity()  , GetAllFiles.OnFileReciveListener, 
             }
         })
 
-callAudioListApi()
+        callAudioListApi()
 
     }
-private fun callAudioListApi(){
-    fileList = ArrayList<FileDetails>()
-    hashMapFileList.clear()
-    fileList.clear()
-    GetAllFiles(this, "Chat Stocker audio", BaseActivity.mDriveServiceHelper, BaseActivity.mDriveService, this@AuidosActivity,"audio/mpeg").execute()
-}
+
+    private fun callAudioListApi() {
+        fileList = ArrayList<FileDetails>()
+        hashMapFileList.clear()
+        fileList.clear()
+        ProgressBarHandler.show(this)
+        GetAllFiles(this, "Chat Stocker audio", BaseActivity.mDriveServiceHelper, BaseActivity.mDriveService, this@AuidosActivity, "audio/mpeg").execute()
+    }
+
     override fun onResume() {
         super.onResume()
 
@@ -159,10 +163,11 @@ private fun callAudioListApi(){
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if(item.itemId==android.R.id.home)
+        if (item.itemId == android.R.id.home)
             super.onBackPressed()
         return true
     }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == ConstantsValues.KEY_FULL_SCREEN_REQUEST_CODE) {

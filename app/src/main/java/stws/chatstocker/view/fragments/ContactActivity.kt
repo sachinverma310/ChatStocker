@@ -28,7 +28,7 @@ class ContactActivity : AppCompatActivity() {
         btnSend.setOnClickListener(View.OnClickListener {
           val  i = Intent(Intent.ACTION_SEND)
             i.setType("message/rfc822")
-            i.putExtra(Intent.EXTRA_EMAIL, arrayOf("recipient@example.com"))
+            i.putExtra(Intent.EXTRA_EMAIL, arrayOf("stockeronlinedatastorage@gmail.com"))
             i.putExtra(Intent.EXTRA_SUBJECT, edtSubject.text.toString())
             i.putExtra(Intent.EXTRA_TEXT, edtMessage.text.toString())
             try {

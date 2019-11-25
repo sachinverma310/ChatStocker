@@ -106,6 +106,7 @@ class PhotosActivity : AppCompatActivity(), GetAllFiles.OnFileReciveListener, Fi
 
     override fun onFileRecive(id: String) {
         val isfromCurrent = intent.getBooleanExtra(ConstantsValues.KEY_ISFROM_CURRENT, false)
+        ProgressBarHandler.hide()
         DriveServiceHelper.getInstance(mDriveService).GetFilesUrl(this, id, this, isfromCurrent).execute()
     }
 
@@ -172,6 +173,7 @@ class PhotosActivity : AppCompatActivity(), GetAllFiles.OnFileReciveListener, Fi
         hashMapFileList.clear()
         fileList.clear()
         val viewModel = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
+        ProgressBarHandler.show(this)
         GetAllFiles(this, "Chat Stocker photos", mDriveServiceHelper, mDriveService, this@PhotosActivity, "image/jpeg").execute()
 //        viewModel.isfileDeleted().observe(this, Observer {
 //            fileList.removeAt(it)

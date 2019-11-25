@@ -66,7 +66,7 @@
                 android:id="@+id/tvName"
                 android:layout_gravity="center"
                 android:textColor="@color/black"
-                android:text="Hello"
+                android:text="@={viewModel.name}"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"></TextView>
         </LinearLayout>

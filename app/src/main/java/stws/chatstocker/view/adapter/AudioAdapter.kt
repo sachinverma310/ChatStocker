@@ -44,7 +44,9 @@ class AudioAdapter (val list: MutableList<FileDetails>,val diveService: Drive,va
         holder.bindItem(list.get(position))
 
     }
+    fun updateList(position: Int,string: String){
 
+    }
     inner class MyViewHolder( itemView: AudioListBinding) : RecyclerView.ViewHolder(itemView.root), FileDownloadProgressListener {
         override fun onProgress(value: Float) {
 
@@ -60,7 +62,7 @@ class AudioAdapter (val list: MutableList<FileDetails>,val diveService: Drive,va
             val photoFile= java.io.File(audio.path + java.io.File.separator
                     + photos.thumbnail)
             progressListener=this
-            val photoViewModel= AudioViewModel(photos.thumbnail!!,photos.fileId!!,photos.thumbnail,diveService,progressListener,adapterPosition,this@AudioAdapter)
+            val photoViewModel= AudioViewModel(photos.thumbnail!!,photos.fileId!!,photos.thumbnail,diveService,progressListener,adapterPosition,this@AudioAdapter,this@AudioAdapter)
             photoListBinding.viewModel=photoViewModel
             photoListBinding?.viewModel?.date= DateTimeUtils.convertDateTimetoDay(photos.createdTime,"dd MMM")
             photoViewModel.context=tvName.context
@@ -68,7 +70,8 @@ class AudioAdapter (val list: MutableList<FileDetails>,val diveService: Drive,va
             progressBar.visibility = View.VISIBLE
             if (photoFile.exists())
                 photoViewModel.isDownloaded!!.set(true)
-            tvName.text=photos.thumbnail
+            photoViewModel!!.name.set(photos.thumbnail)
+//            tvName.text=photos.thumbnail
             itemView.setOnClickListener(View.OnClickListener {
                 if (photoFile.exists()){
                     val intent=Intent(progressBar.context,AudioPalyerActivity::class.java)

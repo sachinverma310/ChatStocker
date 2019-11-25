@@ -86,6 +86,7 @@ class VideoSActivity : AppCompatActivity() , GetAllFiles.OnFileReciveListener, F
     }
 
     override fun onFileRecive(id: String) {
+        ProgressBarHandler.hide()
         val isfromCurrent=intent.getBooleanExtra(ConstantsValues.KEY_ISFROM_CURRENT,false)
         DriveServiceHelper.getInstance(BaseActivity.mDriveService).GetFilesUrl(this,id, this,isfromCurrent).execute()
     }
@@ -144,6 +145,7 @@ class VideoSActivity : AppCompatActivity() , GetAllFiles.OnFileReciveListener, F
        fileList = ArrayList<FileDetails>()
         fileList.clear()
         hashMapFileList.clear()
+        ProgressBarHandler.show(this)
         GetAllFiles(this, "Chat Stocker videos", BaseActivity.mDriveServiceHelper, BaseActivity.mDriveService, this@VideoSActivity,"video/mp4").execute()
     }
 

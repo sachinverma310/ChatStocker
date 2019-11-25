@@ -8,7 +8,9 @@ import android.net.Uri
 import android.os.AsyncTask
 import android.os.Environment
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
+import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -18,8 +20,13 @@ import com.google.api.client.googleapis.media.MediaHttpDownloader
 import com.google.api.client.googleapis.media.MediaHttpDownloaderProgressListener
 import com.google.api.services.drive.Drive
 import stws.chatstocker.ConstantsValues
+import stws.chatstocker.R
 import stws.chatstocker.model.FileDetails
+import stws.chatstocker.utils.DriveServiceHelper
+import stws.chatstocker.utils.GetAllFiles
 import stws.chatstocker.utils.ProgressBarHandler
+import stws.chatstocker.view.AuidosActivity
+import stws.chatstocker.view.BaseActivity
 import stws.chatstocker.view.FullscreenImageActivity
 import stws.chatstocker.view.VideoPlayerActivity
 import stws.chatstocker.view.adapter.AudioAdapter
@@ -28,6 +35,7 @@ import stws.chatstocker.view.fragments.UserFragment
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
+import java.io.IOException
 
 class AudioViewModel : ViewModel, ConstantsValues {
     constructor() {
@@ -43,8 +51,14 @@ class AudioViewModel : ViewModel, ConstantsValues {
     var pos: Int = 0
     var fileDeletedListener: AudioViewModel.FileDeletedListener? = null
     var photos: FileDetails? = null;
+    var audioAdapter: AudioAdapter?=null
+    var name: ObservableField<String> = ObservableField<String>()
+        set(value) {
+            field = value
+        }
+        get() = field
 
-    constructor(url: String, fileId: String, fileName: String, drive: Drive, progressListener: AudioAdapter.FileDownloadProgressListener, pos: Int, fileDeletedListener: FileDeletedListener)
+    constructor(url: String, fileId: String, fileName: String, drive: Drive, progressListener: AudioAdapter.FileDownloadProgressListener, pos: Int, fileDeletedListener: FileDeletedListener,audioAdapter: AudioAdapter)
             : this() {
         this.url = url
         this.isVideo = isVideo
@@ -55,6 +69,7 @@ class AudioViewModel : ViewModel, ConstantsValues {
         this.fileDeletedListener = fileDeletedListener
         this.photos = photos
         this.fileName = fileName
+        this.audioAdapter=audioAdapter
 
     }
 
@@ -80,12 +95,15 @@ class AudioViewModel : ViewModel, ConstantsValues {
             field = value
         }
         get() = field
-    var list:List<FileDetails>?=null
+    var list: List<FileDetails>? = null
         set(value) {
             field = value
         }
         get() = field
+
     fun startDownloading(view: View) {
+        photoFile = File(photo.path + File.separator
+                + fileName)
         if (!photoFile.exists())
             DownloadTask().execute()
         else {
@@ -154,7 +172,7 @@ class AudioViewModel : ViewModel, ConstantsValues {
 
     fun shareItem(view: View) {
 
-            photoFile = File(fileName)
+        photoFile = File(fileName)
         if (photoFile.exists()) {
             val sharingIntent = Intent(Intent.ACTION_SEND);
             sharingIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
@@ -162,9 +180,45 @@ class AudioViewModel : ViewModel, ConstantsValues {
             sharingIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse(fileName));
             view.context!!.startActivity(Intent.createChooser(sharingIntent, "Share Audio Using"));
 //            shareMultipleImage(view.context)
+        } else
+            shareMultipleImage(view.context)
+    }
+
+    fun renameItem(view: View) {
+        if (list!!.size == 1) {
+            for (filesToSend: FileDetails in list!!) {
+
+                photoFile = File(photo.path + File.separator
+                        + filesToSend!!.thumbnail)
+
+            }
+            openeRenameDialog(view, list!!.get(0).thumbnail.toString())
         }
-        else
-        shareMultipleImage(view.context)
+    }
+
+    fun openeRenameDialog(view: View, fileName: String) {
+        val li = LayoutInflater.from(view.context);
+        val promptsView = li.inflate(R.layout.file_rename_dialog, null);
+        val alertDailogBuilder = AlertDialog.Builder(view.context)
+        alertDailogBuilder.setView(promptsView)
+
+        val userInput = promptsView.findViewById(R.id.editTextDialogUserInput) as EditText
+        alertDailogBuilder
+
+                .setPositiveButton(android.R.string.yes, DialogInterface.OnClickListener { dialog, whichButton ->
+                    dialog.dismiss()
+                    val from = File(photo, fileName);
+                    var to: File? = null
+                    if (userInput.length() > 0)
+                        to = File(photo, userInput.text.toString()+".mp3")
+                    else
+                        to = File(fileName)
+                    if (from.exists())
+                        from.renameTo(to);
+                    RenameFile(userInput.text.toString()+".mp3",view.context).execute()
+//                    Toast.makeText(this, "Recording saved", Toast.LENGTH_SHORT).show()
+                })
+                .setNegativeButton(android.R.string.no, null).show()
     }
 
     fun shareMultipleImage(contexts: Context) {
@@ -181,8 +235,8 @@ class AudioViewModel : ViewModel, ConstantsValues {
 //                photoFile = File(photo.path + File.separator
 //                        + filesToSend!!.fileId + "." + "mp4")
 //            else
-                photoFile = File(photo.path + File.separator
-                        + filesToSend!!.thumbnail )
+            photoFile = File(photo.path + File.separator
+                    + filesToSend!!.thumbnail)
 //            val file = java.io.File(filesToSend.fileId);
             val uri = Uri.parse(photoFile.absolutePath);
             files.add(uri);
@@ -191,16 +245,60 @@ class AudioViewModel : ViewModel, ConstantsValues {
         intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, files);
         contexts.startActivity(intent);
     }
+
     fun sendItem(view: View) {
 //        if (isDownloaded!!.get() == true) {
 
-            photoFile = File(photo.path + File.separator
-                    + fileName )
+        photoFile = File(photo.path + File.separator
+                + fileName)
         val intent = Intent(view.context, UserFragment::class.java)
         intent.putExtra(ConstantsValues.KEY_FILE_URL, fileName)
         view.context.startActivity(intent)
 //        }
     }
+
+    inner class RenameFile(val renamefileName: String,val contexts: Context) : AsyncTask<String, String, String>() {
+        override fun doInBackground(vararg params: String?): String {
+
+            try {
+                val file = com.google.api.services.drive.model.File()
+                file.setName(renamefileName)
+
+                // Rename the file.
+                val patchRequest = BaseActivity.mDriveService.files().update(list!!.get(0)!!.fileId, file)
+                patchRequest.setFields("name");
+
+                val updatedFile = patchRequest.execute();
+                return "";
+            } catch (e: IOException) {
+                System.out.println("An error occurred: " + e);
+                return "";
+            }
+            return ""
+        }
+
+
+        override fun onPostExecute(result: String?) {
+            super.onPostExecute(result)
+            val intent=Intent(contexts,AuidosActivity::class.java)
+            intent.putExtra(ConstantsValues.KEY_ISFROM_CURRENT,true)
+            contexts.startActivity(intent)
+            (contexts as AppCompatActivity).finish()
+            name.set(renamefileName+".mp3")
+//            audioAdapter!!.notifyDataSetChanged()
+            Toast.makeText(contexts, "File Renamed Successfully", Toast.LENGTH_SHORT).show()
+//            ProgressBarHandler.hide()
+        }
+
+        override fun onPreExecute() {
+            super.onPreExecute()
+//            ProgressBarHandler.show(context!!)
+//            fileDeletedListener!!.fileDeleted(pos)
+        }
+
+
+    }
+
     inner class deleteFile : AsyncTask<String, String, String>() {
         override fun doInBackground(vararg params: String?): String {
             drive!!.files().delete(photos!!.fileId).execute()
@@ -214,9 +312,9 @@ class AudioViewModel : ViewModel, ConstantsValues {
 
         override fun onPostExecute(result: String?) {
             super.onPostExecute(result)
-            val intent=Intent()
-            intent.putExtra(ConstantsValues.KEY_FILE,photos)
-            (context as AppCompatActivity).setResult(Activity.RESULT_OK,intent)
+            val intent = Intent()
+            intent.putExtra(ConstantsValues.KEY_FILE, photos)
+            (context as AppCompatActivity).setResult(Activity.RESULT_OK, intent)
             (context as AppCompatActivity).finish()
 //            fileDeletedListener!!.fileDeleted(photos!!)
             Toast.makeText(context, "File deleted Successfully", Toast.LENGTH_SHORT).show()
@@ -231,6 +329,7 @@ class AudioViewModel : ViewModel, ConstantsValues {
 
 
     }
+
     fun confirmationDialog(view: View) {
         AlertDialog.Builder(view.context)
 
