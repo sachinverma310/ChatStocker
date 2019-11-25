@@ -45,6 +45,10 @@ allprojects {
         maven {
             url 'https://dl.bintray.com/ulrichraab/maven'
         }
+        maven { url 'https://jitpack.io' }
+        maven {
+            url 'https://oss.sonatype.org/content/repositories/snapshots/'
+        }
         maven { url 'https://oss.jfrog.org/artifactory/oss-snapshot-local' }
     }
 }
@@ -107,6 +111,8 @@ dependencies {
     implementation 'com.devlomi.record-view:record-view:2.0.1'
     api 'com.github.chathuralakmal:AndroidImagePopup:1.2.2'
     api 'com.droidninja:filepicker:2.2.1'
+    implementation 'com.mindorks.android:prdownloader:0.6.0'
+    implementation "com.github.ssseasonnn:RxDownload:1.0.6"
 //    implementation 'com.github.stfalcon:frescoimageviewer:0.1.0'
 //    implementation 'com.facebook.fresco:fresco:0.13.0'
 //    implementation 'com.google.api-client:google-api-client:1.30.2'

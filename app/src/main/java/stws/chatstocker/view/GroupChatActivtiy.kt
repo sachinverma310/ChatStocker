@@ -13,10 +13,7 @@ import android.os.Environment
 import android.os.Handler
 import android.provider.MediaStore
 import android.util.Log
-import android.view.MenuItem
-import android.view.View
-import android.view.Window
-import android.view.WindowManager
+import android.view.*
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.widget.PopupMenu
@@ -33,7 +30,15 @@ import com.google.firebase.database.*
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.UploadTask
+import droidninja.filepicker.FilePickerBuilder
+import droidninja.filepicker.FilePickerConst
 import kotlinx.android.synthetic.main.activity_chat.*
+import kotlinx.android.synthetic.main.activity_chat.bottom_sheet_chats
+import kotlinx.android.synthetic.main.activity_chat.editText
+import kotlinx.android.synthetic.main.activity_chat.recyclerView
+import kotlinx.android.synthetic.main.activity_group_chat_activtiy.*
+import kotlinx.android.synthetic.main.chat_bottom_sheets.*
+import kotlinx.android.synthetic.main.chat_bottom_sheets.view.*
 import stws.chatstocker.ConstantsValues
 import stws.chatstocker.R
 import stws.chatstocker.databinding.ActivityGroupChatActivtiyBinding
@@ -107,7 +112,11 @@ class GroupChatActivtiy : AppCompatActivity(),ChatAppMsgAdapter.ItemSelectedList
     var file: File? = null
     var timeStamp: String? = null
     lateinit var audioRecordingView: AudioRecordView
+    lateinit var imgAudio: ImageView
+    lateinit var imgVideo: ImageView
+    lateinit var imggalley: ImageView
     var fileName: String? = null
+    var mediaFiles = ArrayList<String>();
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val binding:ActivityGroupChatActivtiyBinding=DataBindingUtil.setContentView(this,R.layout.activity_group_chat_activtiy)
@@ -119,6 +128,9 @@ class GroupChatActivtiy : AppCompatActivity(),ChatAppMsgAdapter.ItemSelectedList
         imgDelete = binding.include.imgDelete
         imgSend= binding.include.imgSend
         imgMore = binding.include.imgMore
+        imggalley = chat_group_bottom_sheets.imgSend
+        imgVideo = chat_group_bottom_sheets.imgShare
+        imgAudio = chat_group_bottom_sheets.imgDelete
 //        imgFile=binding.imgFileUpload
         audioRecordingView = binding.editText
         viewmodel.senderUid=myUserId
@@ -161,9 +173,10 @@ class GroupChatActivtiy : AppCompatActivity(),ChatAppMsgAdapter.ItemSelectedList
             viewmodel.onSendClick(audioRecordingView.messageView)
         })
         audioRecordingView.attachmentView.setOnClickListener(View.OnClickListener {
-            showCameraGalaryPopup()
-            photoFile = getOutputMediaFile()
-            fileUri = getOutputMediaFileUri(photoFile!!)
+            chat_group_bottom_sheets.visibility=View.VISIBLE
+//            showCameraGalaryPopup()
+//            photoFile = getOutputMediaFile()
+//            fileUri = getOutputMediaFileUri(photoFile!!)
         })
         audioRecordingView.setRecordingListener(object : AudioRecordView.RecordingListener {
             override fun onRecordingStarted() {
@@ -189,6 +202,47 @@ class GroupChatActivtiy : AppCompatActivity(),ChatAppMsgAdapter.ItemSelectedList
 
             }
 
+        })
+
+        imgVideo.setOnClickListener(View.OnClickListener {
+            FilePickerBuilder.instance.setMaxCount(5)
+                    .setSelectedFiles(mediaFiles)
+                    .setActivityTheme(R.style.LibAppTheme)
+                    .enableVideoPicker(true)
+                    .enableImagePicker(false)
+                    .pickPhoto(this);
+            chat_group_bottom_sheets.visibility=View.GONE
+        })
+        imgAudio.setOnClickListener(View.OnClickListener {
+            val fileTypeLis = arrayOf(".mp3",".wav")
+
+            FilePickerBuilder.instance.setMaxCount(5)
+                    .setSelectedFiles(mediaFiles)
+                    .setActivityTheme(R.style.LibAppTheme)
+                    .enableVideoPicker(false)
+                    .enableImagePicker(true)
+                    .addFileSupport("ZIP",fileTypeLis, R.drawable.mike)
+                    .pickFile(this);
+            chat_group_bottom_sheets.visibility=View.GONE
+        })
+        imggalley.setOnClickListener(View.OnClickListener {
+            FilePickerBuilder.instance.setMaxCount(5)
+                    .setSelectedFiles(mediaFiles)
+                    .setActivityTheme(R.style.LibAppTheme)
+                    .enableVideoPicker(false)
+                    .enableImagePicker(true)
+                    .pickPhoto(this);
+            chat_group_bottom_sheets.visibility=View.GONE
+        })
+        recyclerView.setOnTouchListener(object :View.OnTouchListener {
+            override fun onTouch(v: View?, event: MotionEvent?): Boolean {
+                chat_group_bottom_sheets.visibility=View.GONE
+                return false
+            }
+
+        })
+        editText.setOnClickListener(View.OnClickListener {
+            chat_group_bottom_sheets.visibility=View.GONE
         })
     }
 
@@ -693,28 +747,51 @@ private fun sendFile(senderUid: String?, receiverUid: String?, path: Uri?, pathL
 
 
             if (resultCode == RESULT_OK) {
-                var list: ArrayList<File> = ArrayList()
-                if (requestCode == 100) {
-                    Log.e("path", photoFile!!.getAbsolutePath())
-                    val takenImage = BitmapFactory.decodeFile(photoFile!!.getAbsolutePath())
-                    val realPath: String
-                    realPath = photoFile!!.getAbsolutePath()
-                    list.add(File(realPath))
-                    sendFile(Prefrences.Companion.getUserUid(this), otherUId.uid, Uri.fromFile(File(realPath)), list, 0)
-//                    sendFile(Prefrences.Companion.getUserUid(this), otherUId.uid, Uri.fromFile(File(realPath)))
-//                    Glide.with(this@ChatActivity).load(realPath).into(imgFile)
+                if (resultCode == RESULT_OK) {
+                    var list: ArrayList<File> = ArrayList()
+//                var listFile: ArrayList<ImageFile> = ArrayList()
+                    if (requestCode == FilePickerConst.REQUEST_CODE_PHOTO) {
+//                    Log.e("path", photoFile!!.getAbsolutePath())
+                        mediaFiles = ArrayList<String>();
+                        mediaFiles.addAll(data!!.getStringArrayListExtra(FilePickerConst.KEY_SELECTED_MEDIA));
+//                    val takenImage = BitmapFactory.decodeFile(photoFile!!.getAbsolutePath())
+//                    val realPath: String
+//                    realPath = photoFile!!.getAbsolutePath()
+//                    list.add(File(realPath))
+                        for (i in 0 until mediaFiles.size) {
+                            list.add(File(mediaFiles.get(i)))
+                            sendFile(Prefrences.Companion.getUserUid(this), otherUId.uid, Uri.fromFile(File(mediaFiles.get(i))), list, i)
 
-                } else if (requestCode == 200) {
-                    val realPath: String
-                    realPath = GetRealPathUtil.getPath(this, data!!.data)
-                    list.add(File(realPath))
-//                    Glide.with(this@ChatActivity).load(realPath).into(imgFile)
-                    sendFile(Prefrences.Companion.getUserUid(this), otherUId.uid, Uri.fromFile(File(realPath)), list, 0)
-//                    sendFile(Prefrences.Companion.getUserUid(this), otherUId.uid, Uri.fromFile(File(realPath)))
-                    Log.e("realPath", realPath)
+                        }//                    Glide.with(this@ChatActivity).load(realPath).into(imgFile)
 
+                    }
+                    if (requestCode == FilePickerConst.REQUEST_CODE_DOC) {
+//                    Log.e("path", photoFile!!.getAbsolutePath())
+                        mediaFiles = ArrayList<String>();
+                        mediaFiles.addAll(data!!.getStringArrayListExtra(FilePickerConst.KEY_SELECTED_DOCS));
+//                    val takenImage = BitmapFactory.decodeFile(photoFile!!.getAbsolutePath())
+//                    val realPath: String
+//                    realPath = photoFile!!.getAbsolutePath()
+//                    list.add(File(realPath))
+                        for (i in 0 until mediaFiles.size) {
+                            list.add(File(mediaFiles.get(i)))
+                            sendFile(Prefrences.Companion.getUserUid(this), otherUId.uid, Uri.fromFile(File(mediaFiles.get(i))), list, i)
 
+                        }//                    Glide.with(this@ChatActivity).load(realPath).into(imgFile)
+
+                    }
                 }
+//                else if (requestCode == 200) {
+//                    val realPath: String
+//                    realPath = GetRealPathUtil.getPath(this, data!!.data)
+//                    list.add(File(realPath))
+////                    Glide.with(this@ChatActivity).load(realPath).into(imgFile)
+//                    sendFile(Prefrences.Companion.getUserUid(this), otherUId.uid, Uri.fromFile(File(realPath)), list, 0)
+////                    sendFile(Prefrences.Companion.getUserUid(this), otherUId.uid, Uri.fromFile(File(realPath)))
+//                    Log.e("realPath", realPath)
+//
+//
+//                }
 
             }
         }

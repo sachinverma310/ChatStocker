@@ -29,9 +29,12 @@ import java.io.File
 import java.io.FileOutputStream
 import java.lang.Exception
 import android.content.DialogInterface
+import android.content.pm.PackageManager
+import android.content.pm.ResolveInfo
 import android.net.Uri
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.FileProvider
 import stws.chatstocker.model.FileDetails
 import stws.chatstocker.view.ImageViewActivity
 
@@ -260,14 +263,14 @@ class PhotoViewModel : ViewModel, ConstantsValues {
                 if (photos!=null)
             photoFile = File(photo.path + File.separator
                     + photos!!.fileId + "." + "jpg")
-        if (photoFile.exists()) {
-            val sharingIntent = Intent(Intent.ACTION_SEND);
-            sharingIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
-            sharingIntent.setType("image/*");
-            sharingIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse(photoFile.absolutePath));
-            view.context!!.startActivity(Intent.createChooser(sharingIntent, "Share Image Using"));
-        }
-        else
+//        if (photoFile.exists()) {
+//            val sharingIntent = Intent(Intent.ACTION_SEND);
+//            sharingIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
+//            sharingIntent.setType("image/*");
+//            sharingIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse("file://"+photoFile.absolutePath));
+//            view.context!!.startActivity(Intent.createChooser(sharingIntent, "Share Image Using"));
+//        }
+//        else
         shareMultipleImage(view.context)
     }
 
@@ -275,7 +278,7 @@ class PhotoViewModel : ViewModel, ConstantsValues {
         val intent = Intent();
         intent.setAction(Intent.ACTION_SEND_MULTIPLE);
         intent.putExtra(Intent.EXTRA_SUBJECT, "Here are some files.");
-        intent.setType("image/jpeg"); /* This example is sharing jpeg images. */
+        intent.setType("image/*"); /* This example is sharing jpeg images. */
 
         val files = ArrayList<Uri>();
 
@@ -288,12 +291,15 @@ class PhotoViewModel : ViewModel, ConstantsValues {
                 photoFile = File(photo.path + File.separator
                         + filesToSend!!.fileId + "." + "jpg")
 //            val file = java.io.File(filesToSend.fileId);
-            val uri = Uri.parse(photoFile.absolutePath);
+            val uri = FileProvider.getUriForFile(contexts, contexts.getApplicationContext().getPackageName() + ".provider", photoFile);
+//            val uri = Uri.parse("file://"+photoFile.absolutePath);
+
             files.add(uri);
         }
-
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         intent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, files);
-        contexts.startActivity(intent);
+        contexts.startActivity(Intent.createChooser(intent, "Share Image Using"));
     }
     inner class deleteFile(val contexts:Context) : AsyncTask<String, String, String>() {
         override fun doInBackground(vararg params: String?): String {

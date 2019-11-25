@@ -6,6 +6,7 @@ import android.graphics.Bitmap
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.StrictMode
 import android.util.Log
 import android.view.MenuItem
 import android.view.View
@@ -115,6 +116,8 @@ class PhotosActivity : AppCompatActivity(), GetAllFiles.OnFileReciveListener, Fi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         photosBinding = DataBindingUtil.setContentView(this, stws.chatstocker.R.layout.activity_photos)
+        var builder =  StrictMode.VmPolicy.Builder();
+        StrictMode.setVmPolicy(builder.build());
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         sheetBehavior = BottomSheetBehavior.from(bottom_sheet)
 //        expandCloseSheet()

@@ -27,7 +27,7 @@ class NotificationActivity : AppCompatActivity() {
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         setTitle("Notification Settings")
         rbGrp=activityFullscreenImageBinding.rbgrp
-        if (Prefrences.getIntValue(this@NotificationActivity,ConstantsValues.KEY_Noti_RADIO_ID)!=0) {
+        if (Prefrences.getIntValue(this@NotificationActivity,ConstantsValues.KEY_Noti_RADIO_ID)!=-1) {
             val radioButton=rbGrp.findViewById<RadioButton>(Prefrences.getIntValue(this@NotificationActivity,ConstantsValues.KEY_Noti_RADIO_ID)!!)
             radioButton.isChecked=true;
         }

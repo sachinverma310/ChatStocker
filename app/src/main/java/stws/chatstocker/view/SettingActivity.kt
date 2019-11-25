@@ -21,7 +21,7 @@ class SettingActivity : BaseActivity() {
     fun logout(view: View){
         BaseActivity.client.signOut().addOnSuccessListener(OnSuccessListener<Void> {
             Prefrences.saveBoolean(this, ConstantsValues.KEY_IS_LOGIN,false)
-            Prefrences.saveInt(this,ConstantsValues.KEY_Noti_RADIO_ID,0)
+            Prefrences.saveInt(this,ConstantsValues.KEY_Noti_RADIO_ID,-1)
             startActivity(Intent(this, LoginActivity::class.java))
             finishAffinity()
         })
