@@ -73,14 +73,14 @@
     <string name="slide_to_cancel">Slide to cancel</string>
     <string name="default_notification_channel_id">Notification Default channel</string>
     <string name="app_information">
-        Auto save your phone data like pics, audio and video in the app without occupying the phone storage.\n
-Personal and group chat option is available\n\n
-You can share,delete and save data anytime anywhere using this app.\n\n
-Personal and group chat option is available.\n\n
-Mobile data in Stocker App remains safe and secure in the case of mobile lost,snatching,Natural clamity,theft or damage\n
-The data is stored in the cloud that you can delete any time.\n\n
-You can save  social media sites data like WhatsApp, Facebook, Tiktok etc.\n\n
-Use the app camera for clicking pics, video and audio.The data will be saved automatically in the app storage.\n\nYou will feel proud to know that STOCKER app is made in INDIA.\n\nBy using this app you can keep your important data save forever with no cost.\n \nEVERYTHING ON A SINGLE SCREEN WITH EASY FUNCTIONALITIES.
+       "\u2022" Auto save your phone data like pics, audio and video in the app without occupying the phone storage.\n\n
+"\u2022"Personal and group chat option is available\n\n
+"\u2022"You can share,delete and save data anytime anywhere using this app.\n\n
+"\u2022"Personal and group chat option is available.\n\n
+"\u2022"Mobile data in Stocker App remains safe and secure in the case of mobile lost,snatching,Natural clamity,theft or damage\n
+"\u2022"The data is stored in the cloud that you can delete any time.\n\n
+"\u2022"You can save  social media sites data like WhatsApp, Facebook, Tiktok etc.\n\n
+"\u2022"Use the app camera for clicking pics, video and audio.The data will be saved automatically in the app storage.\n\n"\u2022"You will feel proud to know that <font fgcolor='#FF8E8E93'>STOCKER</font>  app is made in INDIA.\n\nBy using this app you can keep your important data save forever with no cost.\n \n"\u2022" <font fgcolor='#FF4CD964'>EVERYTHING ON A SINGLE SCREEN WITH EASY FUNCTIONALITIES.</font>
 
     </string>
     <string name="faqs">
@@ -95,13 +95,13 @@ You can save the data of social media sites like WhatsApp, Facebook, Tiktok etc.
 Use the app camera too that gets saved automatically in the app.
     </string>
     <string name="tc">
-        <p><strong>Registration:</strong></p> you must register for our Services,provide your current mobile number.\n
-you agree to receive  text message and other information to related to this Application\n
-Our Services do not provide access to emergency services including the police ,fire departments,or hospitals\n
+        <p><strong>Registration:</strong></p> you must register for our Services,provide your current mobile number.\n\n
+you agree to receive  text message and other information to related to this Application\n\n
+Our Services do not provide access to emergency services including the police ,fire departments,or hospitals\n\n
 
-All the app data is shown on a single screen.\n
+All the app data is shown on a single screen.\n\n
 Has easy functionalities\n
-Our Cookie Policy, which sets out information about the cookies on the Site..\n
+Our Cookie Policy, which sets out information about the cookies on the Site..\n\n
 You can save the data of social media sites like WhatsApp, Facebook, Tiktok etc.\n
 
     </string>

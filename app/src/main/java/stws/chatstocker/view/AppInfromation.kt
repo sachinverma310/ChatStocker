@@ -1,30 +1,49 @@
 package stws.chatstocker.view
 
+import android.app.Activity
 import android.graphics.Typeface
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Html
+import android.text.SpannableString
+import android.text.style.BulletSpan
 import android.view.MenuItem
+import android.view.View
+import android.webkit.WebResourceRequest
+import android.webkit.WebView
+import android.webkit.WebViewClient
 import android.widget.TextView
+import androidx.annotation.RequiresApi
 import androidx.core.text.HtmlCompat
 import androidx.databinding.DataBindingUtil
 import kotlinx.android.synthetic.main.activity_app_infromation.*
 import stws.chatstocker.ConstantsValues
 import stws.chatstocker.R
 import stws.chatstocker.databinding.ActivityAppInfromationBinding
+import java.io.BufferedReader
+import java.io.InputStreamReader
 
 class AppInfromation : AppCompatActivity() {
 lateinit var activityFullscreenImageBinding:ActivityAppInfromationBinding
     lateinit var textView: TextView
+    private var webView: WebView? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
          activityFullscreenImageBinding = DataBindingUtil.setContentView(this, R.layout.activity_app_infromation)
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+
+
         textView=activityFullscreenImageBinding.tvJustified;
         if (intent.getStringExtra(ConstantsValues.KEY_FROM).equals("appinfo")){
+            tvJustified.visibility=View.GONE
             setTitle("App Information")
-            tvJustified.setText(resources.getString(R.string.app_information))
-            tvJustified.setTypeface(null,Typeface.BOLD)
+            mybrowser.webViewClient = MyWebViewClient(this)
+            mybrowser.settings.javaScriptEnabled=true
+            mybrowser.settings.setDefaultTextEncodingName("utf-8")
+            mybrowser.loadUrl("file:///android_asset/load.html")
+
+
         }
        else if (intent.getStringExtra(ConstantsValues.KEY_FROM).equals("privacypolicy")){
             setTitle("Privacy Policy")
@@ -63,9 +82,25 @@ lateinit var activityFullscreenImageBinding:ActivityAppInfromationBinding
             setTitle("Terms & Conditions")
             tvJustified.setText(resources.getString(R.string.tc))
             tvJustified.setTypeface(null,Typeface.NORMAL)
+
         }
     }
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+
+    class MyWebViewClient internal constructor(private val activity: Activity) : WebViewClient() {
+
+        @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+        override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
+            val url: String = request?.url.toString();
+            view?.loadUrl(url)
+            return true
+        }
+
+        override fun shouldOverrideUrlLoading(webView: WebView, url: String): Boolean {
+            webView.loadUrl(url)
+            return true
+        }
+    }
+        override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId==android.R.id.home)
             super.onBackPressed()
         return super.onOptionsItemSelected(item)
