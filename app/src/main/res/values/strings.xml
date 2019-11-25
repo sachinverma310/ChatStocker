@@ -120,4 +120,5 @@
     <string name="message">Message</string>
     <string name="support">Support</string>
     <string name="attach_file_from_gallery">Attach File from Gallery</string>
+    <string name="save_to_stocker">Save To Stocker</string>
 </resources>

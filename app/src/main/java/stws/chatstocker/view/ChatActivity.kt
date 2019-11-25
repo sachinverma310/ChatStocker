@@ -5,14 +5,13 @@ import android.app.Dialog
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.drawable.Drawable
 import android.media.MediaRecorder
 import android.net.Uri
-import android.os.Build
+import android.os.*
 import androidx.appcompat.app.AppCompatActivity
-import android.os.Bundle
-import android.os.Environment
-import android.os.Handler
 import android.provider.MediaStore
 import android.util.Log
 import android.view.*
@@ -32,10 +31,15 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
+import com.bumptech.glide.request.target.CustomTarget
+import com.bumptech.glide.request.transition.Transition
 import com.devlomi.record_view.RecordButton
 import com.devlomi.record_view.RecordView
+import com.downloader.*
 import com.google.android.gms.tasks.*
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.api.client.googleapis.media.MediaHttpDownloader
+import com.google.api.client.googleapis.media.MediaHttpDownloaderProgressListener
 import com.google.firebase.database.*
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.OnProgressListener
@@ -43,6 +47,9 @@ import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.UploadTask
 import droidninja.filepicker.FilePickerBuilder
 import droidninja.filepicker.FilePickerConst
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
+import io.reactivex.rxkotlin.subscribeBy
 
 
 import kotlinx.android.synthetic.main.activity_chat.*
@@ -63,23 +70,33 @@ import stws.chatstocker.view.adapter.ChatAdapter
 import stws.chatstocker.view.adapter.ChatAppMsgAdapter
 import stws.chatstocker.view.fragments.UserFragment
 import stws.chatstocker.viewmodel.ChatMessageViewModel
-import java.io.File
-import java.io.IOException
+import zlc.season.rxdownload4.download
+import zlc.season.rxdownload4.file
+import java.io.*
 import java.lang.Exception
+import java.net.URL
+import java.net.URLConnection
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.Error
 import kotlin.collections.ArrayList
 
 class ChatActivity : AppCompatActivity(), ConstantsValues, ChatAppMsgAdapter.ItemSelectedListner {
+    private var disposable: Disposable? = null
     override fun onItemSelected(selectedList: ArrayList<ChatMessage>?) {
+
         if (selectedList!!.size > 0) {
             imgMore.visibility = View.GONE
             imgDelete.visibility = View.VISIBLE
             imgSend.visibility = View.VISIBLE
-        } else {
+            imgSave.visibility = View.VISIBLE
+            if (selectedList!!.size > 1)
+                imgSave.visibility = View.GONE
+        }  else {
             imgMore.visibility = View.VISIBLE
             imgDelete.visibility = View.GONE
             imgSend.visibility = View.GONE
+            imgSave.visibility = View.GONE
         }
         imgDelete.setOnClickListener(View.OnClickListener {
             for (i in 0 until selectedList.size) {
@@ -102,6 +119,15 @@ class ChatActivity : AppCompatActivity(), ConstantsValues, ChatAppMsgAdapter.Ite
             startActivity(intent)
             finish()
 //            }
+        }
+        )
+        imgSave.setOnClickListener(View.OnClickListener {
+            selectedList.get(0).isSelected = false
+            adapter.notifyDataSetChanged()
+            if (!selectedList.get(0).type.equals("text"))
+            saveImageToStocker( selectedList.get(0).msg,selectedList.get(0).type)
+            else
+                Toast.makeText(this,"You can't save the text message",Toast.LENGTH_SHORT).show()
         }
         )
 
@@ -143,17 +169,20 @@ class ChatActivity : AppCompatActivity(), ConstantsValues, ChatAppMsgAdapter.Ite
     lateinit var imgAudio: ImageView
     lateinit var imgVideo: ImageView
     lateinit var imggalley: ImageView
+    lateinit var imgSave: TextView
 //    private lateinit var sheetBehavior: BottomSheetBehavior<ConstraintLayout>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         chatActivityChatBinding = DataBindingUtil.setContentView(this, R.layout.activity_chat)
+
         val scoresRef = FirebaseDatabase.getInstance().getReference("chat-stocker")
         scoresRef.keepSynced(true)
-
+        PRDownloader.initialize(getApplicationContext());
         imgDelete = chatActivityChatBinding.include.imgDelete
         imgSend = chatActivityChatBinding.include.imgSend
         imgMore = chatActivityChatBinding.include.imgMore
+        imgSave = chatActivityChatBinding.include.imgSave
 
         imggalley = bottom_sheet_chats.imgSend
         imgVideo = bottom_sheet_chats.imgShare
@@ -221,7 +250,7 @@ class ChatActivity : AppCompatActivity(), ConstantsValues, ChatAppMsgAdapter.Ite
             viewmodel.onSendClick(audioRecordingView.messageView)
         })
         audioRecordingView.attachmentView.setOnClickListener(View.OnClickListener {
-            bottom_sheet_chats.visibility=View.VISIBLE
+            bottom_sheet_chats.visibility = View.VISIBLE
 //            sheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED)
 //            showCameraGalaryPopup()
 //            photoFile = getOutputMediaFile()
@@ -288,19 +317,19 @@ class ChatActivity : AppCompatActivity(), ConstantsValues, ChatAppMsgAdapter.Ite
                     .enableVideoPicker(true)
                     .enableImagePicker(false)
                     .pickPhoto(this);
-            bottom_sheet_chats.visibility=View.GONE
+            bottom_sheet_chats.visibility = View.GONE
         })
         imgAudio.setOnClickListener(View.OnClickListener {
-            val fileTypeLis = arrayOf(".mp3",".wav")
+            val fileTypeLis = arrayOf(".mp3", ".wav")
 
             FilePickerBuilder.instance.setMaxCount(5)
                     .setSelectedFiles(mediaFiles)
                     .setActivityTheme(R.style.LibAppTheme)
                     .enableVideoPicker(false)
                     .enableImagePicker(true)
-                    .addFileSupport("ZIP",fileTypeLis, R.drawable.mike)
+                    .addFileSupport("ZIP", fileTypeLis, R.drawable.mike)
                     .pickFile(this);
-            bottom_sheet_chats.visibility=View.GONE
+            bottom_sheet_chats.visibility = View.GONE
         })
         imggalley.setOnClickListener(View.OnClickListener {
             FilePickerBuilder.instance.setMaxCount(5)
@@ -309,18 +338,139 @@ class ChatActivity : AppCompatActivity(), ConstantsValues, ChatAppMsgAdapter.Ite
                     .enableVideoPicker(false)
                     .enableImagePicker(true)
                     .pickPhoto(this);
-            bottom_sheet_chats.visibility=View.GONE
+            bottom_sheet_chats.visibility = View.GONE
         })
-        recyclerView.setOnTouchListener(object :View.OnTouchListener {
+        recyclerView.setOnTouchListener(object : View.OnTouchListener {
             override fun onTouch(v: View?, event: MotionEvent?): Boolean {
-                bottom_sheet_chats.visibility=View.GONE
+                bottom_sheet_chats.visibility = View.GONE
                 return false
             }
 
         })
         editText.setOnClickListener(View.OnClickListener {
-            bottom_sheet_chats.visibility=View.GONE
+            bottom_sheet_chats.visibility = View.GONE
         })
+    }
+
+
+    private fun saveImageToStocker( imagePath: String, fileType: String) {
+        val photo = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
+                "Chatstocker")
+        val fileName = Calendar.getInstance().timeInMillis;
+//        val downloadId = PRDownloader.download(imagePath, photoFile!!.absolutePath, fileName.toString())
+//                .build()
+//                .setOnStartOrResumeListener(OnStartOrResumeListener() {
+//
+//                })
+//                .setOnPauseListener(OnPauseListener() {
+//
+//                })
+//                .setOnCancelListener(OnCancelListener() {
+//
+//                })
+//                .setOnProgressListener(com.downloader.OnProgressListener {
+//
+//                })
+//                .start(object : OnDownloadListener {
+//                    override fun onDownloadComplete() {
+//                        var photoFile:File?=null
+//                        if (fileType.equals("image")) {
+//                           photoFile= File(photo.path + File.separator
+//                                    + fileName + ".jpg")
+//                            GetAllFiles(this@ChatActivity, "Chat Stocker photos", BaseActivity.mDriveServiceHelper, BaseActivity.mDriveService, photoFile!!, "image/jpeg").execute()
+//                        }
+//                            else if (fileType.equals("video")) {
+//                            photoFile= File(photo.path + File.separator
+//                                    + fileName + ".mp4")
+//                            GetAllFiles(this@ChatActivity, "Chat Stocker videos", BaseActivity.mDriveServiceHelper, BaseActivity.mDriveService, photoFile!!, "video/mp4").execute()
+//                        } else if (fileType.equals("video")) {
+//                            photoFile= File(photo.path + File.separator
+//                                    + fileName + ".mp3")
+//                            GetAllFiles(this@ChatActivity, "Chat Stocker audio", BaseActivity.mDriveServiceHelper, BaseActivity.mDriveService, photoFile!!, "audio/mpeg").execute()
+//                        } }
+//
+//                    override fun onError(error: com.downloader.Error?) {
+//
+//                    }
+//
+//                });
+//        val photo = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
+//                "Chatstocker")
+//        val fileName=Calendar.getInstance().timeInMillis;
+//        var photoFile = File(photo.path + File.separator
+//                + fileName + "." + fileType)
+//        Glide.with(this)
+//                .asBitmap()
+//                .load(imagePath)
+//                .into(object : CustomTarget<Bitmap>(){
+//                    override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
+//                        storeImage(resource,photoFile)
+//                        GetAllFiles(this@ChatActivity, "Chat Stocker photos", BaseActivity.mDriveServiceHelper, BaseActivity.mDriveService, photoFile!!, "image/jpeg").execute()
+//                    }
+//                    override fun onLoadCleared(placeholder: Drawable?) {
+//                        // this is called when imageView is cleared on lifecycle call or for
+//                        // some other reason.
+//                        // if you are referencing the bitmap somewhere else too other than this imageView
+//                        // clear it here as you can no longer have the bitmap
+//                    }
+//                })
+
+//        FirebaseDatabase.getInstance().reference.child("message_images")
+        disposable = imagePath.download()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeBy(
+                        onNext = { progress ->
+                            //download progress
+                            Log.e("progress","${progress.downloadSizeStr()}/${progress.totalSizeStr()}")
+//                            button.text = "${progress.downloadSizeStr()}/${progress.totalSizeStr()}"
+//                            button.setProgress(progress)
+                        },
+                        onComplete = {
+                            photoFile = imagePath.file() as File
+                            Log.e("filr",photoFile!!.absolutePath)
+
+                            if (fileType.equals("image")) {
+//                           photoFile= File(photo.path + File.separator
+//                                    + fileName + ".jpg")
+                            GetAllFiles(this@ChatActivity, "Chat Stocker photos", BaseActivity.mDriveServiceHelper, BaseActivity.mDriveService, photoFile!!, "image/jpeg").execute()
+                        }
+                            else if (fileType.equals("video")) {
+//                            photoFile= File(photo.path + File.separator
+//                                    + fileName + ".mp4")
+                            GetAllFiles(this@ChatActivity, "Chat Stocker videos", BaseActivity.mDriveServiceHelper, BaseActivity.mDriveService, photoFile!!, "video/mp4").execute()
+                        } else if (fileType.equals("video")) {
+//                            photoFile= File(photo.path + File.separator
+//                                    + fileName + ".mp3")
+                            GetAllFiles(this@ChatActivity, "Chat Stocker audio", BaseActivity.mDriveServiceHelper, BaseActivity.mDriveService, photoFile!!, "audio/mpeg").execute()
+                        }
+
+
+                            //download complete
+//                            button.text = "Open"
+                        },
+                        onError = {
+                            //download failed
+//                            button.text = "Retry"
+                        }
+                )
+    }
+
+    private fun storeImage(image: Bitmap, pictureFile: File) {
+
+        if (pictureFile == null) {
+            Log.d(TAG,
+                    "Error creating media file, check storage permissions: ");// e.getMessage());
+            return;
+        }
+        try {
+            val fos = FileOutputStream(pictureFile);
+            image.compress(Bitmap.CompressFormat.PNG, 90, fos);
+            fos.close();
+        } catch (e: FileNotFoundException) {
+            Log.d(TAG, "File not found: " + e.message);
+        } catch (e: IOException) {
+            Log.d(TAG, "Error accessing file: " + e.message);
+        }
     }
 
     private fun stopRecording() {
@@ -580,6 +730,7 @@ class ChatActivity : AppCompatActivity(), ConstantsValues, ChatAppMsgAdapter.Ite
                 if (!dataSnapshot.hasChild("now")) {
                     list.add(chatMessage)
                     scrollChatLayouttoBottom()
+                    return
                 }
 //                                            if (list.size > 0) {
 //                                                if (!list.get(adapter.itemCount - 1).date.equals(chatMessage.date)) {
@@ -592,11 +743,13 @@ class ChatActivity : AppCompatActivity(), ConstantsValues, ChatAppMsgAdapter.Ite
                     if (!isNow!!.equals(dataSnapshot.key.toString())) {
                         list.add(chatMessage)
                         scrollChatLayouttoBottom()
-
+                        return
                     }
-                    scrollChatLayouttoBottom()
+                    list.add(chatMessage)
                     FirebaseDatabase.getInstance().reference.child("chat_room").child(room_type)
                             .child(dataSnapshot.key.toString()).child("now").removeValue()
+                    scrollChatLayouttoBottom()
+
                 }
             }
 //                                        adapter = ChatAdapter(this@ChatActivity, list)
@@ -878,8 +1031,7 @@ class ChatActivity : AppCompatActivity(), ConstantsValues, ChatAppMsgAdapter.Ite
 
                     }//                    Glide.with(this@ChatActivity).load(realPath).into(imgFile)
 
-                }
-                else if (requestCode == 200) {
+                } else if (requestCode == 200) {
 
                     val realPath: String
                     realPath = GetRealPathUtil.getPath(this@ChatActivity, data!!.data)

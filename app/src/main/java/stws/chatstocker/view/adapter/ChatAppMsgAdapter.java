@@ -114,7 +114,7 @@ public class ChatAppMsgAdapter extends RecyclerView.Adapter<ChatAppMsgAdapter.Ch
                 holder.leftMsgLayout.setVisibility(LinearLayout.GONE);
 //                holder.imgFileRight.setImageResource(R.drawable.audio_file);
 //                Glide.with(holder.leftImgLayout.getContext()).load(convertAudiotoThumbnail(Uri.parse(msgDto.getMsg()))).into(holder.imgFileRight);
-            } else {
+            } else if (msgDto.getType().equals("text"))  {
                 holder.rightAudioLayout.setVisibility(View.GONE);
                 holder.leftAudioLayout.setVisibility(View.GONE);
                 holder.leftMsgLayout.setVisibility(LinearLayout.VISIBLE);

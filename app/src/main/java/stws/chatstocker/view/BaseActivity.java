@@ -228,7 +228,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Constant
             public void onSuccess(Void aVoid) {
                 startActivity(new Intent(BaseActivity.this, LoginActivity.class));
                 Prefrences.Companion.saveBoolean(BaseActivity.this, KEY_IS_LOGIN, false);
-                Prefrences.Companion.saveInt(BaseActivity.this,ConstantsValues.KEY_Noti_RADIO_ID,0);
+                Prefrences.Companion.saveInt(BaseActivity.this,ConstantsValues.KEY_Noti_RADIO_ID,-1);
                 finishAffinity();
             }
         });

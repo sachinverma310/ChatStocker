@@ -17,6 +17,8 @@ import stws.chatstocker.ConstantsValues
 import stws.chatstocker.model.GroupDetails
 import stws.chatstocker.model.User
 import stws.chatstocker.utils.Prefrences
+import java.util.*
+import kotlin.collections.ArrayList
 
 
 class UserListViewModel() : ViewModel(),ConstantsValues{
@@ -62,11 +64,13 @@ private lateinit var context:Context
     }
     private fun userListing() {
         nameArrayList = ArrayList<User>()
+//        Collections.synchronizedList(nameArrayList)
         val rootRef = FirebaseDatabase.getInstance().getReference()
         val myuid=Prefrences.Companion.getUserDetails(context, ConstantsValues.KEY_LOGIN_DATA).uid
         val usersdRef = rootRef.child("User")
         val eventListener = object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
+                Log.e("Count " ,""+dataSnapshot.getChildrenCount());
                 for (ds in dataSnapshot.getChildren()) {
                     val uid = ds.child("uid").getValue(String::class.java)
                     if (!myuid.equals(uid)) {
