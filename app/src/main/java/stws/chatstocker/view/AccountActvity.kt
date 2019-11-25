@@ -1,7 +1,9 @@
 package stws.chatstocker.view
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProviders
@@ -26,5 +28,16 @@ class AccountActvity: AppCompatActivity() {
         if (item.itemId==android.R.id.home)
             super.onBackPressed()
         return super.onOptionsItemSelected(item)
+    }
+
+    fun accountInfo(view:View){
+       // startActivity(Intent(this, AccountActvity::class.java))
+
+    }
+    fun deleteAccount(view: View){
+        //startActivity(Intent(this, AccountActvity::class.java))
+    }
+    fun appinformation(view: View){
+      //  startActivity(Intent(this, AccountActvity::class.java))
     }
 }

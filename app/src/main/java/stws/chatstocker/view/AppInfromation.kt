@@ -1,5 +1,6 @@
 package stws.chatstocker.view
 
+import android.graphics.Typeface
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Html
@@ -27,6 +28,7 @@ lateinit var activityFullscreenImageBinding:ActivityAppInfromationBinding
        else if (intent.getStringExtra(ConstantsValues.KEY_FROM).equals("privacypolicy")){
             setTitle("Privacy Policy")
             tvJustified.setText(resources.getString(R.string.privacy))
+            tvJustified.setTypeface(null,Typeface.NORMAL)
         }
         else if (intent.getStringExtra(ConstantsValues.KEY_FROM).equals("faqs")){
             setTitle("FAQ'S")
@@ -51,6 +53,7 @@ lateinit var activityFullscreenImageBinding:ActivityAppInfromationBinding
         else if (intent.getStringExtra(ConstantsValues.KEY_FROM).equals("tc")){
             setTitle("Terms & Conditions")
             tvJustified.setText(resources.getString(R.string.tc))
+            tvJustified.setTypeface(null,Typeface.NORMAL)
         }
     }
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
