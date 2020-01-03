@@ -75,8 +75,11 @@ class UserListDetailsViewModel(user: User) : ViewModel(), ConstantsValues {
             intent.putExtra(KEY_FILE_URL, externalUrl)
             intent.putExtra(KEY_URL_LIST,forwardingurl)
             view.context.startActivity(intent)
-            if (externalUrl!=null)
+            if (externalUrl!=null) {
                 (view.context as AppCompatActivity).finish()
+            }
+            externalUrl=null
+            forwardingurl=null
         }
         else {
             val intent = Intent(view.context, ChatActivity::class.java)
@@ -84,8 +87,11 @@ class UserListDetailsViewModel(user: User) : ViewModel(), ConstantsValues {
             intent.putExtra(KEY_FILE_URL,externalUrl)
             intent.putExtra(KEY_URL_LIST,forwardingurl)
             view.context.startActivity(intent)
-            if (externalUrl!=null)
+            if (externalUrl!=null) {
                 (view.context as AppCompatActivity).finish()
+            }
+            externalUrl=null
+            forwardingurl=null
         }
     }
     fun convertMillistoTime():String{

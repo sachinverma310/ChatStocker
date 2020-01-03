@@ -115,9 +115,8 @@ class GorupChatUserListActivity : AppCompatActivity(), GroupUserAdapter.ItemSele
         userSelectedList= ArrayList()
         grpUserList=intent.getParcelableArrayListExtra<User>(ConstantsValues.KEY_GROUP_DETAILS)
         val viewModel = ViewModelProviders.of(this).get(UserListViewModel::class.java)
-        viewModel.userList(this)!!.observe(this, Observer {
+        viewModel.userList(this,true)!!.observe(this, Observer {
             userList.addAll(it)
-
             userAdapter = GroupUserAdapter(this, userList, this)
             recyclerView.adapter = userAdapter
 

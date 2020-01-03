@@ -60,19 +60,63 @@ class PhotosActivity : AppCompatActivity(), GetAllFiles.OnFileReciveListener, Fi
     var hashMapFileList: HashMap<String, Int> = HashMap()
     lateinit var photoViewModel: PhotoViewModel
     override fun Downloaded(list: List<FileDetails>) {
+//        fileList.addAll(list)
+//        val file = FileSingleton.getInstance()
+//        file.list = fileList
+//
+//        Collections.sort(fileList, SortByTime());
+//        ProgressBarHandler.hide()
+//        var createdtime = ""
+//        for (i in 0 until fileList.size) {
+//            createdtime = DateTimeUtils.convertDateTimetoDay(fileList.get(i).createdTime, "dd MMM")
+//            val millisecond=DateTimeUtils.convertStringtoMillis(createdtime,"dd MMM")
+//            if (hashMapFileList.containsKey(millisecond.toString())) {
+//                hashMapFileList.put(millisecond.toString(), hashMapFileList.get(millisecond.toString())!!.plus(1))
+//            } else {
+//                hashMapFileList.put(millisecond.toString(), 1)
+//            }
+//        }
+//        var layoutManager = GridLayoutManager(this, 3)
+//        recyclerView.layoutManager = layoutManager!!
+//        val sections = ArrayList<SectionedGridRecyclerViewAdapter.Section>()
+//        var prevValue = 0
+//        //Sections
+//        var count = 0;
+//        val results = TreeMap<String,Int>()
+//        results.putAll(hashMapFileList)
+//        val result=results.descendingMap()
+////        val result = hashMapFileList.toSortedMap(compareByDescending { it })
+//        result.forEach { (key, value) ->
+//            if (count == 0)
+//                sections.add(SectionedGridRecyclerViewAdapter.Section(0, key))
+//            else
+//                sections.add(SectionedGridRecyclerViewAdapter.Section(prevValue, key))
+//            prevValue = value + prevValue
+//            count++;
+//
+//        }
+//        photoViewModel = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
+//        photosBinding.viewModel=photoViewModel
+//        photoViewModel.drive=BaseActivity.mDriveService
+//        //Add your adapter to the sectionAdapter
+//        adapter = PhotoAdapter(this@PhotosActivity, BaseActivity.mDriveService, fileList, false, this)
+//
+//        val mSectionedAdapter = SectionedGridRecyclerViewAdapter(this, stws.chatstocker.R.layout.section, stws.chatstocker.R.id.section_text, recyclerView, adapter)
+//        mSectionedAdapter.setSections(sections.toTypedArray<SectionedGridRecyclerViewAdapter.Section>())
+//
+//        //Apply this adapter to the RecyclerView
+//        recyclerView.setAdapter(mSectionedAdapter)
         fileList.addAll(list)
-        val file = FileSingleton.getInstance()
-        file.list = fileList
-
         Collections.sort(fileList, SortByTime());
         ProgressBarHandler.hide()
         var createdtime = ""
         for (i in 0 until fileList.size) {
             createdtime = DateTimeUtils.convertDateTimetoDay(fileList.get(i).createdTime, "dd MMM")
-            if (hashMapFileList.containsKey(createdtime)) {
-                hashMapFileList.put(createdtime, hashMapFileList.get(createdtime)!!.plus(1))
+            val millisecond=DateTimeUtils.convertStringtoMillis(createdtime,"dd MMM")
+            if (hashMapFileList.containsKey(millisecond.toString())) {
+                hashMapFileList.put(millisecond.toString(), hashMapFileList.get(millisecond.toString())!!.plus(1))
             } else {
-                hashMapFileList.put(createdtime, 1)
+                hashMapFileList.put(millisecond.toString(), 1)
             }
         }
         var layoutManager = GridLayoutManager(this, 3)
@@ -81,22 +125,24 @@ class PhotosActivity : AppCompatActivity(), GetAllFiles.OnFileReciveListener, Fi
         var prevValue = 0
         //Sections
         var count = 0;
-        val result = hashMapFileList.toSortedMap(compareByDescending { it })
+        val results = TreeMap<String,Int>()
+        results.putAll(hashMapFileList)
+        val result=results.descendingMap()
         result.forEach { (key, value) ->
             if (count == 0)
-                sections.add(SectionedGridRecyclerViewAdapter.Section(0, key))
+                sections.add(SectionedGridRecyclerViewAdapter.Section(0, DateTimeUtils.convertDateTimetoDay(key.toLong(), "dd MMM")))
             else
-                sections.add(SectionedGridRecyclerViewAdapter.Section(prevValue, key))
+                sections.add(SectionedGridRecyclerViewAdapter.Section(prevValue, DateTimeUtils.convertDateTimetoDay(key.toLong(), "dd MMM")))
             prevValue = value + prevValue
             count++;
 
         }
-        photoViewModel = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
-        photosBinding.viewModel=photoViewModel
-        photoViewModel.drive=BaseActivity.mDriveService
-        //Add your adapter to the sectionAdapter
-        adapter = PhotoAdapter(this@PhotosActivity, BaseActivity.mDriveService, fileList, false, this)
-
+//        Glide.with(this).load(list.get(0)).into(btn)
+//        ProgressBarHandler.hide()
+//        Collections.sort(fileList)
+        FileSingleton.getInstance().list=list
+        val adapter = PhotoAdapter(this, BaseActivity.mDriveService, fileList, false, this)
+        recyclerView.adapter = adapter
         val mSectionedAdapter = SectionedGridRecyclerViewAdapter(this, stws.chatstocker.R.layout.section, stws.chatstocker.R.id.section_text, recyclerView, adapter)
         mSectionedAdapter.setSections(sections.toTypedArray<SectionedGridRecyclerViewAdapter.Section>())
 
@@ -172,7 +218,11 @@ class PhotosActivity : AppCompatActivity(), GetAllFiles.OnFileReciveListener, Fi
         fileList = ArrayList<FileDetails>()
         hashMapFileList.clear()
         fileList.clear()
-        val viewModel = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
+        photoViewModel = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
+        photoViewModel.isVideo=false;
+        photoViewModel.drive=BaseActivity.mDriveService
+        photosBinding.viewModel=photoViewModel
+
         ProgressBarHandler.show(this)
         GetAllFiles(this, "Chat Stocker photos", mDriveServiceHelper, mDriveService, this@PhotosActivity, "image/jpeg").execute()
 //        viewModel.isfileDeleted().observe(this, Observer {

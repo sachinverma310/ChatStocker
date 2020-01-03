@@ -1,11 +1,9 @@
 package stws.chatstocker.utils
 
 
-import com.google.api.client.util.DateTime
+
 import java.text.SimpleDateFormat
 import java.util.*
-
-import java.security.Timestamp
 
 
 class DateTimeUtils {
@@ -27,6 +25,14 @@ companion object{
 //        val date=inFormat.parse(dateTime.toString())
         // Create a calendar object that will convert the date and time value in milliseconds to date.
         return formatter.format(dateTime)
+    }
+
+    fun convertStringtoMillis(dateString: String,format:String):Long{
+
+        val sdf = SimpleDateFormat(format)
+        val date = sdf.parse(dateString)
+        val millis = date.time
+        return millis
     }
 
 //    fun convertDatepormatTimetoDay( dateTime:Long,dateFormat:String):String{

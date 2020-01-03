@@ -13,6 +13,8 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
@@ -44,15 +46,20 @@ class UserFragment : BaseActivity() {
     private lateinit var loginResponse: LoginResponse
     private var fileUrl: ArrayList<File>? = null
     private var urlList: ArrayList<ChatMessage>? = null
+    private lateinit var mSwipeRefreshLayout:SwipeRefreshLayout
+    private lateinit var viewModel:UserListViewModel
+    private lateinit var  recyclerView:RecyclerView
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         actviUserBinding = DataBindingUtil.inflate(layoutInflater, R.layout.activity_user, frameLayout, true)
         userActionBar.visibility = View.VISIBLE
         mainActionBar.visibility = View.GONE
         userList = ArrayList()
+        mSwipeRefreshLayout=actviUserBinding.swipeContainer
+        mSwipeRefreshLayout.setRefreshing(true);
         tvTitle.setText("Chat")
-        val viewModel = ViewModelProviders.of(this).get(UserListViewModel::class.java)
-        val recyclerView = actviUserBinding.recyclerView;
+         viewModel = ViewModelProviders.of(this).get(UserListViewModel::class.java)
+         recyclerView = actviUserBinding.recyclerView;
         recyclerView.itemAnimator = DefaultItemAnimator()
         recyclerView.layoutManager = LinearLayoutManager(this)
         if (intent.getSerializableExtra(ConstantsValues.KEY_FILE_LIST) != null)
@@ -60,14 +67,14 @@ class UserFragment : BaseActivity() {
         else if (intent.getSerializableExtra(ConstantsValues.KEY_URL_LIST) != null)
             urlList = intent.getParcelableArrayListExtra<ChatMessage>(ConstantsValues.KEY_URL_LIST)
         userAdapter = UserAdapter(this@UserFragment, userList)
-        viewModel.userList(this)!!.observe(this, Observer<ArrayList<User>> { users ->
-            userList.addAll(users)
 
-            if (fileUrl != null)
-                userAdapter.setExternalFileUrl(fileUrl!!)
-            else if (urlList != null)
-                userAdapter.setForwardingUrl(urlList!!)
-            recyclerView.adapter = userAdapter
+        mSwipeRefreshLayout.setOnRefreshListener(object :SwipeRefreshLayout.OnRefreshListener{
+            override fun onRefresh() {
+                userList.clear()
+             refreshUserList()
+
+            }
+
         })
         viewModel.getGroupList(this)
         imgSearchBar.setOnClickListener(View.OnClickListener {
@@ -114,6 +121,18 @@ class UserFragment : BaseActivity() {
         //update recyclerview
         userAdapter.updateList(temp);
     }
+    fun refreshUserList(){
+        viewModel.userList(this,false)!!.observe(this, Observer<ArrayList<User>> { users ->
+            mSwipeRefreshLayout.setRefreshing(false);
+            userList.addAll(users)
+
+            if (fileUrl != null)
+                userAdapter.setExternalFileUrl(fileUrl!!)
+            else if (urlList != null)
+                userAdapter.setForwardingUrl(urlList!!)
+            recyclerView.adapter = userAdapter
+        })
+    }
 
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
@@ -137,6 +156,14 @@ class UserFragment : BaseActivity() {
 //        }
     }
 
+    override fun onResume() {
+        super.onResume()
+        userList.clear()
+        mSwipeRefreshLayout.setRefreshing(true);
+        viewModel.userList(this,false)!!.observe(this, Observer<ArrayList<User>> { users ->
+            refreshUserList()
+        })
+    }
     override fun onDestroy() {
 //        val user=mauth!!.getCurrentUser();
 //        if(user!=null){

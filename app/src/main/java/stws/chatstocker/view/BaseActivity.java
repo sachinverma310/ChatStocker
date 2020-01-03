@@ -1,7 +1,9 @@
 package stws.chatstocker.view;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
@@ -23,6 +25,7 @@ import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
 import com.ceylonlabs.imageviewpopup.ImagePopup;
+import com.google.android.gms.auth.GoogleAuthException;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -64,6 +67,7 @@ import stws.chatstocker.di.component.ApplicationComponent;
 
 import dagger.android.support.DaggerAppCompatActivity;
 import stws.chatstocker.model.LoginResponse;
+import stws.chatstocker.model.User;
 import stws.chatstocker.utils.DriveServiceHelper;
 import stws.chatstocker.utils.Prefrences;
 import stws.chatstocker.utils.ProgressBarHandler;
@@ -86,6 +90,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Constant
     private DatabaseReference mUserDatabase;
     private TextView tvSetting,tvCall,tvLogout;
 
+    private Boolean isLogin=false;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -112,6 +117,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Constant
         tvCall = findViewById(R.id.tvCall);
         tvLogout = findViewById(R.id.tvLogout);
         imgBack=findViewById(R.id.imgBack);
+
         imgCall.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -241,6 +247,20 @@ public abstract class BaseActivity extends AppCompatActivity implements Constant
                 GoogleAccountCredential credential = GoogleAccountCredential.usingOAuth2(
                         BaseActivity.this, Collections.singleton(DriveScopes.DRIVE_FILE));
                 credential.setSelectedAccount(googleSignInAccount.getAccount());
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            String accessToken=credential.getToken();
+                            Log.e("acc",accessToken);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        } catch (GoogleAuthException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }).start();
+
                 Drive googleDriveService = new Drive.Builder(
                         AndroidHttp.newCompatibleTransport(),
                         new GsonFactory(),
@@ -248,10 +268,15 @@ public abstract class BaseActivity extends AppCompatActivity implements Constant
                         .setApplicationName("Drive API Migration")
                         .build();
 
+
                 // The DriveServiceHelper encapsulates all REST API and SAF functionality.
                 // Its instantiation is required before handling any onClick actions.
                 mDriveService = googleDriveService;
                 mDriveServiceHelper = DriveServiceHelper.getInstance(googleDriveService);
+                isLogin=true;
+                Intent intent = new Intent("stws.chatstocker");
+                intent.putExtra("isLogin",true);
+                sendBroadcast(intent);
 //                mDriveServiceHelper.listAllFiles()
             }
         });
@@ -286,12 +311,13 @@ public abstract class BaseActivity extends AppCompatActivity implements Constant
     }
 
     private void updateUi(FirebaseUser user) {
-        String userId = Prefrences.Companion.getStringValue(this, KEY_USER_ID);
-        if (userId == null)
-            userId = user.getUid();
+        String userId = null;
         LoginResponse loginResponse = null;
         try {
             loginResponse = Prefrences.Companion.getUserDetails(this, KEY_LOGIN_DATA);
+             userId =loginResponse.getUid();
+            if (userId == null)
+                userId = user.getUid();
             loginResponse.setEmail(user.getEmail());
             if (loginResponse.getProfile() == null)
                 loginResponse.setProfile(user.getPhotoUrl().toString());
@@ -412,7 +438,134 @@ public abstract class BaseActivity extends AppCompatActivity implements Constant
 
 
     }
+    private void updateEamil(User user) {
+        String userId = null;
+        LoginResponse loginResponse = null;
+        try {
+            loginResponse = Prefrences.Companion.getUserDetails(this, KEY_LOGIN_DATA);
+            userId =loginResponse.getUid();
+            if (userId == null)
+                userId = user.getUid();
+            loginResponse.setEmail(user.getEmail());
+            if (loginResponse.getProfile() == null)
+                loginResponse.setProfile(user.getImage().toString());
+            Glide.with(this).load(loginResponse.getProfile()).into(imgProfile);
+//            else
+//                loginResponse.setProfile(user.getPhotoUrl().toString());
+            loginResponse.setName(user.getName());
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        try {
+            Prefrences.Companion.saveUser(BaseActivity.this, KEY_LOGIN_DATA, loginResponse);
 
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Map addValue = new HashMap();
+        addValue.put("device_token", loginResponse.getDeviceToken());
+        addValue.put("online", true);
+        addValue.put("name", user.getName());
+        addValue.put("email", user.getEmail());
+        addValue.put("numbers", loginResponse.getPhone());
+        if (loginResponse.getProfile() == null)
+            addValue.put("profileImage", user.getImage().toString());
+        else
+            addValue.put("profileImage", loginResponse.getProfile());
+        addValue.put("lastSeen", Calendar.getInstance().getTime().toString());
+        addValue.put("uid", userId);
+        //---IF UPDATE IS SUCCESSFULL , THEN OPEN MAIN ACTIVITY---
+        mUserDatabase.child(userId).updateChildren(addValue, new DatabaseReference.CompletionListener() {
+
+            @Override
+            public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+
+//                if (databaseError == null) {
+//
+//                    //---OPENING MAIN ACTIVITY---
+//                    Log.e("Login : ", "Logged in Successfully");
+//                    Prefrences.Companion.saveBoolean(LoginActivity.this, KEY_IS_LOGIN, true);
+//                    startActivity(new Intent(LoginActivity.this, HomeActivity.class));
+//                } else {
+//                    Toast.makeText(LoginActivity.this, databaseError.toString(), Toast.LENGTH_SHORT).show();
+//                    Log.e("Error is : ", databaseError.toString());
+//
+//                }
+            }
+        });
+//        mUserDatabase.child("letters").push().setValue("a");
+//        mUserDatabase.child("letters").push().setValue("z");
+//        mUserDatabase.child("letters").push().setValue("c");
+
+//        mUserDatabase.child(user.getUid()).child("device_token").setValue(token).addOnSuccessListener(new OnSuccessListener<Void>() {
+//            @Override
+//            public void onSuccess(Void aVoid) {
+//                Prefrences.Companion.saveBoolean(LoginActivity.this,KEY_IS_LOGIN,true);
+//                startActivity(new Intent(LoginActivity.this,HomeActivity.class));
+//
+//
+//            }
+//        });
+//        ChildEventListener childEventListener = new ChildEventListener() {
+//            @Override
+//            public void onChildAdded(DataSnapshot dataSnapshot, String previousChildName) {
+//                Log.d(TAG, "onChildAdded:" + dataSnapshot.getKey());
+//
+//                // A new comment has been added, add it to the displayed list
+//                Comment comment = dataSnapshot.getValue(Comment.class);
+//                Prefrences.Companion.saveBoolean(LoginActivity.this,KEY_IS_LOGIN,true);
+//                startActivity(new Intent(LoginActivity.this,HomeActivity.class));
+//                // ...
+//            }
+//
+//            @Override
+//            public void onChildChanged(DataSnapshot dataSnapshot, String previousChildName) {
+//                Log.d(TAG, "onChildChanged:" + dataSnapshot.getKey());
+//
+//                // A comment has changed, use the key to determine if we are displaying this
+//                // comment and if so displayed the changed comment.
+//                Comment newComment = dataSnapshot.getValue(Comment.class);
+//                String commentKey = dataSnapshot.getKey();
+//
+//                // ...
+//            }
+//
+//            @Override
+//            public void onChildRemoved(DataSnapshot dataSnapshot) {
+//                Log.d(TAG, "onChildRemoved:" + dataSnapshot.getKey());
+//
+//                // A comment has changed, use the key to determine if we are displaying this
+//                // comment and if so remove it.
+//                String commentKey = dataSnapshot.getKey();
+//
+//                // ...
+//            }
+//
+//            @Override
+//            public void onChildMoved(DataSnapshot dataSnapshot, String previousChildName) {
+//                Log.d(TAG, "onChildMoved:" + dataSnapshot.getKey());
+//
+//                // A comment has changed position, use the key to determine if we are
+//                // displaying this comment and if so move it.
+//                Comment movedComment = dataSnapshot.getValue(Comment.class);
+//                String commentKey = dataSnapshot.getKey();
+//
+//                // ...
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError databaseError) {
+//                Log.w(TAG, "postComments:onCancelled", databaseError.toException());
+//                Toast.makeText(LoginActivity.this, "Failed to load comments.",
+//                        Toast.LENGTH_SHORT).show();
+//            }
+//        };
+//        mUserDatabase.addChildEventListener(childEventListener);
+
+
+    }
     private void getFirebaseToken(LoginResponse firebaseUser) {
         FirebaseInstanceId.getInstance().getInstanceId()
                 .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
@@ -447,7 +600,9 @@ public abstract class BaseActivity extends AppCompatActivity implements Constant
             try {
                 // Google Sign In was successful, authenticate with Firebase
                 GoogleSignInAccount account = task.getResult(ApiException.class);
-                firebaseAuthWithGoogle(account, BaseActivity.this);
+                User user=new User(account.getDisplayName(),account.getPhotoUrl().toString(),true,account.getEmail(),"","",false,false);
+                updateEamil(user);
+//                firebaseAuthWithGoogle(account, BaseActivity.this);
 //                firebaseAuthWithGoogle(account);
             } catch (ApiException e) {
                 // Google Sign In failed, update UI appropriately
@@ -455,6 +610,10 @@ public abstract class BaseActivity extends AppCompatActivity implements Constant
                 // ...
             }
 
+        }
+        else if (requestCode==REQUEST_CODE_SIGN_IN &&resultCode==RESULT_CANCELED){
+            Toast.makeText(this,"Please Select google account",Toast.LENGTH_SHORT).show();
+            signIn();
         }
     }
 
@@ -485,6 +644,20 @@ public abstract class BaseActivity extends AppCompatActivity implements Constant
     @Override
     protected void onResume() {
         super.onResume();
+//        if (this instanceof HomeActivity) {
+//            if (isLogin)
+//            {
+//                Intent intent = getIntent();
+//                intent.putExtra("isLogin",true);
+//                sendBroadcast(intent);
+//            }
+//        }
         getUserDetails();
     }
+
+    public   boolean isSignedIn() {
+        return GoogleSignIn.getLastSignedInAccount(this) != null;
+    }
+
+
 }

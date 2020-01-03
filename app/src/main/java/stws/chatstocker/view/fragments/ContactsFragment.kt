@@ -12,8 +12,9 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
-import de.ulrichraab.rxcontacts.Contact
-import de.ulrichraab.rxcontacts.RxContacts
+
+import ir.mirrajabi.rxcontacts.Contact
+import ir.mirrajabi.rxcontacts.RxContacts
 import stws.chatstocker.R
 import stws.chatstocker.databinding.ContactsFragmentBinding
 import stws.chatstocker.model.ContactsList
@@ -41,60 +42,77 @@ lateinit var   adapter:ContactAdapter
 //                list.add(contactsList)
 //             adapter.notifyDataSetChanged()
 //        })
-        getContactList()
+        getContactsListings()
 
 
     }
-
-    private fun getContactList() {
-//        val cr = context.getContentResolver()
-//        val cur = cr.query(ContactsContract.Contacts.CONTENT_URI, null, null, null, null)
-//        val list = ArrayList<ContactsList>()
-//        if ((if (cur != null) cur!!.getCount() else 0) > 0) {
-//            while (cur != null && cur!!.moveToNext()) {
-//                val id = cur!!.getString(
-//                        cur!!.getColumnIndex(ContactsContract.Contacts._ID))
-//                val name = cur!!.getString(cur!!.getColumnIndex(
-//                        ContactsContract.Contacts.DISPLAY_NAME))
-//
-//                if (cur!!.getInt(cur!!.getColumnIndex(
-//                                ContactsContract.Contacts.HAS_PHONE_NUMBER)) > 0) {
-//                    val pCur = cr.query(
-//                            ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null,
-//                            ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?",
-//                            arrayOf<String>(id), null)
-//                    while (pCur!!.moveToNext()) {
-//                        val phoneNo = pCur!!.getString(pCur!!.getColumnIndex(
-//                                ContactsContract.CommonDataKinds.Phone.NUMBER))
-//                        val contactsList = ContactsList(name, phoneNo,name[0].toString())
-//                        list.add(contactsList)
-//
-//                    }
-//                    pCur!!.close()
-//                }
-//            }
-//            contactsList!!.postValue(list)
-//        }
-//        if (cur != null) {
-//            cur!!.close()
-//        }
-        RxContacts.fetch(this)
-                .subscribe(object :rx.Observer<Contact>{
-                    override fun onError(e: Throwable?) {
-
-                    }
-
-                    override fun onNext(it: Contact?) {
-                        val contactsList = ContactsList(it!!.displayName, it!!.phoneNumbers.elementAt(0),it!!.displayName[0].toString())
-                        list.add(contactsList)
-                        adapter.notifyDataSetChanged()
-                    }
-
-                    override fun onCompleted() {
-
-                    }
+    private fun getContactsListing(){
+      val  contactList=ArrayList<String>()
+        val contacts = getContentResolver().query(
+                ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+                null,
+                null,
+                null,
+                null
+        );
+        // Empty text view
 
 
-                })
+        // Loop through the contacts
+        while (contacts!!.moveToNext())
+        {
+            // Get the current contact name
+            val name = contacts.getString(
+                    contacts.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME_PRIMARY));
+
+            // Get the current contact phone number
+            val phoneNumber = contacts.getString(
+                    contacts.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)).trim();
+            if (phoneNumber.contains("+91"))
+                contactList.add(phoneNumber.replace(" ",""))
+            else
+                contactList.add("+91"+phoneNumber.replace(" ",""))
+            // Display the contact to text view
+
+
+
+        }
+        contacts.close();
+    }
+    private fun getContactsListings() {
+      val  contactList = ArrayList<String>()
+        val contacts = getContentResolver().query(
+                ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+                null,
+                null,
+                null,
+                null
+        );
+        // Empty text view
+
+
+        // Loop through the contacts
+        while (contacts!!.moveToNext()) {
+            // Get the current contact name
+            val displayName = contacts.getString(
+                    contacts.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME_PRIMARY));
+
+            // Get the current contact phone number
+            val phoneNumber = contacts.getString(
+                    contacts.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)).trim();
+//            val name = contacts.getString(
+//                    contacts.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME)).trim();
+            if (phoneNumber.contains("+91"))
+                contactList.add(phoneNumber.replace(" ", ""))
+            else
+                contactList.add("+91" + phoneNumber.replace(" ", ""))
+            // Display the contact to text view
+            val contactsList = ContactsList(displayName, phoneNumber,displayName[0].toString())
+            list.add(contactsList)
+            adapter.notifyDataSetChanged()
+
+        }
+
+        contacts.close();
     }
 }

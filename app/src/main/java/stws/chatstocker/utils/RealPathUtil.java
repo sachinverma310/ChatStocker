@@ -3,19 +3,35 @@ package stws.chatstocker.utils;
 import android.annotation.SuppressLint;
 import android.content.ContentUris;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 
+import androidx.core.content.FileProvider;
 import androidx.loader.content.CursorLoader;
 
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 public class RealPathUtil {
+    private static final boolean DEBUG = false;
 
     public static String getRealPath(Context context, Uri fileUri) {
         String realPath;
+
         // SDK < API11
         if (Build.VERSION.SDK_INT < 11) {
             realPath = RealPathUtil.getRealPathFromURI_BelowAPI11(context, fileUri);
@@ -124,13 +140,58 @@ public class RealPathUtil {
                 return getDataColumn(context, contentUri, selection, selectionArgs);
             }
         }
+
+
         // MediaStore (and general)
         else if ("content".equalsIgnoreCase(uri.getScheme())) {
 
             // Return the remote address
             if (isGooglePhotosUri(uri))
                 return uri.getLastPathSegment();
+            if (isWhatsappUri(uri)) {
+//                String uri = data.getParcelableExtra(Intent.EXTRA_STREAM).toString();
+              File  photoFile = getOutputMediaFile(2);
+//              Uri   fileUris = getOutputMediaFileUri(context,photoFile);
+//                Uri fileUri = GenericFileProvider.getUriForFile(context,context.getPackageName() + ".provider",photoFile);
+//
+                File selectedImage;
 
+
+
+
+//                if (uri.toString().startsWith("file://")) {
+//                    selectedImage = new File(uri.getPath());
+//                }
+//                else
+//                {
+//                    String[] projection = {MediaStore.MediaColumns.DATA};
+//                    CursorLoader cursorLoader = new CursorLoader(context, uri, projection, null, null, null);
+//                    Cursor cursor = cursorLoader.loadInBackground();
+//                    cursor.moveToFirst();
+//                    int column_index = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
+//                    selectedImage = new File(cursor.getString(column_index));
+//                }
+//                String paths = getDataColumn(context, uri, null, null, "_display_name");
+                String path = "";
+//                handleSendImage()
+//                String path = null;
+//                String[] projection = {MediaStore.MediaColumns.DATA};
+//                CursorLoader cursorLoader = new CursorLoader(context, uri, projection, null, null, null);
+//                Cursor cursor = cursorLoader.loadInBackground();
+//                cursor.moveToFirst();
+//                int column_index = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
+//                File se = new File(cursor.getString(column_index));
+
+                    path = getPathFromInputStreamUri(context, uri);
+
+                if (path != null) {
+                    File file = new File(path);
+                    if (!file.canRead()) {
+                        return null;
+                    }
+                }
+                return path;
+            }
             return getDataColumn(context, uri, null, null);
         }
         // File
@@ -138,6 +199,165 @@ public class RealPathUtil {
             return uri.getPath();
         }
 
+        return null;
+    }
+    public static Uri getOutputMediaFileUri( Context context,File file) {
+        return FileProvider.getUriForFile(context, context.getPackageName() + ".provider", file);
+    }
+
+    private static File getOutputMediaFile(int type) {
+        File mediaStorageDir = new File(
+                Environment
+                        .getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
+                "Chatstocker");
+        if (!mediaStorageDir.exists()) {
+            if (!mediaStorageDir.mkdirs()) {
+                return null;
+            }
+        }
+
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        if (type == 1) {
+
+            // For unique video file name appending current timeStamp with file name
+            return new File(mediaStorageDir.getPath() + File.separator
+                    + "VID_" + timeStamp + "." + "mp4");
+
+        } else {
+            return new File(mediaStorageDir.getPath() + File.separator
+                    + "IMG_" + timeStamp + "." + "jpg");
+        }
+    }
+
+    public static String getPathFromInputStreamUri(Context context, Uri uri) {
+        InputStream inputStream = null;
+        String filePath = null;
+
+        if (uri.getAuthority() != null) {
+            try {
+                inputStream = context.getContentResolver().openInputStream(uri);
+                File photoFile = createTemporalFileFrom(inputStream);
+
+                filePath = photoFile.getPath();
+
+            } catch (FileNotFoundException e) {
+//                Logger.printStackTrace(e);
+            } catch (IOException e) {
+//                Logger.printStackTrace(e);
+            } finally {
+                try {
+                    if (inputStream != null) {
+                        inputStream.close();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        return filePath;
+    }
+
+    private static File createTemporalFileFrom(InputStream inputStream) throws IOException {
+        File targetFile = null;
+
+        if (inputStream != null) {
+            int read;
+            byte[] buffer = new byte[8 * 1024];
+
+            targetFile = createTemporalFile();
+            OutputStream outputStream = new FileOutputStream(targetFile);
+
+            while ((read = inputStream.read(buffer)) != -1) {
+                outputStream.write(buffer, 0, read);
+            }
+            outputStream.flush();
+
+            try {
+                outputStream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return targetFile;
+    }
+
+    private static File createTemporalFile() {
+      File photo=  new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
+                "Chatstocker");
+        return new File(photo.getAbsolutePath() + File.separator, "tempPicture.jpg");
+    }
+//    public static String handleSendImage(Context context, Uri imageUri, String type) throws IOException {
+////        Uri imageUri = (Uri) intent.getParcelableExtra(Intent.EXTRA_STREAM);
+//        File file = null;
+//        if (imageUri != null) {
+//            file = new File(context.getCacheDir(), type);
+//            InputStream inputStream = context.getContentResolver().openInputStream(imageUri);
+//            try {
+//
+//                OutputStream output = new FileOutputStream(file);
+//                try {
+//                    byte[] buffer = new byte[ACRAConstants]; // or other buffer size
+//                    int read;
+//
+//                    while ((read = inputStream.read(buffer)) != -1) {
+//                        output.write(buffer, 0, read);
+//                    }
+//
+//                    output.flush();
+//                } finally {
+//                    output.close();
+//                }
+//            } finally {
+//                inputStream.close();
+//                byte[] bytes = getFileFromPath(file);
+//                //Upload Bytes.
+//            }
+//        }
+//        return file.getPath();
+//    }
+
+    public static byte[] getFileFromPath(File file) {
+        int size = (int) file.length();
+        byte[] bytes = new byte[size];
+        try {
+            BufferedInputStream buf = new BufferedInputStream(new FileInputStream(file));
+            buf.read(bytes, 0, bytes.length);
+            buf.close();
+        } catch (FileNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return bytes;
+    }
+
+    public static String getDataColumn(Context context, Uri uri, String selection,
+                                       String[] selectionArgs, String columnName) {
+
+        Cursor cursor = null;
+        final String column = columnName == null ? "_data" : columnName;
+        final String[] projection = {
+                column
+        };
+
+        try {
+            cursor = context.getContentResolver().query(uri, projection, selection, selectionArgs,
+                    null);
+            if (cursor != null && cursor.moveToFirst()) {
+                if (DEBUG)
+                    DatabaseUtils.dumpCursor(cursor);
+
+                final int column_index = cursor.getColumnIndexOrThrow(column);
+                return column.equals("_data") ? cursor.getString(column_index) : uri.toString() + "/" + cursor.getString(column_index);
+            }
+        } finally {
+            if (cursor != null)
+                cursor.close();
+        }
         return null;
     }
 
@@ -151,6 +371,36 @@ public class RealPathUtil {
      * @param selectionArgs (Optional) Selection arguments used in the query.
      * @return The value of the _data column, which is typically a file path.
      */
+    public static boolean isWhatsappUri(Uri uri) {
+        return "com.whatsapp.provider.media".equals(uri.getAuthority());
+    }
+  public   void handleSendImage(Context context,Uri imageUri) throws IOException {
+
+        if (imageUri != null) {
+            File file = new File(context.getCacheDir(), "image");
+            InputStream inputStream=context.getContentResolver().openInputStream(imageUri);
+            try {
+
+                OutputStream output = new FileOutputStream(file);
+                try {
+                    byte[] buffer = new byte[4 * 1024]; // or other buffer size
+                    int read;
+
+                    while ((read = inputStream.read(buffer)) != -1) {
+                        output.write(buffer, 0, read);
+                    }
+
+                    output.flush();
+                } finally {
+                    output.close();
+                }
+            } finally {
+                inputStream.close();
+                byte[] bytes =getFileFromPath(file);
+                //Upload Bytes.
+            }
+        }
+    }
     public static String getDataColumn(Context context, Uri uri, String selection,
                                        String[] selectionArgs) {
 

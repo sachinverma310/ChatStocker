@@ -166,6 +166,10 @@ class AudioViewModel : ViewModel, ConstantsValues {
     }
 
     fun deleteItem(view: View) {
+        if (list==null){
+            Toast.makeText(view.context,"please make a selection to delete",Toast.LENGTH_SHORT).show()
+            return
+        }
         confirmationDialog(view)
 
     }
@@ -222,6 +226,10 @@ class AudioViewModel : ViewModel, ConstantsValues {
     }
 
     fun shareMultipleImage(contexts: Context) {
+        if (list==null){
+            Toast.makeText(contexts,"please make a selection to share",Toast.LENGTH_SHORT).show()
+            return
+        }
         val intent = Intent();
         intent.setAction(Intent.ACTION_SEND_MULTIPLE);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
@@ -249,14 +257,27 @@ class AudioViewModel : ViewModel, ConstantsValues {
     fun sendItem(view: View) {
 //        if (isDownloaded!!.get() == true) {
 
-        photoFile = File(photo.path + File.separator
-                + fileName)
-        val intent = Intent(view.context, UserFragment::class.java)
-        intent.putExtra(ConstantsValues.KEY_FILE_URL, fileName)
-        view.context.startActivity(intent)
+//        photoFile = File(photo.path + File.separator
+//                + fileName)
+//        val intent = Intent(view.context, UserFragment::class.java)
+//        intent.putExtra(ConstantsValues.KEY_FILE_URL, fileName)
+//        view.context.startActivity(intent)
 //        }
+        sendMulipleImage(view.context)
     }
-
+    fun sendMulipleImage(context: Context){
+        var fileList:ArrayList<File> = ArrayList()
+        if (list==null){
+            Toast.makeText(context,"please make a selection to Send",Toast.LENGTH_SHORT).show()
+            return
+        }
+        for (i in 0 until list!!.size)
+            fileList.add(File(photo.path + File.separator
+                    + list!!.get(i)!!.thumbnail))
+        val intent = Intent(context, UserFragment::class.java)
+        intent.putExtra(ConstantsValues.KEY_FILE_LIST, fileList)
+        context!!.startActivity(intent)
+    }
     inner class RenameFile(val renamefileName: String,val contexts: Context) : AsyncTask<String, String, String>() {
         override fun doInBackground(vararg params: String?): String {
 

@@ -29,6 +29,7 @@ class NotificationActivity : AppCompatActivity() {
         rbGrp=activityFullscreenImageBinding.rbgrp
         if (Prefrences.getIntValue(this@NotificationActivity,ConstantsValues.KEY_Noti_RADIO_ID)!=-1) {
             val radioButton=rbGrp.findViewById<RadioButton>(Prefrences.getIntValue(this@NotificationActivity,ConstantsValues.KEY_Noti_RADIO_ID)!!)
+           if (radioButton!=null)
             radioButton.isChecked=true;
         }
         rbGrp.setOnCheckedChangeListener(object :RadioGroup.OnCheckedChangeListener{

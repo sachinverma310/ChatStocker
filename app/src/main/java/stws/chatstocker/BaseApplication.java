@@ -25,6 +25,7 @@ public class BaseApplication extends Application implements HasActivityInjector 
         ApplicationComponent component = DaggerApplicationComponent.builder().application(this).build();
         component.inject(this);
         FirebaseDatabase.getInstance().setPersistenceEnabled(false);
+        FirebaseDatabase.getInstance().getReference().keepSynced(true);
 
     }
 

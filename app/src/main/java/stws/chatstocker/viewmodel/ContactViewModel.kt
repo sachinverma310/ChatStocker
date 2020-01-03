@@ -8,8 +8,8 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
-import de.ulrichraab.rxcontacts.Contact
-import de.ulrichraab.rxcontacts.RxContacts
+import ir.mirrajabi.rxcontacts.Contact
+
 import stws.chatstocker.model.ContactsList
 
 
@@ -74,21 +74,21 @@ class ContactViewModel() : ViewModel() {
 //        if (cur != null) {
 //            cur!!.close()
 //        }
-        RxContacts.fetch(context)
-                .subscribe(object :rx.Observer<Contact>{
-                    override fun onError(e: Throwable?) {
-
-                    }
-
-                    override fun onNext(t: Contact?) {
-                       contactsList!!.postValue(t)
-                    }
-
-                    override fun onCompleted() {
-
-                    }
-
-
-                })
+//        RxContacts.fetch(context)
+//                .subscribe(object :rx.Observer<Contact>{
+//                    override fun onError(e: Throwable?) {
+//
+//                    }
+//
+//                    override fun onNext(t: Contact?) {
+//                       contactsList!!.postValue(t)
+//                    }
+//
+//                    override fun onCompleted() {
+//
+//                    }
+//
+//
+//                })
     }
 }

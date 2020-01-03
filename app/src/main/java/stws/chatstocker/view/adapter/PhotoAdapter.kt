@@ -23,6 +23,7 @@ import stws.chatstocker.databinding.PhotoListBinding
 import stws.chatstocker.model.FileDetails
 import stws.chatstocker.model.Photos
 import stws.chatstocker.utils.DateTimeUtils
+import stws.chatstocker.utils.FileSingleton
 import stws.chatstocker.viewmodel.PhotoViewModel
 import java.io.ByteArrayOutputStream
 
@@ -73,7 +74,7 @@ class PhotoAdapter(val contxet:AppCompatActivity,val diveService: Drive,val list
             progressListener=this
             Glide.with(imageView.context).load(photos.thumbnail).into(imageView)
             val photoViewModel= PhotoViewModel(photos,photos.thumbnail!!,isVideo,photos.fileId!!,diveService,progressListener,adapterPosition,this@PhotoAdapter)
-            photoListBinding.viewModel=photoViewModel
+
             photoListBinding?.viewModel?.date=createdtime
             photoViewModel.context=contxet
             if (isVideo) {
@@ -84,10 +85,13 @@ class PhotoAdapter(val contxet:AppCompatActivity,val diveService: Drive,val list
             else {
                 photoFile= java.io.File(photo.path + java.io.File.separator
                         + photos.fileId + "." + "jpg")
-                if (photoFile.exists())
-                photoViewModel.isDownloaded!!.set(true)
+                if (photoFile.exists()) {
+                    photoViewModel.isDownloaded!!.set(true)
+
+                }
 //                progressBar.visibility = View.GONE
             }
+            photoListBinding.viewModel=photoViewModel
             checkBox.setOnCheckedChangeListener(object :CompoundButton.OnCheckedChangeListener{
                 override fun onCheckedChanged(buttonView: CompoundButton?, isChecked: Boolean) {
                     if (isChecked)

@@ -44,11 +44,11 @@ class ChatMessageViewModel : ViewModel() {
     private var childEventListenerResponse: MutableLiveData<ChildEventListener>? = null
     private var onchatMessageSendResponse: MutableLiveData<ChatMessage>? = null
     lateinit var childEventListener: ChildEventListener
-    var sendMessageEventListener: ValueEventListener?=null
+    var sendMessageEventListener: ValueEventListener? = null
     public var room_type = "1"
-    private var isCleared:Boolean=true
+    private var isCleared: Boolean = true
     private val TAG = "Chat"
-    var isBlocked:Boolean=false
+    var isBlocked: Boolean = false
         set(value) {
             field = value
         }
@@ -113,18 +113,18 @@ class ChatMessageViewModel : ViewModel() {
         onchatMessageSendResponse = MutableLiveData<ChatMessage>()
         return onchatMessageSendResponse as MutableLiveData<ChatMessage>
     }
-fun convertMillistoTime():String{
-    try {
-        lastSeen.toLong()
-        val date= DateTimeUtils.convertDateTimetoDay(lastSeen.toLong() ,"yyyy-MM-dd hh:mm")
-        return date;
-    }
-    catch (e:Exception){
-        return lastSeen
-    }
+
+    fun convertMillistoTime(): String {
+        try {
+            lastSeen.toLong()
+            val date = DateTimeUtils.convertDateTimetoDay(lastSeen.toLong(), "yyyy-MM-dd hh:mm")
+            return date;
+        } catch (e: Exception) {
+            return lastSeen
+        }
 
 
-}
+    }
 //    fun getAllChatResponse(): LiveData<ChatMessage> {
 ////        if (onchatSendResponse == null) {
 //        onchatSendResponse = MutableLiveData<ChatMessage>()
@@ -145,13 +145,46 @@ fun convertMillistoTime():String{
             sendMessageClick(view)
     }
 
-    private fun sendMessageClick(view: View) {
-        isCleared=false
-            if (isBlocked) {
-                Toast.makeText(view.context,"You are unable to send message to this user",Toast.LENGTH_SHORT).show()
-                return
+
+    public fun updatelstChatTime(time:String){
+        FirebaseDatabase.getInstance()
+                .reference.child("User").child(senderUid).child(ConstantsValues.KEY_FRIEND).addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onCancelled(p0: DatabaseError) {
+
             }
+
+            override fun onDataChange(p0: DataSnapshot) {
+                val childrenCunt = p0.childrenCount
+                val friendValue = HashMap<String, String>()
+                var countKey = 0L
+                if (childrenCunt > 0) {
+                    countKey = childrenCunt + 1
+//                                    grpValue.put(countKey.toString(), key.toString())
+                } else
+                    countKey = 1L
+                friendValue.put(ConstantsValues.KEY_LAST_MSG_TIME, time)
+
+                FirebaseDatabase.getInstance()
+                        .reference.child("User").child(senderUid).child(ConstantsValues.KEY_FRIEND).child(receiverUid).setValue(friendValue).addOnSuccessListener(object : OnSuccessListener<Void>{
+                    override fun onSuccess(p0: Void?) {
+
+                    }
+
+                })
+//                database.child("User").child(users!!.uid.toString()).child(ConstantsValues.KEY_CREATED_BY).setValue(myUserId)
+//                for (DataSnapshot snap: dataSnapshot.getChildren()) {
+            }
+
+        })
+    }
+    private fun sendMessageClick(view: View) {
+        isCleared = false
+        if (isBlocked) {
+            Toast.makeText(view.context, "You are unable to send message to this user", Toast.LENGTH_SHORT).show()
+            return
+        }
         var databaseReference = FirebaseDatabase.getInstance().reference
+        updatelstChatTime(ServerValue.TIMESTAMP.toString())
 //        if (room_type.equals("1")) {
 //            FirebaseDatabase.getInstance()
 //                    .reference
@@ -165,11 +198,10 @@ fun convertMillistoTime():String{
 //        }
 
         val date = Calendar.getInstance().timeInMillis.toString();
-        val chat = ChatMessage(message, "flase", "text", senderUid, date,receiverUid,"",false,name)
-       var room_type_1=""
+        val chat = ChatMessage(message, "flase", "text", senderUid, date, receiverUid, "", false, name)
+        var room_type_1 = ""
         if (room_type.equals("2"))
             room_type_1 = receiverUid + "_" + senderUid;
-
         else
             room_type_1 = senderUid + "_" + receiverUid;
 
@@ -186,11 +218,11 @@ fun convertMillistoTime():String{
 //                if (dataSnapshot.hasChild(room_type_1)) {
 //                    Log.e(TAG, "sendMessageToFirebaseUser: $room_type_1 exists")
 
-                    databaseReference.child("chat_room")
-                            .child(room_type_1)
-                            .child(date)
-                            .setValue(chat).addOnSuccessListener(object:OnSuccessListener<Void>{
-                                override fun onSuccess(p0: Void?) {
+        databaseReference.child("chat_room")
+                .child(room_type_1)
+                .child(date)
+                .setValue(chat).addOnSuccessListener(object : OnSuccessListener<Void> {
+                    override fun onSuccess(p0: Void?) {
 //                                    databaseReference.child("chat_room")
 //                                            .child(room_type_1)
 //                                            .child(date).child("sentToserver").addChildEventListener(object :ChildEventListener{
@@ -215,108 +247,7 @@ fun convertMillistoTime():String{
 //                                                }
 //
 //                                            })
-                                    sendNotifcationtoUser(receiverName,message,view.context,date,room_type_1)
-                                }
-
-                            })
-//                            onchatMessageSendResponse!!.postValue(chat)
-//                } else if (dataSnapshot.hasChild(room_type_2)) {
-//                    Log.e(TAG, "sendMessageToFirebaseUser: $room_type_2 exists")
-//                    databaseReference.child("chat_room")
-//                            .child(room_type_2)
-//                            .child(date)
-//                            .setValue(chat)
-//                            onchatMessageSendResponse!!.postValue(chat)
-//                } else {
-//                    Log.e(TAG, "sendMessageToFirebaseUser: success")
-//                    databaseReference.child("chat_room")
-//                            .child(room_type_1)
-//                            .child(date)
-//                            .setValue(chat)
-//                            onchatMessageSendResponse!!.postValue(chat)
-//                }
-
-//            }
-//
-//        }
-//        databaseReference.child("chat_room")
-//                .ref
-//                .addValueEventListener(sendMessageEventListener!!)
-//        databaseReference.child("chat_room")
-//                .ref.removeEventListener(sendMessageEventListener!!)
-//        databaseReference.child("chat_room")
-//                .ref
-//                .addValueEventListener(object : ValueEventListener {
-//                    override fun onDataChange(dataSnapshot: DataSnapshot) {
-//                        if (dataSnapshot.hasChild(room_type_1)) {
-//                            Log.e(TAG, "sendMessageToFirebaseUser: $room_type_1 exists")
-//
-//                            databaseReference.child("chat_room")
-//                                    .child(room_type_1)
-//                                    .child(date)
-//                                    .setValue(chat)
-////                            onchatMessageSendResponse!!.postValue(chat)
-//                        } else if (dataSnapshot.hasChild(room_type_2)) {
-//                            Log.e(TAG, "sendMessageToFirebaseUser: $room_type_2 exists")
-//                            databaseReference.child("chat_room")
-//                                    .child(room_type_2)
-//                                    .child(date)
-//                                    .setValue(chat)
-////                            onchatMessageSendResponse!!.postValue(chat)
-//                        } else {
-//                            Log.e(TAG, "sendMessageToFirebaseUser: success")
-//                            databaseReference.child("chat_room")
-//                                    .child(room_type_1)
-//                                    .child(date)
-//                                    .setValue(chat)
-////                            onchatMessageSendResponse!!.postValue(chat)
-//                        }
-//
-//                    }
-//
-//                    override fun onCancelled(databaseError: DatabaseError) {
-//                        // Unable to send message.
-//                    }
-//                })
-    }
-
-     fun forwardMessage(chatMessage: ChatMessage,context: Context) {
-        isCleared=false
-        if (isBlocked) {
-            Toast.makeText(context,"You are unable to send message to this user",Toast.LENGTH_SHORT).show()
-            return
-        }
-        var databaseReference = FirebaseDatabase.getInstance().reference
-//        if (room_type.equals("1")) {
-//            FirebaseDatabase.getInstance()
-//                    .reference
-//                    .child("chat_room")
-//                    .child(senderUid + "_" + receiverUid).removeEventListener(childEventListener)
-//        } else if (room_type.equals("2")) {
-//            FirebaseDatabase.getInstance()
-//                    .reference
-//                    .child("chat_room")
-//                    .child(receiverUid + "_" + senderUid).removeEventListener(childEventListener)
-//        }
-
-        val date = Calendar.getInstance().timeInMillis.toString();
-//        val chat = ChatMessage(message, "flase", "text", senderUid, date,receiverUid,"",false,name)
-        var room_type_1=""
-        if (room_type.equals("2"))
-            room_type_1 = receiverUid + "_" + senderUid;
-
-        else
-            room_type_1 = senderUid + "_" + receiverUid;
-
-
-
-
-        databaseReference.child("chat_room")
-                .child(room_type_1)
-                .child(date)
-                .setValue(chatMessage).addOnSuccessListener(object:OnSuccessListener<Void>{
-                    override fun onSuccess(p0: Void?) {
-                        sendNotifcationtoUser(receiverName,message,context,date,room_type_1)
+                        sendNotifcationtoUser(receiverName, message, view.context, date, room_type_1)
                     }
 
                 })
@@ -380,6 +311,108 @@ fun convertMillistoTime():String{
 //                    }
 //                })
     }
+
+    fun forwardMessage(chatMessage: ChatMessage, context: Context) {
+        isCleared = false
+        if (isBlocked) {
+            Toast.makeText(context, "You are unable to send message to this user", Toast.LENGTH_SHORT).show()
+            return
+        }
+        var databaseReference = FirebaseDatabase.getInstance().reference
+//        if (room_type.equals("1")) {
+//            FirebaseDatabase.getInstance()
+//                    .reference
+//                    .child("chat_room")
+//                    .child(senderUid + "_" + receiverUid).removeEventListener(childEventListener)
+//        } else if (room_type.equals("2")) {
+//            FirebaseDatabase.getInstance()
+//                    .reference
+//                    .child("chat_room")
+//                    .child(receiverUid + "_" + senderUid).removeEventListener(childEventListener)
+//        }
+
+        val date = Calendar.getInstance().timeInMillis.toString();
+        chatMessage.date=date
+//        val chat = ChatMessage(message, "flase", "text", senderUid, date,receiverUid,"",false,name)
+        var room_type_1 = ""
+        if (room_type.equals("2"))
+            room_type_1 = receiverUid + "_" + senderUid;
+        else
+            room_type_1 = senderUid + "_" + receiverUid;
+
+
+
+
+        databaseReference.child("chat_room")
+                .child(room_type_1)
+                .child(date)
+                .setValue(chatMessage).addOnSuccessListener(object : OnSuccessListener<Void> {
+                    override fun onSuccess(p0: Void?) {
+                        sendNotifcationtoUser(receiverName, message, context, date, room_type_1)
+                    }
+
+                })
+//                            onchatMessageSendResponse!!.postValue(chat)
+//                } else if (dataSnapshot.hasChild(room_type_2)) {
+//                    Log.e(TAG, "sendMessageToFirebaseUser: $room_type_2 exists")
+//                    databaseReference.child("chat_room")
+//                            .child(room_type_2)
+//                            .child(date)
+//                            .setValue(chat)
+//                            onchatMessageSendResponse!!.postValue(chat)
+//                } else {
+//                    Log.e(TAG, "sendMessageToFirebaseUser: success")
+//                    databaseReference.child("chat_room")
+//                            .child(room_type_1)
+//                            .child(date)
+//                            .setValue(chat)
+//                            onchatMessageSendResponse!!.postValue(chat)
+//                }
+
+//            }
+//
+//        }
+//        databaseReference.child("chat_room")
+//                .ref
+//                .addValueEventListener(sendMessageEventListener!!)
+//        databaseReference.child("chat_room")
+//                .ref.removeEventListener(sendMessageEventListener!!)
+//        databaseReference.child("chat_room")
+//                .ref
+//                .addValueEventListener(object : ValueEventListener {
+//                    override fun onDataChange(dataSnapshot: DataSnapshot) {
+//                        if (dataSnapshot.hasChild(room_type_1)) {
+//                            Log.e(TAG, "sendMessageToFirebaseUser: $room_type_1 exists")
+//
+//                            databaseReference.child("chat_room")
+//                                    .child(room_type_1)
+//                                    .child(date)
+//                                    .setValue(chat)
+////                            onchatMessageSendResponse!!.postValue(chat)
+//                        } else if (dataSnapshot.hasChild(room_type_2)) {
+//                            Log.e(TAG, "sendMessageToFirebaseUser: $room_type_2 exists")
+//                            databaseReference.child("chat_room")
+//                                    .child(room_type_2)
+//                                    .child(date)
+//                                    .setValue(chat)
+////                            onchatMessageSendResponse!!.postValue(chat)
+//                        } else {
+//                            Log.e(TAG, "sendMessageToFirebaseUser: success")
+//                            databaseReference.child("chat_room")
+//                                    .child(room_type_1)
+//                                    .child(date)
+//                                    .setValue(chat)
+////                            onchatMessageSendResponse!!.postValue(chat)
+//                        }
+//
+//                    }
+//
+//                    override fun onCancelled(databaseError: DatabaseError) {
+//                        // Unable to send message.
+//                    }
+//                })
+    }
+
     fun getAllChat() {
 
         val list = ArrayList<ChatMessage>()
@@ -397,13 +430,13 @@ fun convertMillistoTime():String{
                     override fun onDataChange(dataSnapshot: DataSnapshot) {
                         if (dataSnapshot.hasChild(room_type_1)) {
                             room_type = "0"
-                          childEventListener=  object : ChildEventListener {
+                            childEventListener = object : ChildEventListener {
                                 override fun onChildAdded(dataSnapshot: DataSnapshot, s: String?) {
 //                                    list.clear()
                                     if (dataSnapshot.value != null) {
 //                                        for (snapshot: DataSnapshot in dataSnapshot.children) {
-                                            val chatMessage = dataSnapshot.getValue(ChatMessage::class.java!!)
-                                            chatMessage!!.date = dataSnapshot.key.toString()
+                                        val chatMessage = dataSnapshot.getValue(ChatMessage::class.java!!)
+                                        chatMessage!!.date = dataSnapshot.key.toString()
                                         onchatSendResponse!!.postValue(chatMessage)
 //                                            list.add(chatMessage)
 
@@ -438,8 +471,8 @@ fun convertMillistoTime():String{
                                 override fun onChildAdded(dataSnapshot: DataSnapshot, s: String?) {
                                     if (dataSnapshot.value != null) {
 //                                        for (snapshot: DataSnapshot in dataSnapshot.children) {
-                                            val chatMessage = dataSnapshot.getValue(ChatMessage::class.java!!)
-                                            chatMessage!!.date = dataSnapshot.key.toString()
+                                        val chatMessage = dataSnapshot.getValue(ChatMessage::class.java!!)
+                                        chatMessage!!.date = dataSnapshot.key.toString()
                                         onchatSendResponse!!.postValue(chatMessage)
 //                                            list.add(chatMessage)
 
@@ -468,25 +501,23 @@ fun convertMillistoTime():String{
                             }
                             FirebaseDatabase.getInstance().reference.child("chat_room").child(room_type_2).addChildEventListener(childEventListener)
                             FirebaseDatabase.getInstance().reference.child("chat_room").child(room_type_2).removeEventListener(childEventListener)
-                        }}
+                        }
+                    }
 
                 })
     }
 
-     fun clearChat(list:List<ChatMessage>,userId:String,room_type:String){
-         if (sendMessageEventListener!=null)
-         FirebaseDatabase.getInstance().reference.child("chat_room")
-                 .ref
-                 .removeEventListener(sendMessageEventListener!!)
+    fun clearChat(list: List<ChatMessage>, userId: String, room_type: String) {
+        if (sendMessageEventListener != null)
+            FirebaseDatabase.getInstance().reference.child("chat_room")
+                    .ref
+                    .removeEventListener(sendMessageEventListener!!)
 
-         for (i in 0 until list.size) {
-             FirebaseDatabase.getInstance().reference.child("chat_room").child(room_type).child(list.get(i).date)
-                     .child(userId).setValue(true)
-         }
+        for (i in 0 until list.size) {
+            FirebaseDatabase.getInstance().reference.child("chat_room").child(room_type).child(list.get(i).date)
+                    .child(userId).setValue(true)
+        }
     }
-
-
-
 
 
 //    private fun newChildAddedListener() {
@@ -531,45 +562,46 @@ fun convertMillistoTime():String{
 //        }
 //    }
 
-     fun unregisterEventListener() {
+    fun unregisterEventListener() {
 
-        if (sendMessageEventListener!=null)
+        if (sendMessageEventListener != null)
             FirebaseDatabase.getInstance().reference.child("chat_room")
                     .ref
                     .removeEventListener(sendMessageEventListener!!)
     }
- fun sendNotifcationtoUser(title:String,msg:String,context:Context,date:String,room_type: String){
-     val jsonObject= JSONObject()
-     jsonObject.put("to",recieverdeviceToken)
-     jsonObject.put("priority","high")
-     val jsonObjectNotification=JSONObject()
-     jsonObjectNotification.put("title",title)
-     val jsonObjectBody=JSONObject()
+
+    fun sendNotifcationtoUser(title: String, msg: String, context: Context, date: String, room_type: String) {
+        val jsonObject = JSONObject()
+        jsonObject.put("to", recieverdeviceToken)
+        jsonObject.put("priority", "high")
+        val jsonObjectNotification = JSONObject()
+        jsonObjectNotification.put("title", title)
+        val jsonObjectBody = JSONObject()
 //     if (room_type.equals("1"))
 //     jsonObjectBody.put("room_type",senderUid + "_" + receiverUid)
 //     else
-         jsonObjectBody.put("room_type", room_type)
+        jsonObjectBody.put("room_type", room_type)
 
-     jsonObjectBody.put("recieverUid",receiverUid)
-     jsonObjectBody.put("senderUid",senderUid)
-     jsonObjectBody.put("msg",msg)
-     jsonObjectBody.put("dateTime",date);
-     jsonObjectNotification.put("body",jsonObjectBody)
-     val jsonObjectData=JSONObject()
-     jsonObjectData.put("body",jsonObjectBody)
-     jsonObjectData.put("title",title)
+        jsonObjectBody.put("recieverUid", receiverUid)
+        jsonObjectBody.put("senderUid", senderUid)
+        jsonObjectBody.put("msg", msg)
+        jsonObjectBody.put("dateTime", date);
+        jsonObjectNotification.put("body", jsonObjectBody)
+        val jsonObjectData = JSONObject()
+        jsonObjectData.put("body", jsonObjectBody)
+        jsonObjectData.put("title", title)
 //     jsonObjectData.put("recieverUid",receiverUid)
 //     jsonObjectData.put("senderUid",senderUid)
 //     jsonObjectData.put("msg",msg)
-     jsonObject.put("data",jsonObjectData)
+        jsonObject.put("data", jsonObjectData)
 
 //     jsonObject.put("notification",jsonObjectNotification)
-     sendNotification(jsonObject,context)
- }
+        sendNotification(jsonObject, context)
+    }
 
-    private fun sendNotification(notification: JSONObject,context:Context) {
+    private fun sendNotification(notification: JSONObject, context: Context) {
         Log.e("TAG", "sendNotification")
-        val requestQueue=Volley.newRequestQueue(context)
+        val requestQueue = Volley.newRequestQueue(context)
         val jsonObjectRequest = object : JsonObjectRequest(ConstantsValues.FCM_API, notification,
                 Response.Listener<JSONObject> { response ->
                     Log.i("TAG", "onResponse: $response")
@@ -590,7 +622,7 @@ fun convertMillistoTime():String{
         requestQueue.add(jsonObjectRequest)
     }
 
-    fun back(view: View){
+    fun back(view: View) {
         (view.context as AppCompatActivity).onBackPressed()
     }
 }

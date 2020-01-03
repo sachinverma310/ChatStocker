@@ -1,29 +1,24 @@
 package stws.chatstocker.view
 
+
 import android.Manifest
 import android.app.Dialog
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.drawable.Drawable
 import android.media.MediaRecorder
 import android.net.Uri
-import android.os.*
-import androidx.appcompat.app.AppCompatActivity
+import android.os.Bundle
+import android.os.Environment
+import android.os.Handler
 import android.provider.MediaStore
 import android.util.Log
 import android.view.*
-import android.view.inputmethod.InputMethodManager
-import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
-import androidx.annotation.NonNull
-import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.PopupMenu
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.databinding.DataBindingUtil
@@ -31,18 +26,14 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
-import com.bumptech.glide.request.target.CustomTarget
-import com.bumptech.glide.request.transition.Transition
 import com.devlomi.record_view.RecordButton
 import com.devlomi.record_view.RecordView
-import com.downloader.*
-import com.google.android.gms.tasks.*
-import com.google.android.material.bottomsheet.BottomSheetBehavior
-import com.google.api.client.googleapis.media.MediaHttpDownloader
-import com.google.api.client.googleapis.media.MediaHttpDownloaderProgressListener
+import com.downloader.PRDownloader
+import com.google.android.gms.tasks.Continuation
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.android.gms.tasks.Task
 import com.google.firebase.database.*
 import com.google.firebase.storage.FirebaseStorage
-import com.google.firebase.storage.OnProgressListener
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.UploadTask
 import droidninja.filepicker.FilePickerBuilder
@@ -50,39 +41,38 @@ import droidninja.filepicker.FilePickerConst
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.rxkotlin.subscribeBy
-
-
 import kotlinx.android.synthetic.main.activity_chat.*
-import kotlinx.android.synthetic.main.bottom_sheet_layout.*
-import kotlinx.android.synthetic.main.chat_bottom_sheets.*
 import kotlinx.android.synthetic.main.chat_bottom_sheets.view.*
 import stws.chatstocker.ConstantsValues
 import stws.chatstocker.ConstantsValues.*
 import stws.chatstocker.R
 import stws.chatstocker.databinding.ActivityChatBinding
 import stws.chatstocker.model.ChatMessage
-import stws.chatstocker.model.FileDetails
+import stws.chatstocker.model.LoginResponse
 import stws.chatstocker.model.User
 import stws.chatstocker.utils.GetAllFiles
 import stws.chatstocker.utils.GetRealPathUtil
 import stws.chatstocker.utils.Prefrences
-import stws.chatstocker.view.adapter.ChatAdapter
+import stws.chatstocker.utils.Prefrences.Companion.getUserDetails
 import stws.chatstocker.view.adapter.ChatAppMsgAdapter
 import stws.chatstocker.view.fragments.UserFragment
 import stws.chatstocker.viewmodel.ChatMessageViewModel
 import zlc.season.rxdownload4.download
 import zlc.season.rxdownload4.file
-import java.io.*
-import java.lang.Exception
-import java.net.URL
-import java.net.URLConnection
+import java.io.File
+import java.io.FileNotFoundException
+import java.io.FileOutputStream
+import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.Error
 import kotlin.collections.ArrayList
 
 class ChatActivity : AppCompatActivity(), ConstantsValues, ChatAppMsgAdapter.ItemSelectedListner {
     private var disposable: Disposable? = null
+    private lateinit var listAllFile:ArrayList<File>
+    private var uploadcount = 0
+    private var uploadedListIndex=0;
+    private  var isForward=false;
     override fun onItemSelected(selectedList: ArrayList<ChatMessage>?) {
 
         if (selectedList!!.size > 0) {
@@ -92,7 +82,7 @@ class ChatActivity : AppCompatActivity(), ConstantsValues, ChatAppMsgAdapter.Ite
             imgSave.visibility = View.VISIBLE
             if (selectedList!!.size > 1)
                 imgSave.visibility = View.GONE
-        }  else {
+        } else {
             imgMore.visibility = View.VISIBLE
             imgDelete.visibility = View.GONE
             imgSend.visibility = View.GONE
@@ -125,9 +115,9 @@ class ChatActivity : AppCompatActivity(), ConstantsValues, ChatAppMsgAdapter.Ite
             selectedList.get(0).isSelected = false
             adapter.notifyDataSetChanged()
             if (!selectedList.get(0).type.equals("text"))
-            saveImageToStocker( selectedList.get(0).msg,selectedList.get(0).type)
+                saveImageToStocker(selectedList.get(0).msg, selectedList.get(0).type)
             else
-                Toast.makeText(this,"You can't save the text message",Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "You can't save the text message", Toast.LENGTH_SHORT).show()
         }
         )
 
@@ -190,7 +180,16 @@ class ChatActivity : AppCompatActivity(), ConstantsValues, ChatAppMsgAdapter.Ite
         chatList = java.util.ArrayList()
         otherUId = intent.getParcelableExtra(KEYOTHER_UID)
         audioRecordingView = chatActivityChatBinding.editText
-        myUserId = Prefrences.Companion.getUserUid(this)
+        var loginResponse: LoginResponse? = null
+        try {
+            loginResponse = getUserDetails(this, KEY_LOGIN_DATA)
+            myUserId = loginResponse.uid
+
+        } catch (e: IOException) {
+            e.printStackTrace()
+        } catch (e: ClassNotFoundException) {
+            e.printStackTrace()
+        }
         viewmodel = ViewModelProviders.of(this).get(ChatMessageViewModel::class.java)
         FirebaseDatabase.getInstance().reference.child("User").child(otherUId.uid!!).addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onCancelled(p0: DatabaseError) {
@@ -247,6 +246,7 @@ class ChatActivity : AppCompatActivity(), ConstantsValues, ChatAppMsgAdapter.Ite
 
         audioRecordingView.sendView.setOnClickListener(View.OnClickListener {
             viewmodel.message = audioRecordingView.messageView.text.toString()
+            isForward=false
             viewmodel.onSendClick(audioRecordingView.messageView)
         })
         audioRecordingView.attachmentView.setOnClickListener(View.OnClickListener {
@@ -353,7 +353,7 @@ class ChatActivity : AppCompatActivity(), ConstantsValues, ChatAppMsgAdapter.Ite
     }
 
 
-    private fun saveImageToStocker( imagePath: String, fileType: String) {
+    private fun saveImageToStocker(imagePath: String, fileType: String) {
         val photo = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
                 "Chatstocker")
         val fileName = Calendar.getInstance().timeInMillis;
@@ -421,34 +421,34 @@ class ChatActivity : AppCompatActivity(), ConstantsValues, ChatAppMsgAdapter.Ite
                 .subscribeBy(
                         onNext = { progress ->
                             //download progress
-                            Log.e("progress","${progress.downloadSizeStr()}/${progress.totalSizeStr()}")
+                            Log.e("progress", "${progress.downloadSizeStr()}/${progress.totalSizeStr()}")
 //                            button.text = "${progress.downloadSizeStr()}/${progress.totalSizeStr()}"
 //                            button.setProgress(progress)
                         },
                         onComplete = {
                             photoFile = imagePath.file() as File
-                            Log.e("filr",photoFile!!.absolutePath)
+                            Log.e("filr", photoFile!!.absolutePath)
 
                             if (fileType.equals("image")) {
 //                           photoFile= File(photo.path + File.separator
 //                                    + fileName + ".jpg")
-                            GetAllFiles(this@ChatActivity, "Chat Stocker photos", BaseActivity.mDriveServiceHelper, BaseActivity.mDriveService, photoFile!!, "image/jpeg").execute()
-                        }
-                            else if (fileType.equals("video")) {
+                                GetAllFiles(this@ChatActivity, "Chat Stocker photos", BaseActivity.mDriveServiceHelper, BaseActivity.mDriveService, photoFile!!, "image/jpeg").execute()
+                            } else if (fileType.equals("video")) {
 //                            photoFile= File(photo.path + File.separator
 //                                    + fileName + ".mp4")
-                            GetAllFiles(this@ChatActivity, "Chat Stocker videos", BaseActivity.mDriveServiceHelper, BaseActivity.mDriveService, photoFile!!, "video/mp4").execute()
-                        } else if (fileType.equals("video")) {
+                                GetAllFiles(this@ChatActivity, "Chat Stocker videos", BaseActivity.mDriveServiceHelper, BaseActivity.mDriveService, photoFile!!, "video/mp4").execute()
+                            } else if (fileType.equals("audio")) {
 //                            photoFile= File(photo.path + File.separator
 //                                    + fileName + ".mp3")
-                            GetAllFiles(this@ChatActivity, "Chat Stocker audio", BaseActivity.mDriveServiceHelper, BaseActivity.mDriveService, photoFile!!, "audio/mpeg").execute()
-                        }
+                                GetAllFiles(this@ChatActivity, "Chat Stocker audio", BaseActivity.mDriveServiceHelper, BaseActivity.mDriveService, photoFile!!, "audio/mpeg").execute()
+                            }
 
 
                             //download complete
 //                            button.text = "Open"
                         },
                         onError = {
+                            Log.e("failed",it.message)
                             //download failed
 //                            button.text = "Retry"
                         }
@@ -521,21 +521,24 @@ class ChatActivity : AppCompatActivity(), ConstantsValues, ChatAppMsgAdapter.Ite
 
     fun checkifFilesentFromExternal() {
         if (intent.getSerializableExtra(KEY_FILE_URL) != null) {
-            val list = intent.getSerializableExtra(KEY_FILE_URL) as ArrayList<File>?
-            for (i in 0 until list!!.size)
+            listAllFile = intent.getSerializableExtra(KEY_FILE_URL) as ArrayList<File>
+//            for (i in 0 until listAllFile!!.size)
                 sendFile(myUserId, otherUId.uid, null
-                        , intent.getSerializableExtra(KEY_FILE_URL) as ArrayList<File>?, i)
+                        , intent.getSerializableExtra(KEY_FILE_URL) as ArrayList<File>?, 0)
             intent.putExtra(KEY_FILE_URL, "")
         }
     }
 
     fun checkifForwardingUrl() {
+
         if (intent.getParcelableArrayListExtra<ChatMessage>(KEY_URL_LIST) != null) {
             val list = intent.getParcelableArrayListExtra<ChatMessage>(KEY_URL_LIST)
             for (i in 0 until list!!.size) {
+                isForward=true
                 viewmodel.room_type = room_type;
                 viewmodel.forwardMessage(list.get(i), this)
             }
+
 //            intent.putExtra(KEY_FILE_URL, "")
         }
     }
@@ -638,11 +641,20 @@ class ChatActivity : AppCompatActivity(), ConstantsValues, ChatAppMsgAdapter.Ite
 
                                 override fun onChildChanged(p0: DataSnapshot, p1: String?) {
                                     if (p0.child("sentToserver").getValue() as Boolean) {
-                                        list.get(list.size - 1).isSentToserver = p0.child("sentToserver").getValue() as Boolean
-                                        adapter.notifyDataSetChanged()
+
+                                        for (i in 0 until list.size) {
+                                            if (list.get(i).date.equals(p0.key.toString())) {
+                                                list.get(i).isSentToserver = p0.child("sentToserver").getValue() as Boolean
+                                                adapter.notifyItemChanged(i)
+                                                break
+                                            }
+                                        }
+
+
+//                                        scrollChatLayouttoBottom()
                                     }
-                                    Log.e("strp2", p0.child("sentToserver").getValue().toString())
-                                    Log.e("strp2", p0.child("seen").getValue().toString())
+//                                    Log.e("strp2", p0.child("sentToserver").getValue().toString())
+//                                    Log.e("strp2", p0.child("seen").getValue().toString())
                                 }
 
 
@@ -668,11 +680,17 @@ class ChatActivity : AppCompatActivity(), ConstantsValues, ChatAppMsgAdapter.Ite
 
                                 override fun onChildChanged(p0: DataSnapshot, p1: String?) {
                                     if (p0.child("sentToserver").getValue() as Boolean) {
-                                        list.get(list.size - 1).isSentToserver = p0.child("sentToserver").getValue() as Boolean
-                                        adapter.notifyDataSetChanged()
+                                        for (i in 0 until list.size) {
+                                            if (list.get(i).date.equals(p0.key.toString())) {
+                                                list.get(i).isSentToserver = p0.child("sentToserver").getValue() as Boolean
+                                                adapter.notifyItemChanged(i)
+                                                break
+                                            }
+                                        }
+
                                     }
-                                    Log.e("strp2", p0.child("sentToserver").getValue().toString())
-                                    Log.e("strp2", p0.child("seen").getValue().toString())
+//                                    Log.e("strp2", p0.child("sentToserver").getValue().toString())
+//                                    Log.e("strp2", p0.child("seen").getValue().toString())
 
                                 }
 
@@ -684,6 +702,7 @@ class ChatActivity : AppCompatActivity(), ConstantsValues, ChatAppMsgAdapter.Ite
                         } else {
                             room_type = room_type_1
                             viewmodel.room_type = "1"
+
                             FirebaseDatabase.getInstance().reference.child("chat_room").child(room_type_1).addChildEventListener(object : ChildEventListener {
                                 override fun onChildAdded(dataSnapshot: DataSnapshot, s: String?) {
                                     updateChatLayout(dataSnapshot)
@@ -699,11 +718,17 @@ class ChatActivity : AppCompatActivity(), ConstantsValues, ChatAppMsgAdapter.Ite
 
                                 override fun onChildChanged(p0: DataSnapshot, p1: String?) {
                                     if (p0.child("sentToserver").getValue() as Boolean) {
-                                        list.get(list.size - 1).isSentToserver = p0.child("sentToserver").getValue() as Boolean
-                                        adapter.notifyDataSetChanged()
+                                        for (i in 0 until list.size) {
+                                            if (list.get(i).date.equals(p0.key.toString())) {
+                                                list.get(i).isSentToserver = p0.child("sentToserver").getValue() as Boolean
+                                                adapter.notifyItemChanged(i)
+                                                break
+                                            }
+                                        }
+
                                     }
-                                    Log.e("strp2", p0.child("sentToserver").getValue().toString())
-                                    Log.e("strp2", p0.child("seen").getValue().toString())
+//                                    Log.e("strp2", p0.child("sentToserver").getValue().toString())
+//                                    Log.e("strp2", p0.child("seen").getValue().toString())
                                 }
 
 
@@ -727,6 +752,7 @@ class ChatActivity : AppCompatActivity(), ConstantsValues, ChatAppMsgAdapter.Ite
                 val chatMessage = dataSnapshot.getValue(ChatMessage::class.java!!)
                 chatMessage!!.date = dataSnapshot.key.toString()
                 chatMessage.isSent = false
+                viewmodel.updatelstChatTime(chatMessage!!.date)
                 if (!dataSnapshot.hasChild("now")) {
                     list.add(chatMessage)
                     scrollChatLayouttoBottom()
@@ -739,16 +765,29 @@ class ChatActivity : AppCompatActivity(), ConstantsValues, ChatAppMsgAdapter.Ite
 //                                                }
 //                                            }
                 else if (dataSnapshot.hasChild("now")) {
-                    val isNow = dataSnapshot.child("now").getValue();
-                    if (!isNow!!.equals(dataSnapshot.key.toString())) {
+                    val from = dataSnapshot.child("from").getValue();
+                    val text = dataSnapshot.child("type").getValue();
+                    if (text!!.equals("text")){
                         list.add(chatMessage)
                         scrollChatLayouttoBottom()
-                        return
                     }
-                    list.add(chatMessage)
-                    FirebaseDatabase.getInstance().reference.child("chat_room").child(room_type)
-                            .child(dataSnapshot.key.toString()).child("now").removeValue()
-                    scrollChatLayouttoBottom()
+                   else if (!from!!.equals(myUserId)) {
+                        list.add(chatMessage)
+                        scrollChatLayouttoBottom()
+//                        return
+
+                    }
+                    else if (isForward){
+                        list.add(chatMessage)
+                        scrollChatLayouttoBottom()
+
+                    }
+//                    else {
+//                        list.add(chatMessage)
+                        FirebaseDatabase.getInstance().reference.child("chat_room").child(room_type)
+                                .child(dataSnapshot.key.toString()).child("now").removeValue()
+//                        scrollChatLayouttoBottom()
+//                    }
 
                 }
             }
@@ -773,19 +812,16 @@ class ChatActivity : AppCompatActivity(), ConstantsValues, ChatAppMsgAdapter.Ite
 
 
     private fun sendFile(senderUid: String?, receiverUid: String?, path: Uri?, pathList: ArrayList<File>?, i: Int) {
-        var databaseReference = FirebaseDatabase.getInstance().reference
-        val room_type_1 = senderUid + "_" + receiverUid;
-        val room_type_2 = receiverUid + "_" + senderUid;
+        isForward=false
         var date: String? = ""
-        var user_message_push: DatabaseReference? = null
-        var push_id: String? = ""
+
         var filename: String? = ""
         var fileType: String? = ""
         var fileExtension: String? = ""
         var chatMessage: ChatMessage? = null
         val photo = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
                 "Chatstocker")
-        date = Calendar.getInstance().timeInMillis.toString();
+
 
 
         filename = pathList!!.get(i).path!!.substring(pathList.get(i).path!!.lastIndexOf("/") + 1);
@@ -798,32 +834,50 @@ class ChatActivity : AppCompatActivity(), ConstantsValues, ChatAppMsgAdapter.Ite
             fileType = "audio"
             fileExtension = ".mp3"
         }
-        chatMessage = ChatMessage(pathList.get(i).path, "", fileType, senderUid!!, "", receiverUid!!, "", false, "")
-        chatMessage!!.date = date
-        chatMessage.isSent = false
-        chatMessage.progressValue = 0
-        chatMessage.isNow = date
-        list.add(chatMessage)
-        if (list.size > 1) {
-            val newMsgPosition = list.size - 1;
+        for (i in 0 until pathList.size) {
+            date = Calendar.getInstance().timeInMillis.toString();
+            chatMessage = ChatMessage(pathList.get(i).path, "", fileType, senderUid!!, "", receiverUid!!, "", false, "")
+            chatMessage!!.date = date
+            chatMessage.isSent = false
+            chatMessage.progressValue = 0
+            chatMessage.isNow = date
+            list.add(chatMessage)
+            if (list.size > 1) {
+                val newMsgPosition = list.size - 1;
 //
 //        // Notify recycler view insert one new data.
-            adapter.notifyItemInserted(newMsgPosition);
-            recyclerView.scrollToPosition(newMsgPosition);
-        } else
-            adapter.notifyDataSetChanged()
-        var count = 0
+                adapter.notifyItemInserted(newMsgPosition);
+                recyclerView.scrollToPosition(newMsgPosition);
+            } else
+                adapter.notifyDataSetChanged()
+        }
+        uploadedListIndex=list.size-pathList.size
+        upload(senderUid,receiverUid,pathList,0)
+
+
+
+
+    }
+
+    private fun upload(senderUid: String?, receiverUid: String?,pathList: ArrayList<File>,i:Int){
+        var databaseReference = FirebaseDatabase.getInstance().reference
+        var fileExtension: String? = ""
+        val room_type_1 = senderUid + "_" + receiverUid;
+        val room_type_2 = receiverUid + "_" + senderUid;
+        var user_message_push: DatabaseReference? = null
+        var push_id: String? = ""
+
         user_message_push = databaseReference.child("chat_room")
                 .child(senderUid!!).child(receiverUid!!).push();
         push_id = user_message_push!!.getKey()!!;
         val filePath = mImageStorage.child("message_images").child(push_id + fileExtension)
-        var index: Int = 0;
+
         filePath.putFile(Uri.fromFile(pathList.get(i))).addOnProgressListener {
             val progress = (100.0 * it.bytesTransferred / it.totalByteCount)
-            index = list.indexOf(chatMessage)
-            list.get(index).progressValue = progress.toInt()
+//            index = list.indexOf(chatMessage)
+            list.get(uploadedListIndex).progressValue = progress.toInt()
             if (progress.toInt() == 100) {
-                list.get(index).isSent = true
+                list.get(uploadedListIndex).isSent = true
 
             }
             adapter.notifyDataSetChanged()
@@ -846,11 +900,13 @@ class ChatActivity : AppCompatActivity(), ConstantsValues, ChatAppMsgAdapter.Ite
                     val download_url = downUri.toString()
                     Log.d(TAG, "onComplete: Url: " + downUri.toString());
 //                    Glide.with(this@ChatActivity).load(Uri.parse(download_url)).into(imgFile)
-                    val chat = ChatMessage(download_url, "flase", fileType!!, senderUid!!, list.get(index).date!!, receiverUid!!, myUserId!!, false, otherUId.name!!)
+                    val date = Calendar.getInstance().timeInMillis.toString();
+                    list.get(uploadedListIndex).date=date;
+                    val chat = ChatMessage(download_url, "flase", list.get(uploadedListIndex).type!!, senderUid!!, list.get(uploadedListIndex).date!!, receiverUid!!, myUserId!!, false, otherUId.name!!)
                     val messageMap = HashMap<Any, Any>();
                     messageMap.put("message", download_url);
                     messageMap.put("seen", false);
-                    messageMap.put("type", fileType!!);
+                    messageMap.put("type", list.get(uploadedListIndex).type!!);
                     messageMap.put("time", ServerValue.TIMESTAMP);
                     messageMap.put("from", senderUid!!);
 
@@ -858,17 +914,21 @@ class ChatActivity : AppCompatActivity(), ConstantsValues, ChatAppMsgAdapter.Ite
                     messageUserMap.put(senderUid + "/" + push_id, messageMap);
                     messageUserMap.put(receiverUid + "/" + push_id, messageMap);
 //                    adapter.addMessage(chat)
-                    recyclerView.adapter = adapter
-                    chat.isNow = list.get(index).date
+//                    recyclerView.adapter = adapter
+                    chat.isNow = "0"
+
                     if (room_type == "")
                         room_type = senderUid + "_" + receiverUid
                     databaseReference.child("chat_room").child(room_type)
-                            .child(list.get(index).date)
+                            .child(date)
                             .setValue(chat)
 
 
-                    viewmodel.sendNotifcationtoUser(Prefrences.getUserDetails(this@ChatActivity, KEY_LOGIN_DATA).name!!, chat.msg, this@ChatActivity, list.get(index).date, room_type)
-                    count++
+                    viewmodel.sendNotifcationtoUser(Prefrences.getUserDetails(this@ChatActivity, KEY_LOGIN_DATA).name!!, chat.msg, this@ChatActivity, date, room_type)
+                    uploadcount++
+                    uploadedListIndex++
+                    if (uploadcount<pathList.size)
+                        upload(senderUid,receiverUid,pathList,uploadcount)
                     /*  databaseReference.child("chat_room")
                               .ref
                               .addValueEventListener(object : ValueEventListener {
@@ -894,8 +954,6 @@ class ChatActivity : AppCompatActivity(), ConstantsValues, ChatAppMsgAdapter.Ite
                 }
             }
         })
-
-
     }
 
     fun getOutputMediaFileUri(file: File): Uri {
@@ -1012,10 +1070,10 @@ class ChatActivity : AppCompatActivity(), ConstantsValues, ChatAppMsgAdapter.Ite
 //                    list.add(File(realPath))
                     for (i in 0 until mediaFiles.size) {
                         list.add(File(mediaFiles.get(i)))
-                        sendFile(Prefrences.Companion.getUserUid(this), otherUId.uid, Uri.fromFile(File(mediaFiles.get(i))), list, i)
+
 
                     }//                    Glide.with(this@ChatActivity).load(realPath).into(imgFile)
-
+                    sendFile(Prefrences.Companion.getUserUid(this), otherUId.uid, Uri.fromFile(File(mediaFiles.get(0))), list, 0)
                 }
                 if (requestCode == FilePickerConst.REQUEST_CODE_DOC) {
 //                    Log.e("path", photoFile!!.getAbsolutePath())
@@ -1027,10 +1085,10 @@ class ChatActivity : AppCompatActivity(), ConstantsValues, ChatAppMsgAdapter.Ite
 //                    list.add(File(realPath))
                     for (i in 0 until mediaFiles.size) {
                         list.add(File(mediaFiles.get(i)))
-                        sendFile(Prefrences.Companion.getUserUid(this), otherUId.uid, Uri.fromFile(File(mediaFiles.get(i))), list, i)
+
 
                     }//                    Glide.with(this@ChatActivity).load(realPath).into(imgFile)
-
+                    sendFile(Prefrences.Companion.getUserUid(this), otherUId.uid, Uri.fromFile(File(mediaFiles.get(0))), list, 0)
                 } else if (requestCode == 200) {
 
                     val realPath: String

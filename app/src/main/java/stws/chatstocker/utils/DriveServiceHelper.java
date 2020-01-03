@@ -44,6 +44,7 @@ import java.util.concurrent.Executors;
 import stws.chatstocker.R;
 import stws.chatstocker.interfaces.FileRecievedListener;
 import stws.chatstocker.model.FileDetails;
+import stws.chatstocker.services.FileUploadService;
 import stws.chatstocker.view.LoginActivity;
 
 public class DriveServiceHelper {
@@ -86,51 +87,56 @@ public class DriveServiceHelper {
     }
     public void uploadFile(java.io.File path,String folderId,String type,Context context)
             throws Exception {
+        Intent mIntent = new Intent(context, FileUploadService.class);
+        mIntent.putExtra("mFilePath",path.getAbsolutePath());
+        mIntent.putExtra("type",type);
+        mIntent.putExtra("folderId",folderId);
+        FileUploadService.enqueueWork(context, mIntent,mDriveService);
 //        ProgressBarHandler.Companion.show(context);
-        Handler handler=new Handler();
-            Thread thread = new Thread() {
-            @Override
-            public void run() {
-                try {
-//                    while(true) {
-                    List<File> files = mDriveService.files().list().setQ("mimeType = 'application/vnd.google-apps.folder'").execute().getFiles();
-//                        File fileMetadata = new File();
-//                        fileMetadata.setName(path.getName());
-//                        java.io.File filePath = new java.io.File(path.getAbsolutePath());
-//                        FileContent mediaContent = new FileContent("image/jpeg", filePath);
-//                        File file = mDriveService.files().create(fileMetadata, mediaContent)
-//                                .setFields("id")
+//        Handler handler=new Handler();
+//            Thread thread = new Thread() {
+//            @Override
+//            public void run() {
+//                try {
+////                    while(true) {
+////                    List<File> files = mDriveService.files().list().setQ("mimeType = 'application/vnd.google-apps.folder'").execute().getFiles();
+////                        File fileMetadata = new File();
+////                        fileMetadata.setName(path.getName());
+////                        java.io.File filePath = new java.io.File(path.getAbsolutePath());
+////                        FileContent mediaContent = new FileContent("image/jpeg", filePath);
+////                        File file = mDriveService.files().create(fileMetadata, mediaContent)
+////                                .setFields("id")
+////
+////                                .execute();
+////                        System.out.println("File ID: " + file.getId());
 //
-//                                .execute();
-//                        System.out.println("File ID: " + file.getId());
-
-//                    String folderId = "0BwwA4oUTeiV1TGRPeTVjaWRDY1E";
-                    File fileMetadata = new File();
-                    fileMetadata.setName(path.getName());
-
-                    fileMetadata.setParents(Collections.singletonList(folderId));
-                    java.io.File filePath = new java.io.File(path.getAbsolutePath());
-                    FileContent mediaContent = new FileContent(type, filePath);
-
-                    File file = mDriveService.files().create(fileMetadata, mediaContent)
-                            .setFields("id, parents")
-                            .execute();
-                    System.out.println("File ID: " + file.getId());
-                    handler.post(new Runnable() {
-                        @Override
-                        public void run() {
-//                          ProgressBarHandler.Companion.hide();
-                          Toast.makeText(context,"Your file uploaded successfully",Toast.LENGTH_SHORT).show();
-                        }
-                    });
-//                    }
-                }  catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        };
-
-        thread.start();
+////                    String folderId = "0BwwA4oUTeiV1TGRPeTVjaWRDY1E";
+//                    File fileMetadata = new File();
+//                    fileMetadata.setName(path.getName());
+//
+//                    fileMetadata.setParents(Collections.singletonList(folderId));
+//                    java.io.File filePath = new java.io.File(path.getAbsolutePath());
+//                    FileContent mediaContent = new FileContent(type, filePath);
+//
+//                    File file = mDriveService.files().create(fileMetadata, mediaContent)
+//                            .setFields("id, parents")
+//                            .execute();
+//                    System.out.println("File ID: " + file.getId());
+//                    handler.post(new Runnable() {
+//                        @Override
+//                        public void run() {
+////                          ProgressBarHandler.Companion.hide();
+//                          Toast.makeText(context,"Your file uploaded successfully",Toast.LENGTH_SHORT).show();
+//                        }
+//                    });
+////                    }
+//                }  catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        };
+//
+//        thread.start();
 //        logDebug("upload file...");
 
 
@@ -402,7 +408,7 @@ public class DriveServiceHelper {
             if (genericUrl.size()>0)
             fileRecievedListener.Downloaded(genericUrl);
             else
-                Toast.makeText(context,"You donot have  any files on drive",Toast.LENGTH_SHORT).show();
+                Toast.makeText(context,"You do not have  any files on drive",Toast.LENGTH_SHORT).show();
 //            ProgressBarHandler.Companion.hide();
 
 //            Log.e("url",genericUrl.get(0).getu+"");

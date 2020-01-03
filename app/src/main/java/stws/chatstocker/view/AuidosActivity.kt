@@ -47,16 +47,56 @@ class AuidosActivity : AppCompatActivity(), GetAllFiles.OnFileReciveListener, Fi
     lateinit var adapter: AudioAdapter
     override fun Downloaded(list: List<FileDetails>) {
 //        Glide.with(this).load(list.get(0)).into(btn)
+//        fileList.addAll(list)
+//        Collections.sort(fileList, SortByTime());
+//        ProgressBarHandler.hide()
+//        var createdtime = ""
+//        for (i in 0 until fileList.size) {
+//            createdtime = DateTimeUtils.convertDateTimetoDay(fileList.get(i).createdTime, "dd MMM")
+//            if (hashMapFileList.containsKey(createdtime)) {
+//                hashMapFileList.put(createdtime, hashMapFileList.get(createdtime)!!.plus(1))
+//            } else {
+//                hashMapFileList.put(createdtime, 1)
+//            }
+//        }
+//        var layoutManager = GridLayoutManager(this, 3)
+//        recyclerView.layoutManager = layoutManager!!
+//        val sections = ArrayList<SectionedGridRecyclerViewAdapter.Section>()
+//        var prevValue = 0
+//        //Sections
+//        var count = 0;
+//        val result = hashMapFileList.toSortedMap(compareByDescending { it })
+//        result.forEach { (key, value) ->
+//            if (count == 0)
+//                sections.add(SectionedGridRecyclerViewAdapter.Section(0, key))
+//            else
+//                sections.add(SectionedGridRecyclerViewAdapter.Section(prevValue, key))
+//            prevValue = value + prevValue
+//            count++;
+//
+//        }
+//
+//
+//        //Add your adapter to the sectionAdapter
+//        adapter = AudioAdapter(fileList, BaseActivity.mDriveService, this)
+//
+//        val mSectionedAdapter = SectionedGridRecyclerViewAdapter(this, R.layout.section, R.id.section_text, recyclerView, adapter)
+//        mSectionedAdapter.setSections(sections.toTypedArray<SectionedGridRecyclerViewAdapter.Section>())
+//
+//        //Apply this adapter to the RecyclerView
+//        recyclerView.setAdapter(mSectionedAdapter)
+//        ProgressBarHandler.hide()
         fileList.addAll(list)
         Collections.sort(fileList, SortByTime());
         ProgressBarHandler.hide()
         var createdtime = ""
         for (i in 0 until fileList.size) {
             createdtime = DateTimeUtils.convertDateTimetoDay(fileList.get(i).createdTime, "dd MMM")
-            if (hashMapFileList.containsKey(createdtime)) {
-                hashMapFileList.put(createdtime, hashMapFileList.get(createdtime)!!.plus(1))
+            val millisecond=DateTimeUtils.convertStringtoMillis(createdtime,"dd MMM")
+            if (hashMapFileList.containsKey(millisecond.toString())) {
+                hashMapFileList.put(millisecond.toString(), hashMapFileList.get(millisecond.toString())!!.plus(1))
             } else {
-                hashMapFileList.put(createdtime, 1)
+                hashMapFileList.put(millisecond.toString(), 1)
             }
         }
         var layoutManager = GridLayoutManager(this, 3)
@@ -65,27 +105,28 @@ class AuidosActivity : AppCompatActivity(), GetAllFiles.OnFileReciveListener, Fi
         var prevValue = 0
         //Sections
         var count = 0;
-        val result = hashMapFileList.toSortedMap(compareByDescending { it })
+        val results = TreeMap<String,Int>()
+        results.putAll(hashMapFileList)
+        val result=results.descendingMap()
         result.forEach { (key, value) ->
             if (count == 0)
-                sections.add(SectionedGridRecyclerViewAdapter.Section(0, key))
+                sections.add(SectionedGridRecyclerViewAdapter.Section(0, DateTimeUtils.convertDateTimetoDay(key.toLong(), "dd MMM")))
             else
-                sections.add(SectionedGridRecyclerViewAdapter.Section(prevValue, key))
+                sections.add(SectionedGridRecyclerViewAdapter.Section(prevValue, DateTimeUtils.convertDateTimetoDay(key.toLong(), "dd MMM")))
             prevValue = value + prevValue
             count++;
 
         }
-
-
-        //Add your adapter to the sectionAdapter
-        adapter = AudioAdapter(fileList, BaseActivity.mDriveService, this)
-
-        val mSectionedAdapter = SectionedGridRecyclerViewAdapter(this, R.layout.section, R.id.section_text, recyclerView, adapter)
+//        Glide.with(this).load(list.get(0)).into(btn)
+//        ProgressBarHandler.hide()
+//        Collections.sort(fileList)
+        val adapter = AudioAdapter(fileList, BaseActivity.mDriveService, this)
+        recyclerView.adapter = adapter
+        val mSectionedAdapter = SectionedGridRecyclerViewAdapter(this, stws.chatstocker.R.layout.section, stws.chatstocker.R.id.section_text, recyclerView, adapter)
         mSectionedAdapter.setSections(sections.toTypedArray<SectionedGridRecyclerViewAdapter.Section>())
 
         //Apply this adapter to the RecyclerView
         recyclerView.setAdapter(mSectionedAdapter)
-//        ProgressBarHandler.hide()
     }
 
     override fun onFileRecive(id: String) {

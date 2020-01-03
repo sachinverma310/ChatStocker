@@ -10,7 +10,7 @@
         <!--<item>@drawable/audio</item>-->
         <!--<item>@drawable/audio</item>-->
     </drawable>
-    <string name="app_name">ChatStocker</string>
+    <string name="app_name">Stocker</string>
     <string name="sign_in">Sign In</string>
     <string name="mobile_num">Mobile Number</string>
     <string name="enter_your_mob_no">Enter your mobile number</string>
@@ -21,7 +21,7 @@
     <string name="stocker">Stocker</string>
     <string name="store_data">Store data automatically in a single screen</string>
     <string name="relive_your">Relive your life</string>
-    <string name="otp_verification">OTP VERFIFCATION</string>
+    <string name="otp_verification">OTP VERIFICATION</string>
     <string name="we_have_sent">We have sent otp to your mobile number</string>
     <string name="waitng_for_otp">Waiting for otp</string>
     <string name="resend_otp">Resend Otp</string>
@@ -113,5 +113,16 @@ You can save the data of social media sites like WhatsApp, Facebook, Tiktok etc.
     <string name="message">Message</string>
     <string name="support">Support</string>
     <string name="attach_file_from_gallery">Attach File from Gallery</string>
-    <string name="save_to_stocker">Save To Stocker</string>
+    <string name="save_to_stocker">(Save To Stocker)</string>
+    <string name="noti_channel_default">Default Channel</string>
+    <string name="btn_retry_not">Retry</string>
+    <string name="btn_cancel_not">Cancel</string>
+    <string name="file_upload_successful">File has been uploaded successfully</string>
+    <string name="uploading">Uploading</string>
+    <string name="in_progress">in progress</string>
+    <string name="message_failed">File has been not uploaded</string>
+    <string name="message_upload_success">Uploading Success</string>
+    <string name="error_upload_failed">Uploading failed</string>
+    <string name="message_upload_failed">File is not uploaded. Please TRY AGAIN</string>
+    <string name="internal_storage">Internal Storage</string>
 </resources>

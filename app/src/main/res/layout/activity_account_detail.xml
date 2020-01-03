@@ -54,6 +54,7 @@
         android:layout_height="wrap_content">
 
         <ImageView
+            android:onClick="@{(v)->viewModel.accounInfromation(v)}"
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_marginStart="8dp"
@@ -63,13 +64,13 @@
             android:src="@drawable/sethelp" />
 
         <TextView
+            android:onClick="@{(v)->viewModel.accounInfromation(v)}"
             android:id="@+id/tvAccountInfo"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:gravity="center|start"
             android:paddingLeft="10dp"
-            android:onClick="accountInfo"
             android:text="Account Information"
             android:textColor="@color/black"
             android:textSize="16sp" />
@@ -89,6 +90,7 @@
         android:layout_height="wrap_content">
 
         <ImageView
+            android:onClick="@{(v)->viewModel.appInfo(v)}"
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:layout_marginStart="8dp"
@@ -103,7 +105,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:gravity="center|start"
-            android:onClick="appinformation"
+            android:onClick="@{(v)->viewModel.appInfo(v)}"
             android:paddingLeft="10dp"
             android:text="App Information"
             android:textColor="@color/black"
@@ -129,6 +131,7 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:scaleType="fitXY"
+            android:onClick="@{(v)->viewModel.deleteAccount(v)}"
             android:layout_marginBottom="8dp"
             android:src="@drawable/delete_account" />
 
@@ -139,7 +142,7 @@
             android:layout_weight="1"
             android:gravity="center|start"
             android:paddingLeft="10dp"
-            android:onClick="deleteAccount"
+            android:onClick="@{(v)->viewModel.deleteAccount(v)}"
             android:text="Delete My Account"
             android:textColor="@color/black"
             android:textSize="16sp" />

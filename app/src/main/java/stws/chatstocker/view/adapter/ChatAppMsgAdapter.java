@@ -24,6 +24,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.firebase.auth.FirebaseAuth;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -32,11 +33,15 @@ import java.util.List;
 import stws.chatstocker.ConstantsValues;
 import stws.chatstocker.R;
 import stws.chatstocker.model.ChatMessage;
+import stws.chatstocker.model.LoginResponse;
 import stws.chatstocker.utils.DateTimeUtils;
+import stws.chatstocker.utils.Prefrences;
 import stws.chatstocker.view.AudioPalyerActivity;
 import stws.chatstocker.view.FullProfilePicViewrActivity;
 import stws.chatstocker.view.FullscreenImageActivity;
 import stws.chatstocker.view.VideoPlayerActivity;
+
+import static stws.chatstocker.ConstantsValues.KEY_LOGIN_DATA;
 
 public class ChatAppMsgAdapter extends RecyclerView.Adapter<ChatAppMsgAdapter.ChatAppMsgViewHolder> {
 
@@ -62,6 +67,10 @@ public class ChatAppMsgAdapter extends RecyclerView.Adapter<ChatAppMsgAdapter.Ch
     @Override
     public void onBindViewHolder(ChatAppMsgViewHolder holder, int position) {
         ChatMessage msgDto = this.msgDtoList.get(position);
+        holder.imageRightDate.setText(DateTimeUtils.Companion.convertMillisecondtodate(Long.parseLong(msgDto.getDate()), "hh:mm a"));
+        holder.imgLeftDate.setText(DateTimeUtils.Companion.convertMillisecondtodate(Long.parseLong(msgDto.getDate()), "hh:mm a"));
+        holder.audioRightDate.setText(DateTimeUtils.Companion.convertMillisecondtodate(Long.parseLong(msgDto.getDate()), "hh:mm a"));
+        holder.audioLefDate.setText(DateTimeUtils.Companion.convertMillisecondtodate(Long.parseLong(msgDto.getDate()), "hh:mm a"));
         if (msgDto.isSentToserver()){
             if (msgDto.getType().equals("image")){
                 holder.imgTickSingleImage.setVisibility(View.VISIBLE);
@@ -83,7 +92,20 @@ public class ChatAppMsgAdapter extends RecyclerView.Adapter<ChatAppMsgAdapter.Ch
 //            holder.imgTickSingle.setVisibility(View.GONE);
         }
 
-        String cuurentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        String cuurentUserId = null;
+        LoginResponse loginResponse = null;
+        try {
+            loginResponse = Prefrences.Companion.getUserDetails(holder.leftMsgTextView.getContext(), KEY_LOGIN_DATA);
+            cuurentUserId =loginResponse.getUid();
+
+//            else
+//                loginResponse.setProfile(user.getPhotoUrl().toString());
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
         holder.parentLayout.setBackgroundColor(msgDtoList.get(position).isSelected() ? Color.GRAY : Color.TRANSPARENT);
         // If the message is a received message.
         if (msgDto.getProgressValue() == 100)
@@ -191,7 +213,7 @@ public class ChatAppMsgAdapter extends RecyclerView.Adapter<ChatAppMsgAdapter.Ch
 
         TextView leftMsgTextView, leftDate, tvUserNameLeft;
 
-        TextView rightMsgTextView, rightDate, tvUserNameRight;
+        TextView rightMsgTextView, rightDate, tvUserNameRight,imageRightDate,imgLeftDate,audioLefDate,audioRightDate;
         ImageView imgFileLeft, imgFileRight,imgTickSingle,imgTickDouble,imgTickSingleImage,imgTickDoubleImage,imgTickSingleAudio,imgTickDoubleAudio;
 
         public ChatAppMsgViewHolder(View itemView) {
@@ -205,6 +227,10 @@ public class ChatAppMsgAdapter extends RecyclerView.Adapter<ChatAppMsgAdapter.Ch
                 rightMsgTextView = (TextView) itemView.findViewById(R.id.chat_right_msg_text_view);
                 rightDate = itemView.findViewById(R.id.chatRightdate);
                 leftDate = itemView.findViewById(R.id.chatLeftdate);
+                imgLeftDate = itemView.findViewById(R.id.chatImageLeftdate);
+                imageRightDate = itemView.findViewById(R.id.chatImageRightdate);
+                audioLefDate= itemView.findViewById(R.id.tvAudioDate);
+                audioRightDate = itemView.findViewById(R.id.tvAudioDateRight);
                 imgTickDouble= itemView.findViewById(R.id.imgTickDouble);
                 imgTickSingle= itemView.findViewById(R.id.imgTickSingle);
                 imgTickDoubleAudio= itemView.findViewById(R.id.imgTickDoubleAudio);
@@ -233,10 +259,14 @@ public class ChatAppMsgAdapter extends RecyclerView.Adapter<ChatAppMsgAdapter.Ch
                             intent.putExtra(ConstantsValues.KEY_FILE_URL, msgDtoList.get(getAdapterPosition()).getMsg());
                             v.getContext().startActivity(intent);
                         } else if (msgDtoList.get(getAdapterPosition()).getType().equals("video")) {
-                            Intent intent = new Intent(v.getContext(), VideoPlayerActivity.class);
-                            intent.putExtra(ConstantsValues.KEY_ISFROM_CHAT, true);
-                            intent.putExtra(ConstantsValues.KEY_FILE_URL, msgDtoList.get(getAdapterPosition()).getMsg());
+                            Uri uri = Uri.parse(msgDtoList.get(getAdapterPosition()).getMsg());
+                            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                            intent.setDataAndType(uri, "video/mp4");
                             v.getContext().startActivity(intent);
+//                            Intent intent = new Intent(v.getContext(), VideoPlayerActivity.class);
+//                            intent.putExtra(ConstantsValues.KEY_ISFROM_CHAT, true);
+//                            intent.putExtra(ConstantsValues.KEY_FILE_URL, msgDtoList.get(getAdapterPosition()).getMsg());
+//                            v.getContext().startActivity(intent);
                         } else {
                             Intent intent = new Intent(v.getContext(), AudioPalyerActivity.class);
                             intent.putExtra(ConstantsValues.KEY_PATH, msgDtoList.get(getAdapterPosition()).getMsg());
@@ -259,10 +289,14 @@ public class ChatAppMsgAdapter extends RecyclerView.Adapter<ChatAppMsgAdapter.Ch
                             intent.putExtra(ConstantsValues.KEY_ISFROM_CHAT, true);
                             v.getContext().startActivity(intent);
                         } else if (msgDtoList.get(getAdapterPosition()).getType().equals("video")) {
-                            Intent intent = new Intent(v.getContext(), VideoPlayerActivity.class);
-                            intent.putExtra(ConstantsValues.KEY_FILE_URL, msgDtoList.get(getAdapterPosition()).getMsg());
-                            intent.putExtra(ConstantsValues.KEY_ISFROM_CHAT, true);
+                            Uri uri = Uri.parse(msgDtoList.get(getAdapterPosition()).getMsg());
+                            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                            intent.setDataAndType(uri, "video/mp4");
                             v.getContext().startActivity(intent);
+//                            Intent intent = new Intent(v.getContext(), VideoPlayerActivity.class);
+//                            intent.putExtra(ConstantsValues.KEY_FILE_URL, msgDtoList.get(getAdapterPosition()).getMsg());
+//                            intent.putExtra(ConstantsValues.KEY_ISFROM_CHAT, true);
+//                            v.getContext().startActivity(intent);
                         } else {
                             Intent intent = new Intent(v.getContext(), AudioPalyerActivity.class);
                             intent.putExtra(ConstantsValues.KEY_FILE_URL, msgDtoList.get(getAdapterPosition()).getMsg());

@@ -33,7 +33,7 @@ class UserAdapter(val context: Context, var userList: ArrayList<User>) : Recycle
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         holder.bindItem(userList.get(position))
-        Glide.with(context).load(userList.get(position).image).into(holder.imageView)
+        Glide.with(context).load(userList.get(position).image).placeholder(R.drawable.logo).into(holder.imageView)
     }
 
     fun updateList(updateduserList: ArrayList<User>) {
@@ -57,8 +57,14 @@ class UserAdapter(val context: Context, var userList: ArrayList<User>) : Recycle
         val imageView = userListBinding.imgUserPic
 
         public fun bindItem(user: User) {
-//            if (userListBinding.getViewModel() == null) {
-            userListBinding.setViewModel(UserListDetailsViewModel(user))
+            var userViewModel:UserListDetailsViewModel
+            if (userListBinding.getViewModel() == null) {
+                 userViewModel=UserListDetailsViewModel(user)
+                userListBinding.setViewModel(userViewModel)
+            }
+            else{
+                userListBinding.viewModel!!.user=user
+            }
             if ( url!=null)
             userListBinding?.viewModel?.externalUrl = url!!
             else if (forwardingurl!=null)

@@ -34,7 +34,7 @@ class UserHorizontalAdapter (val context: Context, var user: User,var itemSelect
     }
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         holder.bindItem(userList.get(position)!!)
-        Glide.with(context).load(userList.get(position)!!.image).into(holder.imageView)
+        Glide.with(context).load(userList.get(position)!!.image).placeholder(R.drawable.logo).into(holder.imageView)
         holder.imgDel.setOnClickListener(View.OnClickListener {
             userList.remove(userList.get(position))
             notifyDataSetChanged()

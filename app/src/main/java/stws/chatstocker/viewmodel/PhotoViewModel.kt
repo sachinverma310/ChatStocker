@@ -105,6 +105,7 @@ class PhotoViewModel : ViewModel, ConstantsValues {
                 photoFile = File(photo.path + File.separator
                         + fileId + "." + "jpg")
                 if (photoFile.exists()) {
+
                     val intent = Intent(view.context, ImageViewActivity::class.java)
                     intent.putExtra(ConstantsValues.KEY_FILE_URL, photoFile.absolutePath)
                     intent.putExtra(ConstantsValues.KEY_FILE,photos)
@@ -115,12 +116,24 @@ class PhotoViewModel : ViewModel, ConstantsValues {
                     startDownloading(view)
             } else {
                 if (photoFile.exists()) {
+                    val photoFile = File(photo.path + File.separator
+                            + fileId + "." + "mp4")
 
-                    val intent = Intent(view.context, VideoPlayerActivity::class.java)
-                    intent.putExtra(ConstantsValues.KEY_VIDEO_ID, fileId)
-                    intent.putExtra(ConstantsValues.KEY_FILE,photos)
-                    ( view.context as AppCompatActivity).startActivityForResult(intent,ConstantsValues.KEY_FULL_SCREEN_REQUEST_CODE)
-                    isDownloaded!!.set(true)
+//      val videoView =activityVideoPlayerBinding.surfView
+//        //Set MediaController  to enable play, pause, forward, etc options.
+//        val mediaController=  MediaController(this);
+//        mediaController.setAnchorView(videoView);
+
+                    //Location of Media File
+                    var uri = Uri.parse(photoFile.absolutePath)
+                    val intent =  Intent(Intent.ACTION_VIEW, uri);
+                    intent.setDataAndType(uri, "video/mp4");
+                    ( view.context as AppCompatActivity).startActivity(intent);
+//                    val intent = Intent(view.context, VideoPlayerActivity::class.java)
+//                    intent.putExtra(ConstantsValues.KEY_VIDEO_ID, fileId)
+//                    intent.putExtra(ConstantsValues.KEY_FILE,photos)
+//                    ( view.context as AppCompatActivity).startActivityForResult(intent,ConstantsValues.KEY_FULL_SCREEN_REQUEST_CODE)
+//                    isDownloaded!!.set(true)
                 }
                 else
                     startDownloading(view)
@@ -138,7 +151,7 @@ class PhotoViewModel : ViewModel, ConstantsValues {
         if (!photoFile.exists())
             DownloadTask().execute()
         else {
-
+            openfullScreenImage(view)
         }
     }
 
@@ -197,7 +210,10 @@ class PhotoViewModel : ViewModel, ConstantsValues {
     }
 
     fun deleteItem(view: View) {
-
+        if (list==null){
+            Toast.makeText(view.context,"please make a selection to Delete",Toast.LENGTH_SHORT).show()
+            return
+        }
         confirmationDialog(view)
 
 //        request.dele
@@ -235,6 +251,10 @@ class PhotoViewModel : ViewModel, ConstantsValues {
 
     fun sendMulipleImage(context: Context,fileType:String){
         var fileList:ArrayList<File> = ArrayList()
+        if (list==null){
+            Toast.makeText(context,"Please make a selection to send",Toast.LENGTH_SHORT).show()
+            return
+        }
         for (i in 0 until list!!.size)
             fileList.add(File(photo.path + File.separator
                     + list!!.get(i)!!.fileId + "." + fileType))
@@ -281,6 +301,10 @@ class PhotoViewModel : ViewModel, ConstantsValues {
         intent.setType("image/*"); /* This example is sharing jpeg images. */
 
         val files = ArrayList<Uri>();
+        if (list==null){
+            Toast.makeText(contexts,"please make a selection to share",Toast.LENGTH_SHORT).show()
+            return
+        }
 
         for (filesToSend: FileDetails in list!!) {
             if (isVideo)
@@ -305,6 +329,7 @@ class PhotoViewModel : ViewModel, ConstantsValues {
         override fun doInBackground(vararg params: String?): String {
             if (list!!.size>0) {
                 for (i in 0 until list!!.size) {
+                    val fileId=list!!.get(i)!!.fileId
                     drive!!.files().delete(list!!.get(i)!!.fileId).execute()
                     if (!isVideo)
                         photoFile = File(photo.path + File.separator

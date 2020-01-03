@@ -31,6 +31,7 @@ import android.os.Vibrator
 import android.view.View
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.target.NotificationTarget
+import com.google.firebase.database.ServerValue
 import stws.chatstocker.ConstantsValues
 import stws.chatstocker.utils.Prefrences
 
@@ -49,6 +50,9 @@ class FirebaseService : FirebaseMessagingService() {
 //
 
         val jsonObject = JSONObject(title!!.get("body"))
+        var isGroup:Boolean=false
+        if (jsonObject.has("isgroup"))
+            isGroup=true;
         val intent = Intent(this, UserFragment::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
         val pendingIntent = PendingIntent.getActivity(this, 0, intent,
@@ -185,10 +189,17 @@ class FirebaseService : FirebaseMessagingService() {
 
         notificationManager.notify(1, customNotification)
 //        if (jsonObject.getString("dateTime")!!){
-        FirebaseDatabase.getInstance().reference.child("chat_room")
-                .child(jsonObject.getString("room_type"))
-                .child(jsonObject.getString("dateTime"))
-                .child("sentToserver").setValue(true)
+        val userId=Prefrences.getUserDetails(this,"login_data").uid
+        FirebaseDatabase.getInstance().reference.child("User")
+                .child(userId!!)
+                .child("friend")
+                .child(jsonObject.getString("senderUid")).child("last_msg_time").setValue(ServerValue.TIMESTAMP)
+        if (!isGroup) {
+            FirebaseDatabase.getInstance().reference.child("chat_room")
+                    .child(jsonObject.getString("room_type"))
+                    .child(jsonObject.getString("dateTime"))
+                    .child("sentToserver").setValue(true)
+        }
 //        onchatMessageSendResponse!!.postValue(chat)
 
     }

@@ -30,7 +30,7 @@ class GroupUserAdapter (val context: Context, var userList: ArrayList<User>,var 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         holder.bindItem(userList.get(position))
         holder.itemView.setBackgroundColor(if (userList.get(position).isSeletced!!) Color.GRAY else Color.TRANSPARENT)
-        Glide.with(context).load(userList.get(position).image).into(holder.imageView)
+        Glide.with(context).load(userList.get(position).image).placeholder(R.drawable.logo).into(holder.imageView)
         holder.itemView.setOnClickListener(View.OnClickListener {
             userList.get(position).isSeletced = !userList.get(position).isSeletced!!
             holder.itemView.setBackgroundColor(if (userList.get(position).isSeletced!!) Color.GRAY else Color.TRANSPARENT)

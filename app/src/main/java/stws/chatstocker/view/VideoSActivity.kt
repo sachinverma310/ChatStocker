@@ -32,14 +32,14 @@ import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
-class VideoSActivity : AppCompatActivity() , GetAllFiles.OnFileReciveListener, FileRecievedListener,PhotoAdapter.FileSelectedListener {
+class VideoSActivity : AppCompatActivity(), GetAllFiles.OnFileReciveListener, FileRecievedListener, PhotoAdapter.FileSelectedListener {
     override fun selectedFile(photos: ArrayList<FileDetails>) {
         Log.e("list", photos.toString())
         if (photos.size > 0)
             sheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED)
         else
             sheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED)
-        photoViewModel.list=photos;
+        photoViewModel.list = photos;
     }
 
     lateinit var fileList: MutableList<FileDetails>
@@ -52,10 +52,11 @@ class VideoSActivity : AppCompatActivity() , GetAllFiles.OnFileReciveListener, F
         var createdtime = ""
         for (i in 0 until fileList.size) {
             createdtime = DateTimeUtils.convertDateTimetoDay(fileList.get(i).createdTime, "dd MMM")
-            if (hashMapFileList.containsKey(createdtime)) {
-                hashMapFileList.put(createdtime, hashMapFileList.get(createdtime)!!.plus(1))
+            val millisecond=DateTimeUtils.convertStringtoMillis(createdtime,"dd MMM")
+            if (hashMapFileList.containsKey(millisecond.toString())) {
+                hashMapFileList.put(millisecond.toString(), hashMapFileList.get(millisecond.toString())!!.plus(1))
             } else {
-                hashMapFileList.put(createdtime, 1)
+                hashMapFileList.put(millisecond.toString(), 1)
             }
         }
         var layoutManager = GridLayoutManager(this, 3)
@@ -64,19 +65,22 @@ class VideoSActivity : AppCompatActivity() , GetAllFiles.OnFileReciveListener, F
         var prevValue = 0
         //Sections
         var count = 0;
-        val result =   hashMapFileList.toSortedMap(compareByDescending { it })
+        val results = TreeMap<String,Int>()
+        results.putAll(hashMapFileList)
+        val result=results.descendingMap()
         result.forEach { (key, value) ->
             if (count == 0)
-                sections.add(SectionedGridRecyclerViewAdapter.Section(0, key))
+                sections.add(SectionedGridRecyclerViewAdapter.Section(0, DateTimeUtils.convertDateTimetoDay(key.toLong(), "dd MMM")))
             else
-                sections.add(SectionedGridRecyclerViewAdapter.Section(prevValue, key))
+                sections.add(SectionedGridRecyclerViewAdapter.Section(prevValue, DateTimeUtils.convertDateTimetoDay(key.toLong(), "dd MMM")))
             prevValue = value + prevValue
             count++;
 
         }
 //        Glide.with(this).load(list.get(0)).into(btn)
 //        ProgressBarHandler.hide()
-        val adapter=PhotoAdapter(this@VideoSActivity,BaseActivity.mDriveService,fileList,true,this)
+//        Collections.sort(fileList)
+        val adapter = PhotoAdapter(this@VideoSActivity, BaseActivity.mDriveService, fileList, true, this)
         recyclerView.adapter = adapter
         val mSectionedAdapter = SectionedGridRecyclerViewAdapter(this, stws.chatstocker.R.layout.section, stws.chatstocker.R.id.section_text, recyclerView, adapter)
         mSectionedAdapter.setSections(sections.toTypedArray<SectionedGridRecyclerViewAdapter.Section>())
@@ -87,8 +91,8 @@ class VideoSActivity : AppCompatActivity() , GetAllFiles.OnFileReciveListener, F
 
     override fun onFileRecive(id: String) {
         ProgressBarHandler.hide()
-        val isfromCurrent=intent.getBooleanExtra(ConstantsValues.KEY_ISFROM_CURRENT,false)
-        DriveServiceHelper.getInstance(BaseActivity.mDriveService).GetFilesUrl(this,id, this,isfromCurrent).execute()
+        val isfromCurrent = intent.getBooleanExtra(ConstantsValues.KEY_ISFROM_CURRENT, false)
+        DriveServiceHelper.getInstance(BaseActivity.mDriveService).GetFilesUrl(this, id, this, isfromCurrent).execute()
     }
 
     lateinit var photosBinding: ActivityPhotosBinding
@@ -101,19 +105,19 @@ class VideoSActivity : AppCompatActivity() , GetAllFiles.OnFileReciveListener, F
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
 //        setContentView(R.layout.activity_audio_recording)
         setTitle(resources.getString(R.string.current_years_videos))
-        val isfromCurrent=intent.getBooleanExtra(ConstantsValues.KEY_ISFROM_CURRENT,false)
+        val isfromCurrent = intent.getBooleanExtra(ConstantsValues.KEY_ISFROM_CURRENT, false)
         if (!isfromCurrent)
             setTitle(resources.getString(R.string.prev_years_videos))
         recyclerView = photosBinding.recyclerView
 //        recyclerView.layoutManager = GridLayoutManager(this, 3)
         recyclerView.itemAnimator = DefaultItemAnimator()
         photoViewModel = ViewModelProviders.of(this).get(PhotoViewModel::class.java)
-        photosBinding.viewModel=photoViewModel
-        photoViewModel.isVideo=true
-        photoViewModel.drive=BaseActivity.mDriveService
+        photosBinding.viewModel = photoViewModel
+        photoViewModel.isVideo = true
+        photoViewModel.drive = BaseActivity.mDriveService
 //        val photoViewModel=ViewModelProviders.of(this).get(PhotoViewModel::class.java)
-      /*  ProgressBarHandler.getInstance()
-        ProgressBarHandler.show(this)*/
+        /*  ProgressBarHandler.getInstance()
+          ProgressBarHandler.show(this)*/
         sheetBehavior = BottomSheetBehavior.from(bottom_sheet)
 //        expandCloseSheet()
         sheetBehavior.setBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
@@ -141,12 +145,13 @@ class VideoSActivity : AppCompatActivity() , GetAllFiles.OnFileReciveListener, F
 
 
     }
-    private fun getVideosApi(){
-       fileList = ArrayList<FileDetails>()
+
+    private fun getVideosApi() {
+        fileList = ArrayList<FileDetails>()
         fileList.clear()
         hashMapFileList.clear()
         ProgressBarHandler.show(this)
-        GetAllFiles(this, "Chat Stocker videos", BaseActivity.mDriveServiceHelper, BaseActivity.mDriveService, this@VideoSActivity,"video/mp4").execute()
+        GetAllFiles(this, "Chat Stocker videos", BaseActivity.mDriveServiceHelper, BaseActivity.mDriveService, this@VideoSActivity, "video/mp4").execute()
     }
 
     override fun onResume() {
@@ -156,10 +161,11 @@ class VideoSActivity : AppCompatActivity() , GetAllFiles.OnFileReciveListener, F
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if(item.itemId==android.R.id.home)
+        if (item.itemId == android.R.id.home)
             super.onBackPressed()
         return true
     }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == ConstantsValues.KEY_FULL_SCREEN_REQUEST_CODE) {

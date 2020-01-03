@@ -3,13 +3,17 @@ package stws.chatstocker.utils;
 import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 
+import java.io.File;
+
 public class GetRealPathUtil {
+    private static final boolean DEBUG = false;
     public static String getPath(final Context context, final Uri uri) {
 
         final boolean isKitKat = Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT;
@@ -66,6 +70,22 @@ public class GetRealPathUtil {
             // Return the remote address
             if (isGooglePhotosUri(uri))
                 return uri.getLastPathSegment();
+            if (isWhatsappUri(uri)) {
+
+                String path = getDataColumn(context, uri, null, null, "_display_name");
+
+                if (path != null) {
+                    File file = new File(path);
+                    if (!file.canRead()) {
+                        return null;
+                    }
+                }
+                return path;
+            }
+            // File
+            else if ("file".equalsIgnoreCase(uri.getScheme())) {
+                return uri.getPath();
+            }
 
             return getDataColumn(context, uri, null, null);
         }
@@ -76,7 +96,31 @@ public class GetRealPathUtil {
 
         return null;
     }
+    public static String getDataColumn(Context context, Uri uri, String selection,
+                                       String[] selectionArgs,String columnName) {
 
+        Cursor cursor = null;
+        final String column = columnName == null ?  "_data" : columnName;
+        final String[] projection = {
+                column
+        };
+
+        try {
+            cursor = context.getContentResolver().query(uri, projection, selection, selectionArgs,
+                    null);
+            if (cursor != null && cursor.moveToFirst()) {
+                if (DEBUG)
+                    DatabaseUtils.dumpCursor(cursor);
+
+                final int column_index = cursor.getColumnIndexOrThrow(column);
+                return column.equals("_data") ? cursor.getString(column_index) : uri.toString() + "/" + cursor.getString(column_index);
+            }
+        } finally {
+            if (cursor != null)
+                cursor.close();
+        }
+        return null;
+    }
     /**
      * Get the value of the data column for this Uri. This is useful for
      * MediaStore Uris, and other file-based ContentProviders.
@@ -135,7 +179,9 @@ public class GetRealPathUtil {
     public static boolean isMediaDocument(Uri uri) {
         return "com.android.providers.media.documents".equals(uri.getAuthority());
     }
-
+    public static boolean isWhatsappUri(Uri uri) {
+        return "com.whatsapp.provider.media".equals(uri.getAuthority());
+    }
     /**
      * @param uri The Uri to check.
      * @return Whether the Uri authority is Google Photos.

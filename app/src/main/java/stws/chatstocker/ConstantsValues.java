@@ -18,6 +18,7 @@ public interface ConstantsValues {
     String KEY_ADDED_GRP="group";
     String KEY_GRP_IMAGE="grp_image";
     String KEY_GRP_NAME="grp_name";
+    String KEY_LAST_MSG_TIME="last_msg_time";
     String KEY_GRP_ID="grp_id";
     String KEY_CREATED_BY="created_by";
     String KEY_CREATED_AT="created_at";
@@ -37,4 +38,5 @@ public interface ConstantsValues {
     String KEY_Noti_RADIO_ID="radiob_btn_id";
     String KEY_NotI_SETTING="noti_setting";
     String KEY_FROM="is_from";
+    String KEY_FRIEND="friend";
 }

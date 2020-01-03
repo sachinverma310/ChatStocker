@@ -288,6 +288,7 @@ public class LoginActivity extends DaggerAppCompatActivity implements ConstantsV
             addValue.put("profileImage", "");
             addValue.put("lastSeen", String.valueOf(Calendar.getInstance().getTimeInMillis()));
             addValue.put("uid", user.getUid());
+
         } else {
             loginResponse = new LoginResponse(user.getDisplayName(), user.getUid(), user.getEmail(), user.getPhotoUrl().toString(), "", token);
             addValue.put("device_token", token);
@@ -298,6 +299,7 @@ public class LoginActivity extends DaggerAppCompatActivity implements ConstantsV
             addValue.put("profileImage", user.getPhotoUrl().toString());
             addValue.put("lastSeen", String.valueOf(Calendar.getInstance().getTimeInMillis()));
             addValue.put("uid", user.getUid());
+
         }
         try {
             Prefrences.Companion.saveUser(LoginActivity.this, KEY_LOGIN_DATA, loginResponse);
@@ -557,7 +559,7 @@ public class LoginActivity extends DaggerAppCompatActivity implements ConstantsV
 
     private boolean validatePhoneNumber() {
         String phoneNumber = mPhoneNumberField.getText().toString();
-        if (TextUtils.isEmpty(phoneNumber)) {
+        if (TextUtils.isEmpty(phoneNumber) || mPhoneNumberField.length()!=10) {
             mPhoneNumberField.setError("Invalid phone number.");
             return false;
         }
@@ -577,7 +579,7 @@ public class LoginActivity extends DaggerAppCompatActivity implements ConstantsV
                 if (!validatePhoneNumber()) {
                     return;
                 }
-                startPhoneNumberVerification(mPhoneNumberField.getText().toString());
+                startPhoneNumberVerification("+91"+mPhoneNumberField.getText().toString());
                 break;
             case R.id.btnFb:
                 break;

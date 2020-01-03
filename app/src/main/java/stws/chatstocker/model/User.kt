@@ -3,7 +3,7 @@ package stws.chatstocker.model
 import android.os.Parcel
 import android.os.Parcelable
 
-class User(val name:String?,val image:String?,val online:Boolean? ,val email:String?,val lastSeen:String?,val uid:String?,var isSeletced:Boolean?,var isGroup:Boolean?):Parcelable {
+class User(val name:String?,val image:String?,val online:Boolean? ,val email:String?,val lastSeen:String?,val uid:String?,var isSeletced:Boolean?,var isGroup:Boolean?):Parcelable,Comparable<User> {
     constructor(parcel: Parcel) : this(
             parcel.readString(),
             parcel.readString(),
@@ -30,6 +30,12 @@ class User(val name:String?,val image:String?,val online:Boolean? ,val email:Str
         field=value
     }
     get() = field
+
+    var lastMsgSent:String?=""
+        set(value) {
+            field=value
+        }
+        get() = field
     override fun describeContents(): Int {
         return 0
     }
@@ -42,6 +48,10 @@ class User(val name:String?,val image:String?,val online:Boolean? ,val email:Str
         override fun newArray(size: Int): Array<User?> {
             return arrayOfNulls(size)
         }
+    }
+
+    override fun compareTo(other: User): Int {
+        return other.lastMsgSent!!.compareTo(this.lastMsgSent!!)
     }
 
 }

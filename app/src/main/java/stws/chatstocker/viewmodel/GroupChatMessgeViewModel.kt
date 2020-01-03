@@ -121,6 +121,7 @@ class GroupChatMessgeViewModel:ViewModel() {
 
         var databaseReference = FirebaseDatabase.getInstance().reference
         val date = Calendar.getInstance().timeInMillis.toString();
+        chatMessage.date=date
 //        val chat = ChatMessage(message, "flase", "text", senderUid, date,groupUid,"",false,name)
 
         getAllGroupUser(groupUid,context,chatMessage.msg)
@@ -146,6 +147,38 @@ class GroupChatMessgeViewModel:ViewModel() {
                 .ref
                 .addListenerForSingleValueEvent(sendMessageEventListener!!)
 
+    }
+
+    public fun updatelstChatTime(time:String){
+        FirebaseDatabase.getInstance()
+                .reference.child("User").child(senderUid).child(ConstantsValues.KEY_FRIEND).addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onCancelled(p0: DatabaseError) {
+
+            }
+
+            override fun onDataChange(p0: DataSnapshot) {
+                val childrenCunt = p0.childrenCount
+                val friendValue = HashMap<String, String>()
+                var countKey = 0L
+                if (childrenCunt > 0) {
+                    countKey = childrenCunt + 1
+//                                    grpValue.put(countKey.toString(), key.toString())
+                } else
+                    countKey = 1L
+                friendValue.put(ConstantsValues.KEY_LAST_MSG_TIME, time)
+
+                FirebaseDatabase.getInstance()
+                        .reference.child("User").child(senderUid).child(ConstantsValues.KEY_FRIEND).child(groupUid).setValue(friendValue).addOnSuccessListener(object : OnSuccessListener<Void>{
+                    override fun onSuccess(p0: Void?) {
+
+                    }
+
+                })
+//                database.child("User").child(users!!.uid.toString()).child(ConstantsValues.KEY_CREATED_BY).setValue(myUserId)
+//                for (DataSnapshot snap: dataSnapshot.getChildren()) {
+            }
+
+        })
     }
     private fun sendMessageClick(view: View) {
         isCleared=false
@@ -201,7 +234,7 @@ class GroupChatMessgeViewModel:ViewModel() {
                             .child(groupUid)
                             .child(date)
                             .setValue(chat)
-
+                updatelstChatTime(ServerValue.TIMESTAMP.toString())
 //                            onchatMessageSendResponse!!.postValue(chat)
 //                }
 
@@ -267,7 +300,7 @@ class GroupChatMessgeViewModel:ViewModel() {
     fun back(view: View){
         (view.context as AppCompatActivity).onBackPressed()
     }
-    fun exitGroup(){
+    fun exitGroup(context: Context){
         FirebaseDatabase.getInstance().reference.child("User")
                 .ref.child(senderUid).child(ConstantsValues.KEY_ADDED_GRP).child(groupUid).removeValue()
         FirebaseDatabase.getInstance().reference.child(ConstantsValues.KEY_GROUP_DETAILS).child(groupUid)
@@ -287,6 +320,8 @@ class GroupChatMessgeViewModel:ViewModel() {
                                 break
                             }
                         }
+                        Toast.makeText(context,"Exted from group successfully",Toast.LENGTH_SHORT).show()
+                        (context as AppCompatActivity).finish()
                     }
 
                 })
@@ -345,21 +380,39 @@ class GroupChatMessgeViewModel:ViewModel() {
                     .ref
                     .removeEventListener(sendMessageEventListener!!)
     }
+    fun sendNotifcationtoUser(title: String, msg: String, context: Context, date: String, room_type: String,receiverUid: String,recieverdeviceToken:String) {
+        val jsonObject = JSONObject()
+        jsonObject.put("to", recieverdeviceToken)
+        jsonObject.put("priority", "high")
+        val jsonObjectNotification = JSONObject()
+        jsonObjectNotification.put("title", title)
+        val jsonObjectBody = JSONObject()
+//     if (room_type.equals("1"))
+//     jsonObjectBody.put("room_type",senderUid + "_" + receiverUid)
+//     else
+        jsonObjectBody.put("room_type", room_type)
 
-    fun sendNotifcationtoUser(title:String,msg:String,recieverdeviceToken:String,context: Context){
-        val jsonObject= JSONObject()
-        jsonObject.put("to",recieverdeviceToken)
-        jsonObject.put("priority","high")
-        val jsonObjectNotification= JSONObject()
-        jsonObjectNotification.put("title",title)
-        jsonObjectNotification.put("body",msg)
-        jsonObject.put("notification",jsonObjectNotification)
-        sendNotification(jsonObject,context)
+        jsonObjectBody.put("recieverUid", receiverUid)
+        jsonObjectBody.put("senderUid", senderUid)
+        jsonObjectBody.put("msg", msg)
+        jsonObjectBody.put("dateTime", date);
+        jsonObjectBody.put("isgroup", true);
+        jsonObjectNotification.put("body", jsonObjectBody)
+        val jsonObjectData = JSONObject()
+        jsonObjectData.put("body", jsonObjectBody)
+        jsonObjectData.put("title", title)
+//     jsonObjectData.put("recieverUid",receiverUid)
+//     jsonObjectData.put("senderUid",senderUid)
+//     jsonObjectData.put("msg",msg)
+        jsonObject.put("data", jsonObjectData)
+
+//     jsonObject.put("notification",jsonObjectNotification)
+        sendNotification(jsonObject, context)
     }
 
     private fun sendNotification(notification: JSONObject, context: Context) {
         Log.e("TAG", "sendNotification")
-        val requestQueue= Volley.newRequestQueue(context)
+        val requestQueue = Volley.newRequestQueue(context)
         val jsonObjectRequest = object : JsonObjectRequest(ConstantsValues.FCM_API, notification,
                 Response.Listener<JSONObject> { response ->
                     Log.i("TAG", "onResponse: $response")
@@ -379,6 +432,39 @@ class GroupChatMessgeViewModel:ViewModel() {
         }
         requestQueue.add(jsonObjectRequest)
     }
+//    fun sendNotifcationtoUser(title:String,msg:String,recieverdeviceToken:String,context: Context){
+//        val jsonObject= JSONObject()
+//        jsonObject.put("to",recieverdeviceToken)
+//        jsonObject.put("priority","high")
+//        val jsonObjectNotification= JSONObject()
+//        jsonObjectNotification.put("title",title)
+//        jsonObjectNotification.put("body",msg)
+//        jsonObject.put("notification",jsonObjectNotification)
+//        sendNotification(jsonObject,context)
+//    }
+//
+//    private fun sendNotification(notification: JSONObject, context: Context) {
+//        Log.e("TAG", "sendNotification")
+//        val requestQueue= Volley.newRequestQueue(context)
+//        val jsonObjectRequest = object : JsonObjectRequest(ConstantsValues.FCM_API, notification,
+//                Response.Listener<JSONObject> { response ->
+//                    Log.i("TAG", "onResponse: $response")
+//
+//                },
+//                Response.ErrorListener {
+//                    Toast.makeText(context, "Request error", Toast.LENGTH_LONG).show()
+//                    Log.i("TAG", "onErrorResponse: Didn't work")
+//                }) {
+//
+//            override fun getHeaders(): Map<String, String> {
+//                val params = HashMap<String, String>()
+//                params["Authorization"] = ConstantsValues.SERVER_KEY
+//                params["Content-Type"] = "application/json"
+//                return params
+//            }
+//        }
+//        requestQueue.add(jsonObjectRequest)
+//    }
 
     fun getAllGroupUser(grpId:String,context: Context,msg: String){
 
@@ -401,8 +487,9 @@ class GroupChatMessgeViewModel:ViewModel() {
                                 override fun onDataChange(ds: DataSnapshot) {
                                     if (ds.hasChild(ConstantsValues.KEY_DEVICE_TOKEN)) {
                                         val token = ds.child(ConstantsValues.KEY_DEVICE_TOKEN).getValue(String::class.java)
+//                                        val receiverUid = ds.child(ConstantsValues.KEY).getValue(String::class.java)
                                         if (!Prefrences.getUserDetails(context,ConstantsValues.KEY_LOGIN_DATA).deviceToken.equals(token))
-                                    sendNotifcationtoUser(groupName,msg,token!!,context)
+                                    sendNotifcationtoUser(groupName,msg,context,"",grpId,userId.toString(),token!!)
                                     }
                                 }
                             })

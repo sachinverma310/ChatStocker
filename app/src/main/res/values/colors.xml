@@ -20,4 +20,5 @@
     <color name="profile_edit_hint_color">#142335</color>
     <color name="chat_page">#CEDAE9</color>
     <color name="gray">#7D7F80</color>
+    <color name="green">#62B13A</color>
 </resources>
