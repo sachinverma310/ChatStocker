@@ -58,6 +58,7 @@ class EditGroupActivity : AppCompatActivity(),View.OnClickListener {
     lateinit var viewModel: EditGroupViewModel
     lateinit var group:User
     lateinit var imgPick: ImageView
+    lateinit var imgBack: ImageView
     lateinit var imgCamera: ImageView
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -78,10 +79,13 @@ class EditGroupActivity : AppCompatActivity(),View.OnClickListener {
             groupSize=it.size
         })
         imgCamera=binding.imgCamera
+        imgBack=binding.editGrpActionBar.imgBack
         imgPick=binding.imgPick
         imgPick.setOnClickListener(this)
         imgCamera.setOnClickListener(this)
-
+        imgBack.setOnClickListener(View.OnClickListener {
+            super.onBackPressed()
+        })
 //        binding.editGrpActionBar.tvCreatedBy=group.
 
 

@@ -113,7 +113,7 @@ You can save the data of social media sites like WhatsApp, Facebook, Tiktok etc.
     <string name="message">Message</string>
     <string name="support">Support</string>
     <string name="attach_file_from_gallery">Attach File from Gallery</string>
-    <string name="save_to_stocker">(Save To Stocker)</string>
+    <string name="save_to_stocker">[Save To Stocker]</string>
     <string name="noti_channel_default">Default Channel</string>
     <string name="btn_retry_not">Retry</string>
     <string name="btn_cancel_not">Cancel</string>

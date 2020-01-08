@@ -7,7 +7,7 @@ import okhttp3.MultipartBody
 import retrofit2.http.*
 
 interface ApiService {
-    @GET("User.json")
+    @GET("Users.json")
     fun listuser(): Observable<JsonObject>
 
 

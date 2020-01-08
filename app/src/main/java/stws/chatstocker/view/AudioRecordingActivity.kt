@@ -19,6 +19,7 @@ import android.icu.lang.UCharacter.GraphemeClusterBreak.T
 import android.media.MediaRecorder
 import android.os.Environment
 import android.view.LayoutInflater
+import android.view.MenuItem
 
 import android.view.View
 import android.widget.EditText
@@ -167,6 +168,12 @@ class AudioRecordingActivity : BaseActivity(), View.OnClickListener {
 //                startStopAudioRecording(false)
             }
         }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId==android.R.id.home)
+        super.onBackPressed()
+        return super.onOptionsItemSelected(item)
     }
 
     private fun stopRecording() {

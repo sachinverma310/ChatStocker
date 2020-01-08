@@ -3,6 +3,7 @@ package stws.chatstocker.view
 
 import android.Manifest
 import android.app.Dialog
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
@@ -17,6 +18,7 @@ import android.view.*
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.ContextCompat
@@ -89,12 +91,7 @@ class ChatActivity : AppCompatActivity(), ConstantsValues, ChatAppMsgAdapter.Ite
             imgSave.visibility = View.GONE
         }
         imgDelete.setOnClickListener(View.OnClickListener {
-            for (i in 0 until selectedList.size) {
-                list.remove(selectedList.get(i))
-                adapter.notifyDataSetChanged()
-            }
-            viewmodel.clearChat(selectedList, myUserId!!, room_type)
-            adapter.selectedMessageList.clear()
+           confirmationDialog(imgDelete,selectedList)
         })
         imgSend.setOnClickListener(View.OnClickListener {
 
@@ -121,6 +118,23 @@ class ChatActivity : AppCompatActivity(), ConstantsValues, ChatAppMsgAdapter.Ite
         }
         )
 
+    }
+    fun confirmationDialog(view: View,selectedList: ArrayList<ChatMessage>) {
+        AlertDialog.Builder(view.context)
+
+                .setMessage("Are you sure you want to delete this file")
+
+                .setPositiveButton(android.R.string.yes, DialogInterface.OnClickListener { dialog, whichButton ->
+                    dialog.dismiss()
+                    for (i in 0 until selectedList!!.size) {
+                        list.remove(selectedList.get(i))
+
+                    }
+                    adapter.notifyDataSetChanged()
+                    viewmodel.clearChat(selectedList, myUserId!!, room_type)
+                    adapter.selectedMessageList.clear()
+                })
+                .setNegativeButton(android.R.string.no, null).show()
     }
 
     private lateinit var chatActivityChatBinding: ActivityChatBinding
@@ -191,7 +205,7 @@ class ChatActivity : AppCompatActivity(), ConstantsValues, ChatAppMsgAdapter.Ite
             e.printStackTrace()
         }
         viewmodel = ViewModelProviders.of(this).get(ChatMessageViewModel::class.java)
-        FirebaseDatabase.getInstance().reference.child("User").child(otherUId.uid!!).addListenerForSingleValueEvent(object : ValueEventListener {
+        FirebaseDatabase.getInstance().reference.child("Users").child(otherUId.uid!!).addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onCancelled(p0: DatabaseError) {
 
             }

@@ -151,7 +151,7 @@ class GroupChatMessgeViewModel:ViewModel() {
 
     public fun updatelstChatTime(time:String){
         FirebaseDatabase.getInstance()
-                .reference.child("User").child(senderUid).child(ConstantsValues.KEY_FRIEND).addListenerForSingleValueEvent(object : ValueEventListener {
+                .reference.child("Users").child(senderUid).child(ConstantsValues.KEY_FRIEND).addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onCancelled(p0: DatabaseError) {
 
             }
@@ -168,7 +168,7 @@ class GroupChatMessgeViewModel:ViewModel() {
                 friendValue.put(ConstantsValues.KEY_LAST_MSG_TIME, time)
 
                 FirebaseDatabase.getInstance()
-                        .reference.child("User").child(senderUid).child(ConstantsValues.KEY_FRIEND).child(groupUid).setValue(friendValue).addOnSuccessListener(object : OnSuccessListener<Void>{
+                        .reference.child("Users").child(senderUid).child(ConstantsValues.KEY_FRIEND).child(groupUid).setValue(friendValue).addOnSuccessListener(object : OnSuccessListener<Void>{
                     override fun onSuccess(p0: Void?) {
 
                     }
@@ -301,7 +301,7 @@ class GroupChatMessgeViewModel:ViewModel() {
         (view.context as AppCompatActivity).onBackPressed()
     }
     fun exitGroup(context: Context){
-        FirebaseDatabase.getInstance().reference.child("User")
+        FirebaseDatabase.getInstance().reference.child("Users")
                 .ref.child(senderUid).child(ConstantsValues.KEY_ADDED_GRP).child(groupUid).removeValue()
         FirebaseDatabase.getInstance().reference.child(ConstantsValues.KEY_GROUP_DETAILS).child(groupUid)
                .child(ConstantsValues.KEY_GRP_USER).addValueEventListener(object : ValueEventListener{
@@ -479,7 +479,7 @@ class GroupChatMessgeViewModel:ViewModel() {
                             val userId = group.value
                             Log.e("user",userId.toString())
                             FirebaseDatabase.getInstance()
-                                    .reference.child("User").child(userId.toString()!!).addListenerForSingleValueEvent(object :ValueEventListener{
+                                    .reference.child("Users").child(userId.toString()!!).addListenerForSingleValueEvent(object :ValueEventListener{
                                 override fun onCancelled(p0: DatabaseError) {
 
                                 }

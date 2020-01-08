@@ -154,9 +154,11 @@ public class FileUploadService extends JobIntentService {
             java.io.File filePath = new java.io.File(path.getAbsolutePath());
             FileContent mediaContent = new FileContent(fileType, filePath);
             if (!previousFile.equals(path.getAbsolutePath())) {
+
                 com.google.api.services.drive.model.File file = mDriveServices.files().create(fileMetadata, mediaContent)
                         .setFields("id, parents")
                         .execute();
+
                 previousFile=path.getAbsolutePath();
                 System.out.println("File ID: " + file.getId());
             }
@@ -189,7 +191,9 @@ public class FileUploadService extends JobIntentService {
             return new File(mediaStorageDir.getPath() + File.separator
                     + "VID_" + timeStamp + "." + "mp4");
 
-        } else {
+        }
+
+        else {
             return new File(mediaStorageDir.getPath() + File.separator
                     + "IMG_" + timeStamp + "." + "jpg");
         }

@@ -106,7 +106,7 @@ public class LoginActivity extends DaggerAppCompatActivity implements ConstantsV
         AndroidInjection.inject(this);
         activityLoginBinding = DataBindingUtil.setContentView(this, R.layout.activity_login);
         printHashKey();
-        mUserDatabase = FirebaseDatabase.getInstance().getReference().child("User");
+        mUserDatabase = FirebaseDatabase.getInstance().getReference().child("Users");
         btnGmail = activityLoginBinding.btnGmail;
         btnLoginWithMobile = activityLoginBinding.btnSignIn;
         btnFb = activityLoginBinding.btnFb;

@@ -189,6 +189,10 @@ class AudioViewModel : ViewModel, ConstantsValues {
     }
 
     fun renameItem(view: View) {
+        if (list==null){
+            Toast.makeText(view.context,"please make a selection to edit",Toast.LENGTH_SHORT).show()
+            return
+        }
         if (list!!.size == 1) {
             for (filesToSend: FileDetails in list!!) {
 

@@ -131,6 +131,9 @@ class HomeActivity : BaseActivity(), ConstantsValues, HomeAdapter.OnItemClcik {
         recyclerView.layoutManager = GridLayoutManager(this@HomeActivity, 3) as RecyclerView.LayoutManager?
         val spacingInPixels = 10
         recyclerView.addItemDecoration(SpacesItemDecoration(10, SpacesItemDecoration.HORIZONTAL));
+        val notiSetting = Prefrences.getStringValue(this, ConstantsValues.KEY_NotI_SETTING)
+        if (notiSetting == null)
+            Prefrences.saveString(this, ConstantsValues.KEY_NotI_SETTING, "Tone");
         val list = arrayListOf<Drawable>(resources.getDrawable(R.drawable.photos, resources.newTheme()),
                 resources.getDrawable(R.drawable.photos_second, resources.newTheme())
                 , resources.getDrawable(R.drawable.photos_second, resources.newTheme())
@@ -215,7 +218,7 @@ class HomeActivity : BaseActivity(), ConstantsValues, HomeAdapter.OnItemClcik {
                         if (customIntent.data == null)
                             for (i in 0 until customIntent.clipData!!.itemCount) {
                                 try {
-                                    photoFile = File(RealPathUtil.getRealPath(this@HomeActivity, customIntent!!.clipData!!.getItemAt(i).uri));
+                                    photoFile = File(RealPathUtil.getRealPath(this@HomeActivity, customIntent!!.clipData!!.getItemAt(i).uri,customIntent.type));
 //                                    openPath(customIntent!!.clipData!!.getItemAt(i).uri)
 //                                    photoFile = File(FileUtils.getPath(this@HomeActivity, customIntent!!.clipData!!.getItemAt(i).uri));
 //                    photoFile=  FileProvider.getUriForFile(this, packageName + ".provider", file)
@@ -236,11 +239,13 @@ class HomeActivity : BaseActivity(), ConstantsValues, HomeAdapter.OnItemClcik {
 //            photoFile = File(URI(imageUri!!.path));
                                 if (customIntent.type.equals("image/*"))
                                     GetAllFiles(this@HomeActivity, "Chat Stocker photos", mDriveServiceHelper, mDriveService, photoFile!!, "image/jpeg").execute()
-                                else {
+                                else if (customIntent.type.toString().contains("audio")) {
+                                    GetAllFiles(this@HomeActivity, "Chat Stocker photos", mDriveServiceHelper, mDriveService, photoFile!!, "audio/mpeg").execute()
+                                } else {
                                     GetAllFiles(this@HomeActivity, "Chat Stocker videos", mDriveServiceHelper, mDriveService, photoFile!!, "video/mp4").execute()
                                 }
                             }
-                        intent=null
+                        intent = null
 
 
                     }
@@ -264,7 +269,7 @@ class HomeActivity : BaseActivity(), ConstantsValues, HomeAdapter.OnItemClcik {
                     // Get new Instance ID token
                     val token = task.result!!.token;
                     val userId = Prefrences.getUserUid(this)!!
-                    FirebaseDatabase.getInstance().reference.child("User").child(userId).child(ConstantsValues.KEY_DEVICE_TOKEN).setValue(token)
+                    FirebaseDatabase.getInstance().reference.child("Users").child(userId).child(ConstantsValues.KEY_DEVICE_TOKEN).setValue(token)
 
 
                     // Log and toast
@@ -361,16 +366,16 @@ class HomeActivity : BaseActivity(), ConstantsValues, HomeAdapter.OnItemClcik {
 
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
-        customIntent=intent!!
-        if (mDriveServiceHelper!=null){
-            customIntent=intent
+        customIntent = intent!!
+        if (mDriveServiceHelper != null) {
+            customIntent = intent
             if (customIntent.type != null) {
 
                 customIntent.addFlags(FLAG_GRANT_READ_URI_PERMISSION and FLAG_GRANT_WRITE_URI_PERMISSION);
                 if (customIntent.data == null)
                     for (i in 0 until customIntent.clipData!!.itemCount) {
                         try {
-                            photoFile = File(RealPathUtil.getRealPath(this@HomeActivity, customIntent!!.clipData!!.getItemAt(i).uri));
+                            photoFile = File(RealPathUtil.getRealPath(this@HomeActivity, customIntent!!.clipData!!.getItemAt(i).uri,customIntent.type));
 //                                    openPath(customIntent!!.clipData!!.getItemAt(i).uri)
 //                                    photoFile = File(FileUtils.getPath(this@HomeActivity, customIntent!!.clipData!!.getItemAt(i).uri));
 //                    photoFile=  FileProvider.getUriForFile(this, packageName + ".provider", file)
@@ -391,7 +396,9 @@ class HomeActivity : BaseActivity(), ConstantsValues, HomeAdapter.OnItemClcik {
 //            photoFile = File(URI(imageUri!!.path));
                         if (customIntent.type.equals("image/*") or customIntent.type.equals("image/jpeg"))
                             GetAllFiles(this@HomeActivity, "Chat Stocker photos", mDriveServiceHelper, mDriveService, photoFile!!, "image/jpeg").execute()
-                        else {
+                        else if (customIntent.type.toString().contains("audio")) {
+                            GetAllFiles(this@HomeActivity, "Chat Stocker audio", mDriveServiceHelper, mDriveService, photoFile!!, "audio/mpeg").execute()
+                        } else {
                             GetAllFiles(this@HomeActivity, "Chat Stocker videos", mDriveServiceHelper, mDriveService, photoFile!!, "video/mp4").execute()
                         }
                     }
@@ -411,7 +418,7 @@ class HomeActivity : BaseActivity(), ConstantsValues, HomeAdapter.OnItemClcik {
 //                }
 //            }
             101 -> {
-                if (resultCode== Activity.RESULT_OK) {
+                if (resultCode == Activity.RESULT_OK) {
                     val imageUri = data!!.getData() as Uri
                     photoFile = File(URI(imageUri.path));
                     GetAllFiles(this, "Chat Stocker photos", mDriveServiceHelper, mDriveService, photoFile!!, "image/jpeg").execute()
@@ -442,7 +449,7 @@ class HomeActivity : BaseActivity(), ConstantsValues, HomeAdapter.OnItemClcik {
                 }
             }
             MEDIA_TYPE_VIDEO -> {
-                if (resultCode== Activity.RESULT_OK) {
+                if (resultCode == Activity.RESULT_OK) {
                     GetAllFiles(this, "Chat Stocker videos", mDriveServiceHelper, mDriveService, photoFile!!, "video/mp4").execute()
 //                GetAllFiles("Chat Stocker videos").execute()
                 }

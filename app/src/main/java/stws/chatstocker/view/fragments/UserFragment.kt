@@ -105,7 +105,7 @@ class UserFragment : BaseActivity() {
             }
 
         })
-        mDatabaseReference = FirebaseDatabase.getInstance().getReference().child("User");
+        mDatabaseReference = FirebaseDatabase.getInstance().getReference().child("Users");
         loginResponse = Prefrences.getUserDetails(this, ConstantsValues.KEY_LOGIN_DATA)
     }
 

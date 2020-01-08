@@ -151,7 +151,7 @@ class GroupUserViewModel : ViewModel, ConstantsValues {
                         val users = userList.get(i) as User
 
                         FirebaseDatabase.getInstance()
-                                .reference.child("User").child(users.uid.toString()).child(ConstantsValues.KEY_ADDED_GRP).addListenerForSingleValueEvent(object : ValueEventListener {
+                                .reference.child("Users").child(users.uid.toString()).child(ConstantsValues.KEY_ADDED_GRP).addListenerForSingleValueEvent(object : ValueEventListener {
                             override fun onCancelled(p0: DatabaseError) {
 
                             }
@@ -168,14 +168,14 @@ class GroupUserViewModel : ViewModel, ConstantsValues {
                                 grpValue.put(KEY_GRP_NAME, grpName)
                                 grpValue.put(KEY_GRP_IMAGE, download_url)
                                 grpValue.put(KEY_GRP_ID, groupId.toString())
-                                database.child("User").child(users.uid.toString()).child(KEY_ADDED_GRP).child(groupId.toString()).setValue(grpValue).addOnSuccessListener(object : OnSuccessListener<Void>{
+                                database.child("Users").child(users.uid.toString()).child(KEY_ADDED_GRP).child(groupId.toString()).setValue(grpValue).addOnSuccessListener(object : OnSuccessListener<Void>{
                                     override fun onSuccess(p0: Void?) {
                                         if (i==userList.size-1)
                                             groupCreated(context)
                                     }
 
                                 })
-                                database.child("User").child(users!!.uid.toString()).child(KEY_CREATED_BY).setValue(myUserId)
+                                database.child("Users").child(users!!.uid.toString()).child(KEY_CREATED_BY).setValue(myUserId)
 //                for (DataSnapshot snap: dataSnapshot.getChildren()) {
                             }
 
@@ -199,7 +199,7 @@ class GroupUserViewModel : ViewModel, ConstantsValues {
     }
     fun getChildrent(): Int {
         FirebaseDatabase.getInstance()
-                .reference.child("User").child(user?.uid!!).child(ConstantsValues.KEY_ADDED_GRP).addListenerForSingleValueEvent(object : ValueEventListener {
+                .reference.child("Users").child(user?.uid!!).child(ConstantsValues.KEY_ADDED_GRP).addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onCancelled(p0: DatabaseError) {
 
             }

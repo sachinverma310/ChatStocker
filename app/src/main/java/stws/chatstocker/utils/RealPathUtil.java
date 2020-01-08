@@ -28,10 +28,11 @@ import java.util.Date;
 
 public class RealPathUtil {
     private static final boolean DEBUG = false;
+    private static String type = "";
 
-    public static String getRealPath(Context context, Uri fileUri) {
+    public static String getRealPath(Context context, Uri fileUri, String types) {
         String realPath;
-
+        type = types;
         // SDK < API11
         if (Build.VERSION.SDK_INT < 11) {
             realPath = RealPathUtil.getRealPathFromURI_BelowAPI11(context, fileUri);
@@ -150,13 +151,11 @@ public class RealPathUtil {
                 return uri.getLastPathSegment();
             if (isWhatsappUri(uri)) {
 //                String uri = data.getParcelableExtra(Intent.EXTRA_STREAM).toString();
-              File  photoFile = getOutputMediaFile(2);
+                File photoFile = getOutputMediaFile(2);
 //              Uri   fileUris = getOutputMediaFileUri(context,photoFile);
 //                Uri fileUri = GenericFileProvider.getUriForFile(context,context.getPackageName() + ".provider",photoFile);
 //
                 File selectedImage;
-
-
 
 
 //                if (uri.toString().startsWith("file://")) {
@@ -182,7 +181,7 @@ public class RealPathUtil {
 //                int column_index = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
 //                File se = new File(cursor.getString(column_index));
 
-                    path = getPathFromInputStreamUri(context, uri);
+                path = getPathFromInputStreamUri(context, uri);
 
                 if (path != null) {
                     File file = new File(path);
@@ -201,7 +200,8 @@ public class RealPathUtil {
 
         return null;
     }
-    public static Uri getOutputMediaFileUri( Context context,File file) {
+
+    public static Uri getOutputMediaFileUri(Context context, File file) {
         return FileProvider.getUriForFile(context, context.getPackageName() + ".provider", file);
     }
 
@@ -284,9 +284,16 @@ public class RealPathUtil {
     }
 
     private static File createTemporalFile() {
-      File photo=  new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
+        File photo = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
                 "Chatstocker");
-        return new File(photo.getAbsolutePath() + File.separator, "tempPicture.jpg");
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        if (type.contains("video"))
+            return new File(photo.getAbsolutePath() + File.separator, timeStamp + ".mp4");
+        else if (type.contains("audio"))
+            return new File(photo.getAbsolutePath() + File.separator, timeStamp + ".mp3");
+
+        return new File(photo.getAbsolutePath() + File.separator, timeStamp + ".jpg");
+
     }
 //    public static String handleSendImage(Context context, Uri imageUri, String type) throws IOException {
 ////        Uri imageUri = (Uri) intent.getParcelableExtra(Intent.EXTRA_STREAM);
@@ -374,11 +381,12 @@ public class RealPathUtil {
     public static boolean isWhatsappUri(Uri uri) {
         return "com.whatsapp.provider.media".equals(uri.getAuthority());
     }
-  public   void handleSendImage(Context context,Uri imageUri) throws IOException {
+
+    public void handleSendImage(Context context, Uri imageUri) throws IOException {
 
         if (imageUri != null) {
             File file = new File(context.getCacheDir(), "image");
-            InputStream inputStream=context.getContentResolver().openInputStream(imageUri);
+            InputStream inputStream = context.getContentResolver().openInputStream(imageUri);
             try {
 
                 OutputStream output = new FileOutputStream(file);
@@ -396,11 +404,12 @@ public class RealPathUtil {
                 }
             } finally {
                 inputStream.close();
-                byte[] bytes =getFileFromPath(file);
+                byte[] bytes = getFileFromPath(file);
                 //Upload Bytes.
             }
         }
     }
+
     public static String getDataColumn(Context context, Uri uri, String selection,
                                        String[] selectionArgs) {
 

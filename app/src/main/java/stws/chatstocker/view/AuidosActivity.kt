@@ -91,8 +91,8 @@ class AuidosActivity : AppCompatActivity(), GetAllFiles.OnFileReciveListener, Fi
         ProgressBarHandler.hide()
         var createdtime = ""
         for (i in 0 until fileList.size) {
-            createdtime = DateTimeUtils.convertDateTimetoDay(fileList.get(i).createdTime, "dd MMM")
-            val millisecond=DateTimeUtils.convertStringtoMillis(createdtime,"dd MMM")
+            createdtime = DateTimeUtils.convertDateTimetoDay(fileList.get(i).createdTime, "dd MMM yyyy")
+            val millisecond=DateTimeUtils.convertStringtoMillis(createdtime,"dd MMM yyyy")
             if (hashMapFileList.containsKey(millisecond.toString())) {
                 hashMapFileList.put(millisecond.toString(), hashMapFileList.get(millisecond.toString())!!.plus(1))
             } else {

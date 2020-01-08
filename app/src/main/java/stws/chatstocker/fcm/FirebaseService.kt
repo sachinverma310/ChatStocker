@@ -190,7 +190,7 @@ class FirebaseService : FirebaseMessagingService() {
         notificationManager.notify(1, customNotification)
 //        if (jsonObject.getString("dateTime")!!){
         val userId=Prefrences.getUserDetails(this,"login_data").uid
-        FirebaseDatabase.getInstance().reference.child("User")
+        FirebaseDatabase.getInstance().reference.child("Users")
                 .child(userId!!)
                 .child("friend")
                 .child(jsonObject.getString("senderUid")).child("last_msg_time").setValue(ServerValue.TIMESTAMP)

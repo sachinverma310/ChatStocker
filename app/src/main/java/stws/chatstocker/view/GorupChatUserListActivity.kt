@@ -93,6 +93,8 @@ class GorupChatUserListActivity : AppCompatActivity(), GroupUserAdapter.ItemSele
     private lateinit var mDatabaseReference: DatabaseReference
     private lateinit var loginResponse: LoginResponse
     private lateinit var imgSearch: ImageView
+    private lateinit var imgBack: ImageView
+
     private lateinit var recyclerViewSelected: RecyclerView
     private lateinit var tvTotalPrtcpnt:TextView
     private lateinit var fbNext:FloatingActionButton
@@ -107,6 +109,7 @@ class GorupChatUserListActivity : AppCompatActivity(), GroupUserAdapter.ItemSele
         recyclerViewSelected = activityGrChaBinding.recyclerViewHorz;
         recyclerViewSelected.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         imgSearch = activityGrChaBinding.groupActvionBar.imgSearch
+        imgBack = activityGrChaBinding.groupActvionBar.imgBack
         tvTotalPrtcpnt=activityGrChaBinding.groupActvionBar.tvTotalParticipent
         fbNext=activityGrChaBinding.fbNext
         tvTotalPrtcpnt.setText("0 Participants")
@@ -177,6 +180,9 @@ class GorupChatUserListActivity : AppCompatActivity(), GroupUserAdapter.ItemSele
                 setResult(Activity.RESULT_OK,intent)
                 finish()
             }
+        })
+        imgBack.setOnClickListener(View.OnClickListener {
+            super.onBackPressed()
         })
     }
 

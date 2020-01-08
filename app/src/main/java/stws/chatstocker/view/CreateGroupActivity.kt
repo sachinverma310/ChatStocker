@@ -269,4 +269,5 @@ class CreateGroupActivity : AppCompatActivity(),GroupUserAdapter.ItemSelectedLis
 ////            return getCaptureImageOutputUri()!!
 //        return data.getData()!!
 //    }
+
 }

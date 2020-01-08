@@ -206,7 +206,7 @@ class ProfileActivity : AppCompatActivity() {
         if (requestCode == PHONE_NO_REUEST_CODE) {
 //            verifyPhoneNumberWithCode(data!!.getStringExtra(ConstantsValues.KEY_VERIFICATION_ID), data.getStringExtra(ConstantsValues.KEY_OTP))
 //            if (lastPhone.equals(phone)){
-            FirebaseDatabase.getInstance().reference.child("User").child(Prefrences.getUserUid(this)!!).child("numbers")
+            FirebaseDatabase.getInstance().reference.child("Users").child(Prefrences.getUserUid(this)!!).child("numbers")
                     .setValue(edtMobile.text.toString())
             loginResponse.phone = edtMobile.text.toString()
             Prefrences.saveUser(this, ConstantsValues.KEY_LOGIN_DATA, loginResponse)
@@ -222,7 +222,7 @@ class ProfileActivity : AppCompatActivity() {
 //        val room_type_1 = senderUid + "_" + receiverUid;
 //        val room_type_2 = receiverUid + "_" + senderUid;
         val date = Calendar.getInstance().timeInMillis.toString();
-        val user_message_push = databaseReference.child("User")
+        val user_message_push = databaseReference.child("Users")
                 .child(senderUid!!).push();
         val push_id = user_message_push.getKey();
         val filePath = mImageStorage.child("profile_images").child(push_id + ".jpg")
@@ -247,7 +247,7 @@ class ProfileActivity : AppCompatActivity() {
                     Prefrences.saveUser(this@ProfileActivity, ConstantsValues.KEY_LOGIN_DATA, loginResponse)
                     Log.d("TAG", "onComplete: Url: " + downUri.toString());
 //                    Glide.with(this@ChatActivity).load(Uri.parse(download_url)).into(imgFile)
-                    databaseReference.child("User").child(senderUid).child("profileImage").setValue(download_url)
+                    databaseReference.child("Users").child(senderUid).child("profileImage").setValue(download_url)
 
                 }
             }

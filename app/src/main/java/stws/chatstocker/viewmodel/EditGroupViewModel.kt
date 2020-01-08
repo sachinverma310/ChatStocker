@@ -110,7 +110,7 @@ class EditGroupViewModel:ViewModel, ConstantsValues {
                 .reference.child(ConstantsValues.KEY_GROUP_DETAILS).child(grpId).child(ConstantsValues.KEY_GRP_NAME).setValue(grpName)
         for (i in 0 until userList.size)
             FirebaseDatabase.getInstance()
-                    .reference.child("User").child(userList.get(i).uid!!).child(ConstantsValues.KEY_ADDED_GRP)
+                    .reference.child("Users").child(userList.get(i).uid!!).child(ConstantsValues.KEY_ADDED_GRP)
                     .child(grpId).child(ConstantsValues.KEY_GRP_NAME).setValue(grpName)
 
     }
@@ -147,7 +147,7 @@ class EditGroupViewModel:ViewModel, ConstantsValues {
 
                     for (i in 0 until userList.size)
                         FirebaseDatabase.getInstance()
-                                .reference.child("User").child(userList.get(i).uid!!).child(ConstantsValues.KEY_ADDED_GRP)
+                                .reference.child("Users").child(userList.get(i).uid!!).child(ConstantsValues.KEY_ADDED_GRP)
                                 .child(grpId).child(ConstantsValues.KEY_GRP_IMAGE).setValue(download_url)
 
                     ProgressBarHandler.hide()
@@ -167,7 +167,7 @@ class EditGroupViewModel:ViewModel, ConstantsValues {
         for (i in 0 until user.size) {
             groupSize=groupSize+1
             database.child(ConstantsValues.KEY_GROUP_DETAILS).child(groupId).child(ConstantsValues.KEY_GRP_USER).child(groupSize.toString()).setValue(user.get(i).user!!.uid)
-            database.child("User").child(user.get(i).user!!.uid!!).child(ConstantsValues.KEY_ADDED_GRP).addListenerForSingleValueEvent(object : ValueEventListener {
+            database.child("Users").child(user.get(i).user!!.uid!!).child(ConstantsValues.KEY_ADDED_GRP).addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onCancelled(p0: DatabaseError) {
 
                 }
@@ -184,7 +184,7 @@ class EditGroupViewModel:ViewModel, ConstantsValues {
                     grpValue.put(ConstantsValues.KEY_GRP_NAME, grpName)
                     grpValue.put(ConstantsValues.KEY_GRP_IMAGE, user.get(i).user!!.image!!)
                     grpValue.put(ConstantsValues.KEY_GRP_ID, groupId.toString())
-                    database.child("User").child(user.get(i).user!!.uid!!).child(ConstantsValues.KEY_ADDED_GRP).child(groupId.toString()).setValue(grpValue)
+                    database.child("Users").child(user.get(i).user!!.uid!!).child(ConstantsValues.KEY_ADDED_GRP).child(groupId.toString()).setValue(grpValue)
                     isAddedToGroup.postValue(true)
                     if (i==user.size-1)
                     ProgressBarHandler.hide()
@@ -210,7 +210,7 @@ class EditGroupViewModel:ViewModel, ConstantsValues {
                             val userId = group.value
                             Log.e("user",userId.toString())
                             FirebaseDatabase.getInstance()
-                                    .reference.child("User").child(userId.toString()!!).addListenerForSingleValueEvent(object :ValueEventListener{
+                                    .reference.child("Users").child(userId.toString()!!).addListenerForSingleValueEvent(object :ValueEventListener{
                                 override fun onCancelled(p0: DatabaseError) {
 
                                 }

@@ -246,7 +246,7 @@ class UserListViewModel() : ViewModel(), ConstantsValues {
 //        Collections.synchronizedList(nameArrayList)
         val rootRef = FirebaseDatabase.getInstance().getReference()
         val myuid = Prefrences.Companion.getUserDetails(context, ConstantsValues.KEY_LOGIN_DATA).uid
-        val usersdRef = rootRef.child("User")
+        val usersdRef = rootRef.child("Users")
         val eventListener = object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 Log.e("Count ", "" + dataSnapshot.getChildrenCount());
@@ -297,7 +297,7 @@ class UserListViewModel() : ViewModel(), ConstantsValues {
 //        nameArrayList = ArrayList<User>()
         val rootRef = FirebaseDatabase.getInstance().getReference()
         val myuid = Prefrences.Companion.getUserDetails(context, ConstantsValues.KEY_LOGIN_DATA).uid
-        val usersdRef = rootRef.child("User").child(myuid!!)
+        val usersdRef = rootRef.child("Users").child(myuid!!)
         val eventListener = object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 if (dataSnapshot.hasChild(ConstantsValues.KEY_ADDED_GRP)) {

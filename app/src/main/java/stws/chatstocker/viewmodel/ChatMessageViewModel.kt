@@ -148,7 +148,7 @@ class ChatMessageViewModel : ViewModel() {
 
     public fun updatelstChatTime(time:String){
         FirebaseDatabase.getInstance()
-                .reference.child("User").child(senderUid).child(ConstantsValues.KEY_FRIEND).addListenerForSingleValueEvent(object : ValueEventListener {
+                .reference.child("Users").child(senderUid).child(ConstantsValues.KEY_FRIEND).addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onCancelled(p0: DatabaseError) {
 
             }
@@ -165,7 +165,7 @@ class ChatMessageViewModel : ViewModel() {
                 friendValue.put(ConstantsValues.KEY_LAST_MSG_TIME, time)
 
                 FirebaseDatabase.getInstance()
-                        .reference.child("User").child(senderUid).child(ConstantsValues.KEY_FRIEND).child(receiverUid).setValue(friendValue).addOnSuccessListener(object : OnSuccessListener<Void>{
+                        .reference.child("Users").child(senderUid).child(ConstantsValues.KEY_FRIEND).child(receiverUid).setValue(friendValue).addOnSuccessListener(object : OnSuccessListener<Void>{
                     override fun onSuccess(p0: Void?) {
 
                     }

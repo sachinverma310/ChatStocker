@@ -38,6 +38,8 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
+import com.google.api.client.http.HttpRequest;
+import com.google.api.client.http.HttpRequestInitializer;
 import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.DriveScopes;
@@ -103,7 +105,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Constant
         imagePopup.setHideCloseIcon(true);  // Optional
         imagePopup.setImageOnClickClose(true);  // Optional
         frameLayout = findViewById(R.id.frameLayout);
-        mUserDatabase = FirebaseDatabase.getInstance().getReference().child("User");
+        mUserDatabase = FirebaseDatabase.getInstance().getReference().child("Users");
         imgSearchBar = findViewById(R.id.imgSearch);
         bottomNavigationView = findViewById(R.id.bottomNavigationView);
         mainActionbar = findViewById(R.id.mainActionBar);
@@ -129,7 +131,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Constant
         imgBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               BaseActivity.super.onBackPressed();
+               onBackPressed();
             }
         });
         tvCall.setOnClickListener(new View.OnClickListener() {
@@ -221,6 +223,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Constant
                         .requestEmail()
                         .requestIdToken(getString(R.string.default_web_client_id))
                         .requestScopes(new Scope(DriveScopes.DRIVE_FILE))
+
                         .build();
         client = GoogleSignIn.getClient(this, signInOptions);
 
@@ -264,7 +267,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Constant
                 Drive googleDriveService = new Drive.Builder(
                         AndroidHttp.newCompatibleTransport(),
                         new GsonFactory(),
-                        credential)
+                        credential).setHttpRequestInitializer(setHttpTimeout(credential))
                         .setApplicationName("Drive API Migration")
                         .build();
 
@@ -283,7 +286,16 @@ public abstract class BaseActivity extends AppCompatActivity implements Constant
 
 
     }
-
+    private static HttpRequestInitializer setHttpTimeout(final HttpRequestInitializer requestInitializer) {
+        return new HttpRequestInitializer() {
+            @Override
+            public void initialize(HttpRequest httpRequest) throws IOException {
+                requestInitializer.initialize(httpRequest);
+                httpRequest.setConnectTimeout(3 * 60000);  // 3 minutes connect timeout
+                httpRequest.setReadTimeout(3 * 60000);  // 3 minutes read timeout
+            }
+        };
+    }
     public void firebaseAuthWithGoogle(GoogleSignInAccount acct, Context context) {
         Log.d("TAG", "firebaseAuthWithGoogle:" + acct.getId() + " " + acct.getIdToken());
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);

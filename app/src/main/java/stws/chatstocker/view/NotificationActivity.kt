@@ -32,6 +32,11 @@ class NotificationActivity : AppCompatActivity() {
            if (radioButton!=null)
             radioButton.isChecked=true;
         }
+        else{
+            rbGrp.check(R.id.toneRadio)
+            Prefrences.saveInt(this@NotificationActivity,ConstantsValues.KEY_Noti_RADIO_ID,R.id.toneRadio)
+            Prefrences.saveString(this@NotificationActivity,ConstantsValues.KEY_NotI_SETTING,"Tone")
+        }
         rbGrp.setOnCheckedChangeListener(object :RadioGroup.OnCheckedChangeListener{
             override fun onCheckedChanged(group: RadioGroup?, checkedId: Int) {
                 val radioButton=group!!.findViewById<RadioButton>(checkedId)

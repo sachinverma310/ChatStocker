@@ -3,6 +3,7 @@ package stws.chatstocker.view
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.MenuItem
 import android.view.View
 import com.google.android.gms.tasks.OnSuccessListener
 import stws.chatstocker.ConstantsValues
@@ -17,6 +18,11 @@ class SettingActivity : BaseActivity() {
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         setTitle("Settings")
 
+    }
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId==android.R.id.home)
+            super.onBackPressed()
+        return super.onOptionsItemSelected(item)
     }
     fun logout(view: View){
         BaseActivity.client.signOut().addOnSuccessListener(OnSuccessListener<Void> {
